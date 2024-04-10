@@ -1,0 +1,67 @@
+﻿@namespace FrontendBlazor.Client.Pages
+@page "/shifts"
+@rendermode InteractiveAuto
+
+@using FrontendBlazor.Client.Models
+@using FrontendBlazor.Client.Pages.Components
+
+<h3>ShiftPlan</h3>
+
+<table class="table">
+	<thead>
+		<tr>
+			<td>Hours</td>
+			<td>Day</td>
+			@foreach(var employ in employs)
+			{
+				<td>@employ</td>
+			}
+		</tr>
+	</thead>
+	<tbody>
+	@foreach(var day in days)
+	{
+	<tr>
+		<td>@day</td>
+		<td>@day.DayOfWeek</td>
+		@foreach(var employ in employs)
+		{
+			<ShiftComponent Date="@day" Employ="@employ" Shift="GetShift(day, employ)" OnShiftAdded="AddShift" />
+		}
+
+	</tr>
+	}
+	</tbody>
+</table>
+
+@code {
+
+	public List<string> employs =
+	[
+		"Alex",
+	"Krzyś",
+	"Kuba"
+	];
+
+	private List<Shift> shifts = [];
+
+	private List<DateOnly> days =
+	[
+		DateOnly.FromDateTime(DateTime.Now.AddDays(-1)),
+	DateOnly.FromDateTime(DateTime.Now),
+	DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
+	DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
+	DateOnly.FromDateTime(DateTime.Now.AddDays(3)),
+	DateOnly.FromDateTime(DateTime.Now.AddDays(4)),
+	];
+
+	private void AddShift(Shift shift)
+	{
+		shifts.Add(shift);
+	}
+
+	private Shift? GetShift(DateOnly day, string employ)
+	{
+		return shifts.Where(s => s.Date == day && s.Employe == employ).FirstOrDefault();
+	}
+}
