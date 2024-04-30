@@ -1,11 +1,24 @@
 ﻿@namespace FrontendBlazor.Client.Pages
 @page "/shifts"
-@rendermode InteractiveAuto
+@rendermode InteractiveServer
+@inject IShiftsService shiftService
+@inject IEmployeesService employService
 
 @using FrontendBlazor.Client.Models
 @using FrontendBlazor.Client.Pages.Components
+@using FrontendBlazor.Client.Services
 
-<h3>ShiftPlan</h3>
+<div class="row d-flex">
+	<div class="col-3 justify-content-start">
+		<h3>ShiftPlan</h3>
+	</div>
+	<div class="col-9 justify-content-end">
+		<div class="btn-group" role="group">
+			<AddEmployeeModal UpdateData="OnInitializedAsync"/>
+			<RemoveEmployeeModal UpdateData="OnInitializedAsync" />
+		</div>
+	</div>
+</div>
 
 <table class="table">
 	<thead>
@@ -14,19 +27,19 @@
 			<td>Day</td>
 			@foreach(var employ in employs)
 			{
-				<td>@employ</td>
+				<td>@employ.Name</td>
 			}
 		</tr>
 	</thead>
 	<tbody>
 	@foreach(var day in days)
 	{
-	<tr>
+	<tr class="@SetDayBackgroundColor(day)">
 		<td>@day</td>
 		<td>@day.DayOfWeek</td>
 		@foreach(var employ in employs)
 		{
-			<ShiftComponent Date="@day" Employ="@employ" Shift="GetShift(day, employ)" OnShiftAdded="AddShift" />
+			<ShiftComponent Date="@day" Employee="@employ" Shift="PickShiftFromList(day, employ)" OnShiftInsertOrUpdate="InsertOrUpdate" />
 		}
 
 	</tr>
@@ -35,33 +48,43 @@
 </table>
 
 @code {
-
-	public List<string> employs =
-	[
-		"Alex",
-	"Krzyś",
-	"Kuba"
-	];
-
-	private List<Shift> shifts = [];
-
-	private List<DateOnly> days =
-	[
-		DateOnly.FromDateTime(DateTime.Now.AddDays(-1)),
-	DateOnly.FromDateTime(DateTime.Now),
-	DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
-	DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
-	DateOnly.FromDateTime(DateTime.Now.AddDays(3)),
-	DateOnly.FromDateTime(DateTime.Now.AddDays(4)),
-	];
-
-	private void AddShift(Shift shift)
+	protected override async Task OnInitializedAsync()
 	{
-		shifts.Add(shift);
+		employs = (await employService.GetAll()).ToList();
+		shifts = (await shiftService.GetAll()).ToList();
 	}
 
-	private Shift? GetShift(DateOnly day, string employ)
+	public List<Employee> employs = [];
+	public List<Shift> shifts = [];
+
+	private List<DateOnly> days => GenerateDays();
+	private List<DateOnly> GenerateDays()
 	{
-		return shifts.Where(s => s.Date == day && s.Employe == employ).FirstOrDefault();
+		var daysList = new List<DateOnly>();
+		for (int i = -7; i < 7; i++)
+		{
+			daysList.Add(DateOnly.FromDateTime(DateTime.Now.AddDays(i)));
+		}
+		return daysList;
+	}
+	private async Task InsertOrUpdate(Shift shift)
+	{
+		await shiftService.InsertOrUpdate(shift);
+		await OnInitializedAsync();
+	}
+
+	private Shift? PickShiftFromList(DateOnly day, Employee employ)
+	{
+		return shifts.Where(s => s.Date == day && s.Employee == employ).FirstOrDefault();
+	}
+
+	private string SetDayBackgroundColor(DateOnly day)
+	{
+		return day.DayOfWeek switch
+		{
+			DayOfWeek.Saturday => "table-warning",
+			DayOfWeek.Sunday => "table-danger",
+			_ => string.Empty
+		};
 	}
 }

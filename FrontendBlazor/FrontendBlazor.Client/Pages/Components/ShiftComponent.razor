@@ -1,32 +1,19 @@
 ﻿@namespace FrontendBlazor.Client.Pages.Components
 @using FrontendBlazor.Client.Models
+@using FrontendBlazor.Client.Services
 
-@if(Shift != null)
-{
-	<td>
-		<div class="btn btn-@color">
-			<div>@Shift.Start.ToString("HH:mm")</div>
-			<div>@Shift.End.ToString("HH:mm")</div>
-		</div>
-	</td>
-}
-else
-{
-	<AddShiftModal Employ="@Employ" Date="Date" OnShiftAdded="OnShiftAdded" />
-}
+<ShiftModal Employee="@Employee" Shift="@Shift" Date="Date" OnShiftInsertOrUpdate="OnShiftInsertOrUpdate"/>
 
 @code {
-	[Parameter]
-	public DateOnly Date { get; set; }
+    [Parameter]
+    public DateOnly Date { get; set; }
 
-	[Parameter]
-	public string Employ { get; set; } = string.Empty;
+    [Parameter]
+    public Employee? Employee { get; set; }
 
 	[Parameter]
 	public Shift? Shift { get; set; }
 
 	[Parameter]
-	public EventCallback<Shift> OnShiftAdded { get; set; }
-
-	private string color = "secondary";
+	public EventCallback<Shift> OnShiftInsertOrUpdate { get; set; }
 }

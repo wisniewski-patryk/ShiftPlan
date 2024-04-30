@@ -1,0 +1,48 @@
+﻿@namespace FrontendBlazor.Client.Pages.Components
+
+@rendermode InteractiveServer
+
+@using FrontendBlazor.Client.Models
+@using FrontendBlazor.Client.Services
+
+@inject IEmployeesService employeeService
+
+<div class="btn btn-primary" @onclick="OnShowModalClick">
+	Add new employee
+</div>
+
+<Modal @ref="modal" Title="Add employee" ShowCloseButton="true">
+	<BodyTemplate>
+		<label>Employee name</label>
+		<InputText @bind-Value="EmployeeName" />
+	</BodyTemplate>
+	<FooterTemplate>
+		<Button Color="ButtonColor.Primary" @onclick="InsertOrUpdate">Insert</Button>
+		<Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
+	</FooterTemplate>
+</Modal>
+@code {
+	[Parameter]
+	public EventCallback UpdateData { get; set; }
+
+	private Modal modal = new();
+
+	private string EmployeeName { get; set; } = string.Empty;
+
+	private async Task InsertOrUpdate()
+	{
+		if (string.IsNullOrWhiteSpace(EmployeeName)) return;
+		await employeeService.InsertOrUpdate(new Employee(EmployeeName, 0));
+		EmployeeName = string.Empty;
+		await OnHideModalClick();
+		await UpdateData.InvokeAsync();
+	}
+	private async Task OnShowModalClick()
+	{
+		await modal.ShowAsync();
+	}
+	private async Task OnHideModalClick()
+	{
+		await modal.HideAsync();
+	}
+}
