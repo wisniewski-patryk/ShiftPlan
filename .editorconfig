@@ -1,0 +1,2 @@
+dotnet_style_qualification_for_field = true
+dotnet_style_qualification_for_property = true

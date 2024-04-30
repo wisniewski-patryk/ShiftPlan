@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ShiftPlan.Api.Models;
 using ShiftPlan.Api.Repository;
 
@@ -9,7 +10,11 @@ namespace ShiftPlan.Api.Controllers;
 public class ShiftController(IRepository<Shift> shiftsRepository) : ControllerBase
 {
 	[HttpGet]
-	public ActionResult<IAsyncEnumerable<Shift>> GetAll() => Ok(shiftsRepository.GetAll());
+	public ActionResult<IAsyncEnumerable<Shift>> GetAll()
+	{
+		var shifts = shiftsRepository.GetAll().Include(s => s.Employee);
+		return Ok(shifts);
+	}
 
 	[HttpGet("{id}")]
 	public async Task<ActionResult<Shift>> Get(int id) => Ok(await shiftsRepository.Get(id));

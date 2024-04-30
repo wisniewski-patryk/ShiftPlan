@@ -12,8 +12,8 @@ using ShiftPlan.Api.Context;
 namespace ShiftPlan.Api.Migrations
 {
     [DbContext(typeof(ShiftPlanContext))]
-    [Migration("20240428235507_Init")]
-    partial class Init
+    [Migration("20240430222757_Init2")]
+    partial class Init2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,7 +53,7 @@ namespace ShiftPlan.Api.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<int?>("EmployeeId")
+                    b.Property<int>("EmployeeId")
                         .HasColumnType("integer");
 
                     b.Property<TimeOnly>("End")
@@ -73,7 +73,9 @@ namespace ShiftPlan.Api.Migrations
                 {
                     b.HasOne("ShiftPlan.Api.Models.Employee", "Employee")
                         .WithMany()
-                        .HasForeignKey("EmployeeId");
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Employee");
                 });

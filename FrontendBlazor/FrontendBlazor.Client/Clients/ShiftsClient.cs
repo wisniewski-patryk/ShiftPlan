@@ -15,7 +15,7 @@ public class ShiftsClient(HttpClient httpClient) : IShiftsClient
 {
     public async Task<IEnumerable<Shift>?> GetAll()
     {
-        var shifts = await httpClient.GetFromJsonAsync<Shift[]>("shifts");
+        var shifts = await httpClient.GetFromJsonAsync<IEnumerable<Shift>>("shifts");
 		return shifts;
     }
 

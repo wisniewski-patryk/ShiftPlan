@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShiftPlan.Api.Context;
@@ -11,9 +12,11 @@ using ShiftPlan.Api.Context;
 namespace ShiftPlan.Api.Migrations
 {
     [DbContext(typeof(ShiftPlanContext))]
-    partial class ShiftPlanContextModelSnapshot : ModelSnapshot
+    [Migration("20240430221809_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,12 +72,17 @@ namespace ShiftPlan.Api.Migrations
             modelBuilder.Entity("ShiftPlan.Api.Models.Shift", b =>
                 {
                     b.HasOne("ShiftPlan.Api.Models.Employee", "Employee")
-                        .WithMany()
+                        .WithMany("Shifts")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("ShiftPlan.Api.Models.Employee", b =>
+                {
+                    b.Navigation("Shifts");
                 });
 #pragma warning restore 612, 618
         }

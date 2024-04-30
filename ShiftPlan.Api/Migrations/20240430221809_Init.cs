@@ -31,7 +31,7 @@ namespace ShiftPlan.Api.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    EmployeeId = table.Column<int>(type: "integer", nullable: true),
+                    EmployeeId = table.Column<int>(type: "integer", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     Start = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
                     End = table.Column<TimeOnly>(type: "time without time zone", nullable: false)
@@ -43,7 +43,8 @@ namespace ShiftPlan.Api.Migrations
                         name: "FK_Shifts_Employs_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employs",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
