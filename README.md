@@ -12,3 +12,4 @@
 - [ ] user settings
 - [ ] dark mode?
 - [ ] mobile view only version (PWA)
+- [ ] UNIT TESTS!
