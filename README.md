@@ -11,5 +11,6 @@
 - [ ] CI\CD
 - [ ] user settings
 - [ ] dark mode?
-- [ ] mobile view only version (PWA)
-- [ ] UNIT TESTS!
+- [ ] mobile view only version (PWA) 📱 
+- [ ] UNIT TESTS! ⚗ 
+- [ ] Telegram bot notification 🔔 
