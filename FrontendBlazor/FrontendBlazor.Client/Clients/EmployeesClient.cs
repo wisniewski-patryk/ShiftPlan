@@ -15,7 +15,10 @@ public class EmployeesClient(HttpClient httpClient) : IEmployeesClient
 {
 	public async Task<IEnumerable<Employee>?> GetAll()
 	{
-		return await httpClient.GetFromJsonAsync<Employee[]>("employees");
+		var result = await httpClient.GetAsync("employees");
+		result.EnsureSuccessStatusCode();
+		var employees = await result.Content.ReadFromJsonAsync<IEnumerable<Employee>>();
+		return employees;
 	}
 
 	public async Task<Employee?> Get(int id)
