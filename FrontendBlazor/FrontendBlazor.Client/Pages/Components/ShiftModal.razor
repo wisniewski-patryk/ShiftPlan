@@ -48,6 +48,10 @@ else
 		
 	</BodyTemplate>
 	<FooterTemplate>
+		@if (Shift is not null)
+		{
+			<Button class="d-flex" Color="ButtonColor.Danger" @onclick="OnShiftRemove">Remove</Button>
+		}
 		<Button Color="ButtonColor.Primary" @onclick="InsertOrUpdate">@confirmButtonText</Button>
 		<Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
 	</FooterTemplate>
@@ -65,6 +69,9 @@ else
 
 	[Parameter]
 	public EventCallback<Shift> OnShiftEdited { get; set; }
+
+	[Parameter]
+	public EventCallback<Shift> OnShiftRemoved { get; set; }
 
 	[Parameter]
 	public Employee? Employee { get; set; }
@@ -124,7 +131,14 @@ else
 			_ => new TimeOnly(0, 0)
 		};
 	}
-
+	private async Task OnShiftRemove()
+	{
+		if (Shift is not null)
+		{
+			await OnShiftRemoved.InvokeAsync(Shift);
+		}
+		await modal.HideAsync();
+	}
 	private async Task OnShowModalClick()
 	{
 		employees = await employeesService.GetAll();

@@ -2,7 +2,7 @@
 @using FrontendBlazor.Client.Models
 @using FrontendBlazor.Client.Services
 
-<ShiftModal Employee="@Employee" Shift="@Shift" Date="Date" OnShiftInsertOrUpdate="OnShiftInsertOrUpdate"/>
+<ShiftModal Employee="@Employee" Shift="@Shift" Date="Date" OnShiftInsertOrUpdate="OnShiftInsertOrUpdate" OnShiftRemoved="OnShiftRemoved"/>
 
 @code {
     [Parameter]
@@ -16,4 +16,7 @@
 
 	[Parameter]
 	public EventCallback<Shift> OnShiftInsertOrUpdate { get; set; }
+
+	[Parameter]
+	public EventCallback<Shift> OnShiftRemoved { get; set; }
 }
