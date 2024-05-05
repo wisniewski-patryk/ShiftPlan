@@ -5,9 +5,10 @@ namespace ShiftPlan.Api.Extensions;
 
 public static class AddEntityFrameworkExtension
 {
-	public static IServiceCollection AddEntityFramework(this IServiceCollection services)
+	public static IServiceCollection AddEntityFramework(this IServiceCollection services, IConfiguration config)
 	{
-		services.AddDbContext<ShiftPlanContext>(options => options.UseNpgsql("Server=localhost:5432;Database=shiftplandb;Username=shiftplan;Password=dev_password"));
+		var connectionString = config.GetConnectionString("PostgresqlConnection");
+		services.AddDbContext<ShiftPlanContext>(options => options.UseNpgsql(connectionString));
 		return services;
 	}
 }

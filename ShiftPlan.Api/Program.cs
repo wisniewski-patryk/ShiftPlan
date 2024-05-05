@@ -20,8 +20,9 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
+var config = builder.Configuration;
 // Add Entity Framework
-builder.Services.AddEntityFramework();
+builder.Services.AddEntityFramework(config);
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

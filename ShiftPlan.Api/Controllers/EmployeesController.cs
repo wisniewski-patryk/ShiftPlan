@@ -9,8 +9,11 @@ namespace ShiftPlan.Api.Controllers;
 public class EmployeesController(IRepository<Employee> employeesRepository) : ControllerBase
 {
 	[HttpGet]
-	public ActionResult<IAsyncEnumerable<Employee>> GetAll() => Ok(employeesRepository.GetAll());
-
+	public ActionResult<IAsyncEnumerable<Employee>> GetAll()
+	{
+		var employees = employeesRepository.GetAll();
+		return Ok(employees);
+	}
 	[HttpGet("{id}")]
 	public async Task<ActionResult<Employee>> Get(int id) => Ok(await employeesRepository.Get(id));
 
