@@ -22,7 +22,7 @@
 		</div>
 	</div>
 	<div>
-		<SaveWorkModal />
+		<SaveWorkModal OnSave=""/>
 	</div>
 </div>
 
@@ -73,16 +73,27 @@
 		}
 		return daysList;
 	}
-	private async Task InsertOrUpdate(Shift shift)
+	private void InsertOrUpdate(Shift shift)
 	{
-		await shiftService.InsertOrUpdate(shift);
-		await OnInitializedAsync();
+		var existShift = shifts.FirstOrDefault(s => s == shift);
+		if (existShift is null)
+		{
+			shifts.Add(shift);
+		}
+		else
+		{
+			shifts[shifts.IndexOf(existShift)] = shift;
+		}
 	}
 
-	private async Task RemoveShift(Shift shift)
+	private void RemoveShift(Shift shift)
 	{
-		await shiftService.Remove(shift);
-		await OnInitializedAsync();
+		shifts.Remove(shift);
+	}
+
+	private async Task SaveWork()
+	{
+		shiftService.
 	}
 
 	private Shift? PickShiftFromList(DateOnly day, Employee employ)

@@ -34,4 +34,16 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
 		this.entities.Remove(entity);
 		await this.context.SaveChangesAsync(); 
 	}
+
+	public async Task SaveWork(T[] entities)
+	{
+		ArgumentNullException.ThrowIfNull(entities);
+
+
+		foreach (var entity in entities)
+		{
+			this.context.Entry(entity).State = entity.Id == 0 ? EntityState.Added : EntityState.Modified;
+		}
+		await this.context.SaveChangesAsync();
+	}
 }

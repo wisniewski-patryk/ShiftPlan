@@ -22,6 +22,8 @@ public class ShiftsService(IShiftsClient client) : IShiftsService
 
     public async Task InsertOrUpdate(Shift shift) => await client.InsertOrUpdate(shift);
 
+    public async Task SaveWork(Shift[] shifts) => await client.SaveWork(shifts);
+
     public async Task Remove(Shift shift) => await client.Remove(shift);
 }
 

@@ -31,6 +31,12 @@ public class ShiftsClient(HttpClient httpClient) : IShiftsClient
         return await response.Content.ReadFromJsonAsync<Shift>();
     }
 
+    public async Task SaveWork(Shift[] shifts)
+	{
+		var response = await httpClient.PostAsJsonAsync("shifts/saveWork", shifts);
+		response.EnsureSuccessStatusCode();
+	}
+
     public async Task Remove(Shift shift)
     {
         var request = new HttpRequestMessage(HttpMethod.Delete, "shifts/delete")
