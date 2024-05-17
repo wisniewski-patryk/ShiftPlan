@@ -1,0 +1,125 @@
+﻿@namespace ShiftPlan.Blazor.Client.Pages
+
+@page "/"
+
+@rendermode InteractiveServer
+
+@inject IShiftsService shiftService
+@inject IEmployeesService employeeService
+
+@using ShiftPlan.Blazor.Client.Models
+@using ShiftPlan.Blazor.Client.Pages.Components
+@using ShiftPlan.Blazor.Client.Services
+
+<div class="row d-flex">
+	<div class="col-3 justify-content-start">
+		<h3>ShiftPlan</h3>
+	</div>
+	<div class="col-9 justify-content-end">
+		<div class="btn-group" role="group">
+			<AddEmployeeModal InsertEmployee="InsertOrUpdateEmployee" />
+			<RemoveEmployeeModal RemoveEmployee="RemoveEmployee" Employees="employees"/>
+		</div>
+	</div>
+</div>
+
+<table class="table">
+	<thead>
+		<tr>
+			<td>Hours</td>
+			<td>Day</td>
+			@foreach(var employ in employees)
+			{
+				<td>@employ.Name</td>
+			}
+		</tr>
+	</thead>
+	<tbody>
+	@foreach(var day in days)
+	{
+	<tr class="@SetDayBackgroundColor(day)">
+		<td>@day</td>
+		<td>@day.DayOfWeek</td>
+		@foreach(var employ in employees)
+		{
+			<ShiftComponent Date="@day" Employee="@employ" Shift="PickShiftFromList(day, employ)" OnShiftInsertOrUpdate="InsertOrUpdateShift" OnShiftRemoved="RemoveShift" />
+		}
+	</tr>
+	}
+	</tbody>
+</table>
+
+@code {
+	protected override async Task OnInitializedAsync()
+	{
+		employees = (await employeeService.GetAll()).ToList();
+		shifts = (await shiftService.GetAll()).ToList();
+	}
+
+	public List<Employee> employees = [];
+	public List<Shift> shifts = [];
+
+	private List<DateOnly> days => GenerateDays();
+	private List<DateOnly> GenerateDays()
+	{
+		var daysList = new List<DateOnly>();
+		for (int i = -7; i < 7; i++)
+		{
+			daysList.Add(DateOnly.FromDateTime(DateTime.Now.AddDays(i)));
+		}
+		return daysList;
+	}
+	private async Task InsertOrUpdateShift(Shift shift)
+	{
+		var newShift = await shiftService.InsertOrUpdate(shift);
+		if (newShift is null) return;
+
+		var existingShift = shifts.FirstOrDefault(s => s.Id == newShift.Id);
+		if (existingShift != null)
+		{
+			shifts.Remove(existingShift);
+		}
+		shifts.Add(newShift);
+	}
+
+	private async Task RemoveShift(Shift shift)
+	{
+		await shiftService.Remove(shift);
+		shifts.Remove(shift);
+	}
+
+	private async Task InsertOrUpdateEmployee(Employee employee)
+	{
+		var newEmployee = await employeeService.InsertOrUpdate(employee);
+		if (newEmployee is null) return;
+
+		var existingEmployee = employees.FirstOrDefault(e => e.Id == newEmployee.Id);
+		if (existingEmployee is not null)
+		{
+			employees.Remove(existingEmployee);
+		}
+		employees.Add(newEmployee);
+	}
+
+	private async Task RemoveEmployee(Employee employee)
+	{
+		if (employee is null) return;
+		await employeeService.Remove(employee);
+		employees.Remove(employee);
+	}
+
+	private Shift? PickShiftFromList(DateOnly day, Employee employ)
+	{
+		return shifts.Where(s => s.Date == day && s.Employee == employ).FirstOrDefault();
+	}
+
+	private string SetDayBackgroundColor(DateOnly day)
+	{
+		return day.DayOfWeek switch
+		{
+			DayOfWeek.Saturday => "table-warning",
+			DayOfWeek.Sunday => "table-danger",
+			_ => string.Empty
+		};
+	}
+}

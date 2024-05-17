@@ -1,54 +1,53 @@
-﻿@namespace FrontendBlazor.Client.Pages.Components
+﻿@namespace ShiftPlan.Blazor.Client.Pages.Components
 
 @rendermode InteractiveServer
 
-@using FrontendBlazor.Client.Models
-@using FrontendBlazor.Client.Services
+@using ShiftPlan.Blazor.Client.Models
+@using ShiftPlan.Blazor.Client.Services
 
 @inject IEmployeesService employeeService
 
-<div class="btn btn-danger" @onclick="OnShowModalClick">
+<Button @ref="removeButton" Color="ButtonColor.Danger" @onclick="OnShowModalClick">
 	<Icon Name="IconName.Trash" /> Remove employee
-</div>
+</Button>
 
 <Modal @ref="modal" Title="Remove employee" ShowCloseButton="true">
 	<BodyTemplate>
 		<label>Employee name</label>
 		<InputSelect class="form-control" TValue="int" @bind-Value="SelectedEmployee">
-			@foreach (var employ in employees)
+			@foreach (var employ in this.Employees)
 			{
 				<option value="@employ.Id">@employ.Name</option>
 			}
 		</InputSelect>
 	</BodyTemplate>
 	<FooterTemplate>
-		<Button Color="ButtonColor.Primary" @onclick="Delete">Remove</Button>
+		<Button Color="ButtonColor.Primary" @onclick="RemoveSelectedEmployee">Remove</Button>
 		<Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
 	</FooterTemplate>
 </Modal>
 @code {
 	private Modal modal = new();
+	private Button removeButton;
 
 	[Parameter]
-	public EventCallback UpdateData { get; set; }
+	public List<Employee> Employees { get; set; } = [];
+
+	[Parameter]
+	public EventCallback<Employee> RemoveEmployee { get; set; }
 
 	private int SelectedEmployee { get; set; }
-	private List<Employee> employees = new();
-	private async Task Delete()
+
+	private async Task RemoveSelectedEmployee()
 	{
-		var employee = employees?.FirstOrDefault(e => e.Id == SelectedEmployee);
-		if (employee is null) return;
-		await employeeService.Remove(employee);
+		this.removeButton.ShowLoading("Removing employee...");
 		await OnHideModalClick();
-		await UpdateData.InvokeAsync();
+		var employee = this.Employees?.FirstOrDefault(e => e.Id == SelectedEmployee);
+		if (employee is not null) await RemoveEmployee.InvokeAsync(employee);
+		this.removeButton.HideLoading();
 	}
-	private async Task OnShowModalClick()
-	{
-		employees = (await employeeService.GetAll()).ToList();
-		await modal.ShowAsync();
-	}
-	private async Task OnHideModalClick()
-	{
-		await modal.HideAsync();
-	}
+
+	private async Task OnShowModalClick() => await modal.ShowAsync();
+
+	private async Task OnHideModalClick() => await modal.HideAsync();
 }

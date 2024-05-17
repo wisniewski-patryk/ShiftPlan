@@ -1,8 +1,7 @@
-﻿@namespace FrontendBlazor.Client.Pages.Components
-@using FrontendBlazor.Client.Models
-@using FrontendBlazor.Client.Services
+﻿@namespace ShiftPlan.Blazor.Client.Pages.Components
+@using ShiftPlan.Blazor.Client.Models
 
-<ShiftModal Employee="@Employee" Shift="@Shift" Date="Date" OnShiftInsertOrUpdate="OnShiftInsertOrUpdate" OnShiftRemoved="OnShiftRemoved"/>
+<InsertOrUpdateShiftModal Employee="@Employee" Shift="@Shift" Date="Date" OnShiftInsertOrUpdate="OnShiftInsertOrUpdate" OnShiftRemoved="OnShiftRemoved"/>
 
 @code {
     [Parameter]

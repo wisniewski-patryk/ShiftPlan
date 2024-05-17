@@ -1,6 +1,6 @@
-﻿@namespace FrontendBlazor.Client.Pages.Components
-@using FrontendBlazor.Client.Models
-@using FrontendBlazor.Client.Services
+﻿@namespace ShiftPlan.Blazor.Client.Pages.Components
+@using ShiftPlan.Blazor.Client.Models
+@using ShiftPlan.Blazor.Client.Services
 
 @inject IEmployeesService employeesService
 
@@ -89,7 +89,6 @@ else
 
 	private async Task InsertOrUpdate()
 	{
-		var markAsNew = 0;
 		Shift? shift = null;
 		if (Employee is null)
 		{
@@ -97,7 +96,7 @@ else
 		}
 		if (Shift is null)
 		{
-			shift = new Shift(Employee, Date, newStart, newEnd, markAsNew);
+			shift = new Shift(Employee, Date, newStart, newEnd);
 		}
 		else
 		{

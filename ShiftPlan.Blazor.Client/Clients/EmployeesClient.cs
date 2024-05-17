@@ -1,7 +1,7 @@
-﻿using FrontendBlazor.Client.Models;
+﻿using ShiftPlan.Blazor.Client.Models;
 using System.Net.Http.Json;
 
-namespace FrontendBlazor.Client.Clients;
+namespace ShiftPlan.Blazor.Client.Clients;
 
 public interface IEmployeesClient
 {
@@ -28,7 +28,11 @@ public class EmployeesClient(HttpClient httpClient) : IEmployeesClient
 
 	public async Task<Employee?> InsertOrUpdate(Employee employee)
 	{
-		var response = await httpClient.PostAsJsonAsync("employees/insertOrUpdate", employee);
+		var request = new HttpRequestMessage(HttpMethod.Post, "employees/insertOrUpdate")
+		{
+			Content = JsonContent.Create(employee)
+		};
+		var response = await httpClient.SendAsync(request);
 		response.EnsureSuccessStatusCode();
 		return await response.Content.ReadFromJsonAsync<Employee>();
 	}
@@ -36,9 +40,9 @@ public class EmployeesClient(HttpClient httpClient) : IEmployeesClient
 	public async Task Remove(Employee employee)
 	{
 		var request = new HttpRequestMessage(HttpMethod.Delete, "employees/delete")
-        {
-            Content = JsonContent.Create(employee)
-        };
+		{
+			Content = JsonContent.Create(employee)
+		};
 		var response = await httpClient.SendAsync(request);
 		response.EnsureSuccessStatusCode();
 	}

@@ -29,11 +29,4 @@ public class ShiftController(IRepository<Shift> shiftsRepository) : ControllerBa
 		await shiftsRepository.Delete(shift);
 		return Ok();
 	}
-
-	[HttpPost("saveWork")]
-	public async Task<IActionResult> SaveWork([FromBody] Shift[] shifts)
-	{
-		await shiftsRepository.SaveWork(shifts);
-		return Ok();
-	}
 }

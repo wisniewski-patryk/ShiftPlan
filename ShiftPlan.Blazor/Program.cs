@@ -1,6 +1,6 @@
-using FrontendBlazor.Client.Clients;
-using FrontendBlazor.Client.Services;
-using FrontendBlazor.Components;
+using ShiftPlan.Blazor.Client.Clients;
+using ShiftPlan.Blazor.Client.Services;
+using ShiftPlan.Blazor.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +41,6 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
 		.AddInteractiveServerRenderMode()
 		.AddInteractiveWebAssemblyRenderMode()
-		.AddAdditionalAssemblies(typeof(FrontendBlazor.Client._Imports).Assembly);
+		.AddAdditionalAssemblies(typeof(ShiftPlan.Blazor.Client._Imports).Assembly);
 
 app.Run();
