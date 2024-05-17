@@ -28,11 +28,7 @@ public class EmployeesClient(HttpClient httpClient) : IEmployeesClient
 
 	public async Task<Employee?> InsertOrUpdate(Employee employee)
 	{
-		var request = new HttpRequestMessage(HttpMethod.Post, "employees/insertOrUpdate")
-		{
-			Content = JsonContent.Create(employee)
-		};
-		var response = await httpClient.SendAsync(request);
+		var response = await httpClient.PostAsJsonAsync("employees/insertOrUpdate", employee);
 		response.EnsureSuccessStatusCode();
 		return await response.Content.ReadFromJsonAsync<Employee>();
 	}

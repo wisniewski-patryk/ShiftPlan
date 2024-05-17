@@ -32,7 +32,7 @@
 	{
 		addButton.ShowLoading("Inserting employee...");
 		await OnHideModalClick();
-		await InsertEmployee.InvokeAsync(new(EmployeeName));
+		await InsertEmployee.InvokeAsync(new(EmployeeName, 0));
 		addButton.HideLoading();
 	}
 
