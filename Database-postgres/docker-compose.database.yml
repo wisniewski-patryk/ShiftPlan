@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  db:
+    container_name: shiftplan_postgres
+    image: postgres:16.1
+    restart: always
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    volumes:
+      - ./database-data/:/var/lib/postgresql/data/
+    networks:
+      - shiftplan_db
+networks:
+  shiftplan_db:
