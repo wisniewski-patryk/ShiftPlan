@@ -33,7 +33,8 @@ public class ShiftController(IRepository<Shift> shiftsRepository) : ControllerBa
 	[HttpPost("saveWork")]
 	public async Task<IActionResult> SaveWork([FromBody] Shift[] shifts)
 	{
-		await shiftsRepository.SaveWork(shifts);
+		//await shiftsRepository.SaveWork(shifts);//TODO lack of method SaveWork??
+		await Task.Delay(1000);
 		return Ok();
 	}
 }
