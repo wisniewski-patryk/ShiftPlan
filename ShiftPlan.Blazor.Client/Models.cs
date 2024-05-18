@@ -8,7 +8,8 @@ public enum ShiftType
 {
 	First,
 	Second,
-	Third
+	Third,
+	Other
 }
 
 public enum State

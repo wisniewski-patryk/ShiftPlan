@@ -7,17 +7,21 @@
 @if (Shift is null)
 {
 	<td>
-		<div class="btn btn-outline-secondary" @onclick="OnShowModalClick">
-			+
+		<div class="d-grid gap-2" @onclick="OnShowModalClick">
+			<Button Color="ButtonColor.Secondary" Outline>
+				+
+
+			</Button>
 		</div>
 	</td>
 } 
 else
 {
 	<td>
-		<div class="btn btn-@color" @onclick="OnShowModalClick">
-			<div>@Shift.Start.ToString("HH:mm")</div>
-			<div>@Shift.End.ToString("HH:mm")</div>
+		<div class="d-grid gap-2" @onclick="OnShowModalClick">
+			<Button Color="GetButtonColor()">
+				@Shift.Start.ToString("HH:mm") - @Shift.End.ToString("HH:mm")
+			</Button>
 		</div>
 	</td>
 }
@@ -79,7 +83,13 @@ else
 	private TimeOnly newStart { get; set; } = new TimeOnly(6, 0);
 	private TimeOnly newEnd { get; set; } = new TimeOnly(14, 0);
 
-	private string color = "primary";
+	private ButtonColor GetButtonColor() => Shift?.Start switch
+	{
+		TimeOnly time when time == new TimeOnly(6, 0) => ButtonColor.Primary,
+		TimeOnly time when time == new TimeOnly(14, 0) => ButtonColor.Warning,
+		TimeOnly time when time == new TimeOnly(22, 0) => ButtonColor.Info,
+		_ => ButtonColor.Secondary
+	};
 
 	private string confirmButtonText => this.Shift is null ? "Add" : "Edit";
 
