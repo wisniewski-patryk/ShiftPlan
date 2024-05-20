@@ -6,7 +6,7 @@
 
 @if (Shift is null)
 {
-	<td>
+	<td class="col-2">
 		<div class="d-grid gap-2" @onclick="OnShowModalClick">
 			<Button Color="ButtonColor.Secondary" Outline>
 				+
@@ -17,7 +17,7 @@
 } 
 else
 {
-	<td>
+	<td class ="col-2">
 		<div class="d-grid gap-2" @onclick="OnShowModalClick">
 			<Button Color="GetButtonColor()">
 				@Shift.Start.ToString("HH:mm") - @Shift.End.ToString("HH:mm")
