@@ -5,6 +5,7 @@
 
 # My solution ignore
 Database-postgres/database-data/
+*/.config/*
 
 # User-specific files
 *.rsuser
