@@ -72,6 +72,7 @@
 		}
 		return daysList;
 	}
+
 	private async Task InsertOrUpdateShift(Shift shift)
 	{
 		var newShift = await shiftService.InsertOrUpdate(shift);
