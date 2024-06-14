@@ -1,0 +1,50 @@
+services:
+  db:
+    container_name: shiftplan-postgres
+    image: postgres:16.1
+    restart: always
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}",]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    env_file:
+      - Database-postgres/.env
+    volumes:
+      - ./Database-postgres/database-data/:/var/lib/postgresql/data/
+
+  shiftplan-api:
+    container_name: shiftplan-api
+    build:
+      context: ./ShiftPlan.Api/
+    image: shiftplan-api:0.1
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 5000:8080
+
+  blazor:
+    container_name: shiftplan-blazor
+    build:
+      context: .
+    image: shiftplan-blazor:0.1
+    restart: always
+    env_file:
+      - .env_blazor
+    depends_on:
+      - shiftplan-api
+    ports:
+      - 8000:8080
+
+  ubuntu:
+    container_name: shiftplan-ubuntu
+    image: ubuntu:latest
+    restart: always
+    tty: true
+    stdin_open: true
+    ports:
+      - 9000:8080

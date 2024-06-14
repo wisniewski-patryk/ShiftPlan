@@ -21,6 +21,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 
 var config = builder.Configuration;
+
 // Add Entity Framework
 builder.Services.AddEntityFramework(config);
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -31,18 +32,18 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-	app.UseSwagger();
-	app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.Map("/health", appBuilder => 
+	appBuilder.Run(async context => 
+		await context.Response.WriteAsync("Healthy")));
 
 app.Run();
 
