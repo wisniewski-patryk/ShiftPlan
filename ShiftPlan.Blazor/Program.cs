@@ -10,7 +10,7 @@ builder.Services.AddRazorComponents()
 		.AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddBlazorBootstrap();
-var backendApiUrl = new Uri(builder.Configuration.GetValue<string>("ShiftPlanBackendApiUrl") ?? throw new Exception("Backend api url not available."));
+var backendApiUrl = new Uri(builder.Configuration.GetConnectionString("ShiftPlanBackendApiUrl") ?? throw new Exception("Backend api url not available."));
 
 builder.Services.AddHttpClient<IEmployeesClient, EmployeesClient>(client => client.BaseAddress = backendApiUrl);
 
@@ -22,18 +22,22 @@ builder.Services.AddTransient<IShiftsService, ShiftsService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment())
+// {
 	app.UseWebAssemblyDebugging();
-}
-else
-{
-	app.UseExceptionHandler("/Error", createScopeForErrors: true);
+// }
+// else
+// {
+	app.UseExceptionHandler("/Error");
 	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 	app.UseHsts();
-}
+// }
 
 app.UseHttpsRedirection();
+
+app.Map("/health", appBuilder => 
+	appBuilder.Run(async context => 
+		await context.Response.WriteAsync($"Healthy, {backendApiUrl}")));
 
 app.UseStaticFiles();
 app.UseAntiforgery();
