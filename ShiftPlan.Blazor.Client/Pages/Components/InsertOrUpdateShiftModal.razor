@@ -6,24 +6,28 @@
 
 @if (Shift is null)
 {
-	<td>
-		<div class="btn btn-outline-secondary" @onclick="OnShowModalClick">
-			+
+	<td class="col-2">
+		<div class="d-grid gap-2" @onclick="OnShowModalClick">
+			<Button Color="ButtonColor.Secondary" Outline>
+				+
+
+			</Button>
 		</div>
 	</td>
 } 
 else
 {
-	<td>
-		<div class="btn btn-@color" @onclick="OnShowModalClick">
-			<div>@Shift.Start.ToString("HH:mm")</div>
-			<div>@Shift.End.ToString("HH:mm")</div>
+	<td class ="col-2">
+		<div class="d-grid gap-2" @onclick="OnShowModalClick">
+			<Button Color="GetButtonColor()">
+				@Shift.Start.ToString("HH:mm") - @Shift.End.ToString("HH:mm")
+			</Button>
 		</div>
 	</td>
 }
 
 
-<Modal @ref="modal" Title="Modal" IsVerticallyCentered="true" ShowCloseButton="true">
+<Modal @ref="modal" Title="Modal" ShowCloseButton="true">
 	<BodyTemplate>
 		<label>Employee</label>
 		<InputSelect class="form-control" @bind-Value="@Employee">
@@ -35,14 +39,14 @@ else
 		<label>Date</label>
 		<DateInput TValue="DateOnly" @bind-Value="@Date"/>
 		<label>Shift</label>
-		<select class="form-select" @onchange="OnChangeShift">
+		<select class="form-select" @onchange="OnChangeShift" >
 		@foreach(var type in Enum.GetNames(typeof(ShiftType)))
 		{
-			<option>@type</option>
+			<option selected="@(GetShiftType().ToString() == type)">@type</option>
 		}
 		</select>
 		<label>Start</label>
-		<TimeInput TValue="TimeOnly" @bind-Value="@newStart"/>
+		<TimeInput TValue="TimeOnly" @bind-Value="@newStart" @onchange="SetEndTimeOnChangeStartTime()"/>
 		<label>End</label>
 		<TimeInput TValue="TimeOnly" @bind-Value="@newEnd"/>
 		
@@ -68,18 +72,29 @@ else
 	public EventCallback<Shift> OnShiftInsertOrUpdate { get; set; }
 
 	[Parameter]
-	public EventCallback<Shift> OnShiftEdited { get; set; }
-
-	[Parameter]
 	public EventCallback<Shift> OnShiftRemoved { get; set; }
 
 	[Parameter]
 	public Employee? Employee { get; set; }
 
-	private TimeOnly newStart { get; set; } = new TimeOnly(6, 0);
-	private TimeOnly newEnd { get; set; } = new TimeOnly(14, 0);
+	private TimeOnly newStart { get; set; }
+	private TimeOnly newEnd { get; set; }
 
-	private string color = "primary";
+	private ButtonColor GetButtonColor() => Shift?.Start switch
+	{
+		TimeOnly time when time == new TimeOnly(6, 0) => ButtonColor.Primary,
+		TimeOnly time when time == new TimeOnly(14, 0) => ButtonColor.Warning,
+		TimeOnly time when time == new TimeOnly(22, 0) => ButtonColor.Info,
+		_ => ButtonColor.Secondary
+	};
+
+	private ShiftType GetShiftType() => Shift?.Start switch
+	{
+		TimeOnly time when time == new TimeOnly(6, 0) => ShiftType.First,
+		TimeOnly time when time == new TimeOnly(14, 0) => ShiftType.Second,
+		TimeOnly time when time == new TimeOnly(22, 0) => ShiftType.Third,
+		_ => ShiftType.Other
+	};
 
 	private string confirmButtonText => this.Shift is null ? "Add" : "Edit";
 
@@ -154,5 +169,27 @@ else
 	private async Task OnHideModalClick()
 	{
 		await modal.HideAsync();
+	}
+
+	protected override void OnInitialized()
+	{
+		if(Shift is not null)
+		{
+			Employee = Shift.Employee;
+			Date = Shift.Date;
+			newStart = Shift.Start;
+			newEnd = Shift.End;
+		}
+		else
+		{
+			newStart = new TimeOnly(6, 0);
+			newEnd = new TimeOnly(14, 0);
+		}
+	}
+
+	private EventCallback SetEndTimeOnChangeStartTime()
+	{
+		newEnd = newStart.AddHours(8);
+		return EventCallback.Empty;
 	}
 }
