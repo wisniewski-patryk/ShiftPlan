@@ -130,7 +130,8 @@
 
 	private void LoadMoreDays()
 	{
-		for (int i = 7; i < 14; i++)
+		var countDays = days.Count();
+		for (int i = countDays; i < countDays + 7; i++)
 		{
 			days.Add(DateOnly.FromDateTime(DateTime.Now.AddDays(i)));
 		}
