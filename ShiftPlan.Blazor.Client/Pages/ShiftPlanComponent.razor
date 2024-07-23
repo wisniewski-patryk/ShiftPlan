@@ -50,6 +50,7 @@
 </table>
 
 <Button Color="ButtonColor.Primary" @onclick="LoadMoreDays">Load more day</Button>
+<Button Color="ButtonColor.Primary" @onclick="FillShifts">FillShifts</Button>
 
 @code {
 	protected override async Task OnInitializedAsync()
@@ -66,7 +67,7 @@
 	private List<DateOnly> GenerateDays()
 	{
 		var daysList = new List<DateOnly>();
-		for (int i = -7; i < 7; i++)
+		for (int i = 0; i < 7; i++)
 		{
 			daysList.Add(DateOnly.FromDateTime(DateTime.Now.AddDays(i)));
 		}
@@ -134,6 +135,102 @@
 		for (int i = countDays; i < countDays + 7; i++)
 		{
 			days.Add(DateOnly.FromDateTime(DateTime.Now.AddDays(i)));
+		}
+	}
+
+	private async Task FillShifts()
+	{
+		var employ1 = new Employee("ParaNr1", 0);
+		//TODO start musi byc od poniedzialku
+		if (!employees.Any(x => x.Name == "ParaNr1"))
+		{
+			await InsertOrUpdateEmployee(employ1);
+			var insertedEmploy = employees.Where(x => x.Name == "ParaNr1").Select(x => x).FirstOrDefault();
+
+			int weekToFill = 3;
+			for (int i = 0; i < weekToFill; i++)
+			{
+				if (i == 0)
+				{
+					DateTime currentDay = DateTime.Today;
+
+					var lastDay = System.Linq.Enumerable.Range(0, 6)
+							.Select(i => currentDay.AddDays(i))
+							.Last(day => day.DayOfWeek == DayOfWeek.Friday);
+
+					var shift1 = new Shift(insertedEmploy, DateOnly.FromDateTime(currentDay), TimeOnly.Parse("6:00:00"), TimeOnly.Parse("14:00:00"), 0);
+					await InsertOrUpdateShift(shift1);
+
+					while (currentDay != lastDay)
+					{
+						currentDay = currentDay.AddDays(1);
+						var shift2 = new Shift(insertedEmploy, DateOnly.FromDateTime(currentDay), TimeOnly.Parse("6:00:00"), TimeOnly.Parse("14:00:00"), 0);
+						await InsertOrUpdateShift(shift2);
+					};
+				}
+
+				if (i == 1)
+				{
+					DateTime today = DateTime.Today;
+
+					var countFirstMonday = System.Linq.Enumerable.Range(0, 12)
+							.Select(i => today.AddDays(i))
+							.TakeWhile(day => day.DayOfWeek != DayOfWeek.Monday).Count();
+
+					DateTime firstDay = System.Linq.Enumerable.Range(countFirstMonday, 12)
+							.Select(i => today.AddDays(i))
+							.First(day => day.DayOfWeek == DayOfWeek.Monday);
+
+					var countFriday = System.Linq.Enumerable.Range(0, 12)
+							.Select(i => today.AddDays(i))
+							.TakeWhile(day => day.DayOfWeek != DayOfWeek.Friday).Count();
+
+					var lastDay = System.Linq.Enumerable.Range(countFriday + 1, countFriday+6)
+							.Select(i => today.AddDays(i))
+							.First(day => day.DayOfWeek == DayOfWeek.Friday);
+
+					var shift1 = new Shift(insertedEmploy, DateOnly.FromDateTime(firstDay), TimeOnly.Parse("14:00:00"), TimeOnly.Parse("22:00:00"), 0);
+					await InsertOrUpdateShift(shift1);
+
+					while (firstDay != lastDay)
+					{
+						firstDay = firstDay.AddDays(1);
+						var shift2 = new Shift(insertedEmploy, DateOnly.FromDateTime(firstDay), TimeOnly.Parse("14:00:00"), TimeOnly.Parse("22:00:00"), 0);
+						await InsertOrUpdateShift(shift2);
+					};
+				}
+
+				if (i == 2)
+				{
+					DateTime today = DateTime.Today;
+
+					var countFirstMonday = System.Linq.Enumerable.Range(0, 12)
+					.Select(i => today.AddDays(i))
+					.TakeWhile(day => day.DayOfWeek != DayOfWeek.Monday).Count();
+
+					DateTime firstDay = System.Linq.Enumerable.Range(countFirstMonday + 1, countFirstMonday + 6)
+							.Select(i => today.AddDays(i))
+							.Last(day => day.DayOfWeek == DayOfWeek.Monday);
+
+					var countFirstFriday = System.Linq.Enumerable.Range(0, 12)
+					.Select(i => today.AddDays(i))
+					.TakeWhile(day => day.DayOfWeek != DayOfWeek.Friday).Count();
+
+					var lastDay = System.Linq.Enumerable.Range(countFirstFriday, 18)
+							.Select(i => today.AddDays(i))
+							.Last(day => day.DayOfWeek == DayOfWeek.Friday);
+
+					var shift1 = new Shift(insertedEmploy, DateOnly.FromDateTime(firstDay), TimeOnly.Parse("22:00:00"), TimeOnly.Parse("6:00:00"), 0);
+					await InsertOrUpdateShift(shift1);
+
+					while (firstDay != lastDay)
+					{
+						firstDay = firstDay.AddDays(1);
+						var shift2 = new Shift(insertedEmploy, DateOnly.FromDateTime(firstDay), TimeOnly.Parse("22:00:00"), TimeOnly.Parse("6:00:00"), 0);
+						await InsertOrUpdateShift(shift2);
+					};
+				}
+			}
 		}
 	}
 }
