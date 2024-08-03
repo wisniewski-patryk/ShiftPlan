@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShiftPlan.Api.Models;
 using ShiftPlan.Api.Repository;
@@ -16,13 +17,16 @@ public class ShiftController(IRepository<Shift> shiftsRepository) : ControllerBa
 		return Ok(shifts);
 	}
 
+	[Authorize]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<Shift>> Get(int id) => Ok(await shiftsRepository.Get(id));
 
+	[Authorize]
 	[HttpPost("insertOrUpdate")]
 	public async Task<ActionResult<Shift>> InsertOrUpdate([FromBody] Shift shift) =>
 		Ok(await shiftsRepository.InsertOrUpdate(shift));
 
+	[Authorize]
 	[HttpDelete("delete")]
 	public async Task<IActionResult> Delete([FromBody] Shift shift) 
 	{
