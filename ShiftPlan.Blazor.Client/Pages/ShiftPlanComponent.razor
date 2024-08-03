@@ -10,6 +10,7 @@
 @using ShiftPlan.Blazor.Client.Models
 @using ShiftPlan.Blazor.Client.Pages.Components
 @using ShiftPlan.Blazor.Client.Services
+@using ShiftPlan.Blazor.Client.Pages.Components.UserIdentity
 
 <div class="row d-flex">
 	<div class="col-3 justify-content-start">
@@ -21,6 +22,7 @@
 			<RemoveEmployeeModal RemoveEmployee="RemoveEmployee" Employees="employees"/>
 		</div>
 	</div>
+	<UserComponent/>
 </div>
 
 <table class="table table-bordered align-middle">

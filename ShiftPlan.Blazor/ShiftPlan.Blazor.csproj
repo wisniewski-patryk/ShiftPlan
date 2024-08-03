@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ShiftPlan.Blazor.Client\ShiftPlan.Blazor.Client.csproj" />
     <PackageReference Include="Blazor.Bootstrap" Version="2.1.0" />
+    <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
   </ItemGroup>

@@ -23,7 +23,7 @@
 @code {
 	[Parameter]
 	public EventCallback<Employee> InsertEmployee { get; set; }
-	private Button addButton;
+	private Button addButton = new();
 	private Modal modal = new();
 
 	private string EmployeeName { get; set; } = string.Empty;

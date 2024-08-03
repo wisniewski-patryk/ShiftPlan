@@ -1,0 +1,95 @@
+﻿@namespace ShiftPlan.Blazor.Client.Pages.Components.UserIdentity
+
+@using ShiftPlan.Blazor.Client.Services
+
+@inject IUserIdentityService userService
+
+<div class="container">
+	@if (userIsLogin)
+	{
+		<span class="btn btn-danger" @onclick="OnShowLogoutModalClick">Logout</span>
+	} else
+	{
+		<span class="btn btn-primary" @onclick="OnShowLoginModalClick">Login</span>
+	}
+</div>
+<span class="btn btn-secondary" @onclick="OnShowRegisterModalClick">Register</span>
+
+<Modal @ref="loginModal" Title="@modalTitle" ShowCloseButton="true">
+	<BodyTemplate>
+		<div>
+			<label class="form-label" for="userEmail">Email</label>
+			<InputText class="form-control" id="userEmail" @bind-Value="userEmail" placeholder="address@email.com"/>
+		</div>
+		<div>
+			<label class="form-label" for="userPassword">password</label>
+			<InputText class="form-control" id="userPassword" @bind-Value="userPassword" type="password" placeholder="Password"/>
+		</div>
+	</BodyTemplate>
+	<FooterTemplate>
+		<Button Color="ButtonColor.Primary" @onclick="LoginUser" >Login</Button>
+	</FooterTemplate>
+</Modal>
+
+<Modal @ref="logoutModal" Title="@modalTitle" ShowCloseButton="true">
+	<BodyTemplate>
+		<p>Do you want logout?</p>
+	</BodyTemplate>
+	<FooterTemplate>
+		<Button Color="ButtonColor.Primary" @onclick="LogoutUser">Logout</Button>
+	</FooterTemplate>
+</Modal>
+
+<Modal @ref="registerModal" Title="Register" ShowCloseButton="true">
+	<BodyTemplate>
+		<div>
+			<label class="form-label" for="userEmail">Email</label>
+			<InputText class="form-control" id="userEmail" @bind-Value="userEmail" placeholder="address@email.com" />
+		</div>
+		<div>
+			<label class="form-label" for="userPassword">password</label>
+			<InputText class="form-control" id="userPassword" @bind-Value="userPassword" type="password" placeholder="Password" />
+		</div>
+	</BodyTemplate>
+	<FooterTemplate>
+		<Button Color="ButtonColor.Primary">Register</Button>
+	</FooterTemplate>
+</Modal>
+
+@code {
+	private bool userIsLogin = false;
+
+	private string modalTitle => userIsLogin ? "Logout" : "Login";
+
+	private string userEmail = string.Empty;
+	private string userPassword = string.Empty;
+
+	private Modal loginModal = new();
+	private async Task OnShowLoginModalClick() => await loginModal.ShowAsync();
+	private async Task OnHideLoginModalClick() => await loginModal.HideAsync();
+	private async Task LoginUser()
+	{
+		var result = await userService.LoginUser(userEmail, userPassword);
+		userIsLogin = result;
+		await OnHideLoginModalClick();
+	}
+
+	private Modal logoutModal = new();
+	private async Task OnShowLogoutModalClick() => await logoutModal.ShowAsync();
+	private async Task OnHideLogoutModalClick() => await logoutModal.HideAsync();
+	private async Task LogoutUser()
+	{
+		await userService.LogoutUser();
+		userIsLogin = false;
+		await OnHideLogoutModalClick();
+	}
+
+	private Modal registerModal = new();
+	private async Task OnShowRegisterModalClick() => await registerModal.ShowAsync();
+	private async Task OnHideRegisterModalClick() => await registerModal.HideAsync();
+	private async Task RegisterUser()
+	{
+		var result = await userService.RegisterNewUser(userEmail, userPassword);
+		await OnHideRegisterModalClick();
+	}
+}
