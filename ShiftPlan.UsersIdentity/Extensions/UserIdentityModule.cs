@@ -9,7 +9,7 @@ public static class UserIdentityModule
 	public static IServiceCollection AddUserIdentity(this IServiceCollection services, string connectionString)
 	{
 		services.AddDbContext<IdentityUserContext>(options => options.UseNpgsql(connectionString));
-		services.AddAuthentication();
+		services.AddAuthorization();
 		services.AddIdentityApiEndpoints<IdentityUser>()
 			.AddEntityFrameworkStores<IdentityUserContext>();
 		return services;
