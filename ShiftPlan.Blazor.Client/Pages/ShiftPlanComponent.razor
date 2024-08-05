@@ -12,7 +12,7 @@
 @using ShiftPlan.Blazor.Client.Services
 @using ShiftPlan.Blazor.Client.Pages.Components.UserIdentity
 
-<Toasts Class="p-3" Messages="toastMessages" Placement="ToastsPlacement.TopRight"/>
+<Toasts Class="p-3" Messages="toastMessages" Placement="ToastsPlacement.TopRight" AutoHide="true"/>
 
 <div class="row d-flex">
 	<div class="col-3 justify-content-start">
@@ -61,14 +61,14 @@
 		var employeesRequestResult = await employeeService.GetAll();
 		if (employeesRequestResult is null)
 		{
-			toastMessages.Add(new ToastMessage(ToastType.Danger, "Failed to load employees"));
+			toastMessages.Add(ToastFailureMessage("Employee", "Failed to load employees"));
 		}
 		employees = employeesRequestResult?.ToList() ?? [];
 
 		var shiftRequestResult = await shiftService.GetAll();
 		if (shiftRequestResult is null)
 		{
-			toastMessages.Add(new ToastMessage(ToastType.Danger, "Failed to load shifts"));
+			toastMessages.Add(ToastFailureMessage("Shift", "Failed to load shifts"));
 		}
 		shifts = shiftRequestResult?.ToList() ?? [];
 		days = GenerateDays();
@@ -95,7 +95,7 @@
 		var newShift = await shiftService.InsertOrUpdate(shift);
 		if (newShift is null)
 		{
-			toastMessages.Add(new ToastMessage(ToastType.Danger, "Failed to insert shift"));
+			toastMessages.Add(ToastFailureMessage("Shift", "Failed to insert shift"));
 			return;
 		}
 
@@ -105,14 +105,14 @@
 			shifts.Remove(existingShift);
 		}
 		shifts.Add(newShift);
-		toastMessages.Add(new ToastMessage(ToastType.Success, "Shift inserted"));
+		toastMessages.Add(ToastSuccessMessage("Shift", "Shift inserted"));
 	}
 
 	private async Task RemoveShift(Shift shift)
 	{
 		await shiftService.Remove(shift);
 		shifts.Remove(shift);
-		toastMessages.Add(new ToastMessage(ToastType.Success, "Shift removed"));
+		toastMessages.Add(ToastSuccessMessage("Shift", "Shift removed"));
 	}
 
 	private async Task InsertOrUpdateEmployee(Employee employee)
@@ -120,7 +120,7 @@
 		var newEmployee = await employeeService.InsertOrUpdate(employee);
 		if (newEmployee is null)
 		{
-			toastMessages.Add(new ToastMessage(ToastType.Danger, "Failed to insert employee"));
+			toastMessages.Add(ToastFailureMessage("Employee", "Failed to insert employee"));
 			return;
 		}
 
@@ -130,7 +130,7 @@
 			employees.Remove(existingEmployee);
 		}
 		employees.Add(newEmployee);
-		toastMessages.Add(new ToastMessage(ToastType.Success, "Employee inserted"));
+		toastMessages.Add(ToastSuccessMessage("Employee", "Employee inserted"));
 	}
 
 	private async Task RemoveEmployee(Employee employee)
@@ -138,7 +138,7 @@
 		if (employee is null) return;
 		await employeeService.Remove(employee);
 		employees.Remove(employee);
-		toastMessages.Add(new ToastMessage(ToastType.Success, "Employee removed"));
+		toastMessages.Add(ToastSuccessMessage("Employee", "Employee removed"));
 	}
 
 	private Shift? PickShiftFromList(DateOnly day, Employee employ)
@@ -164,4 +164,27 @@
 			days.Add(DateOnly.FromDateTime(DateTime.Now.AddDays(i)));
 		}
 	}
+
+	private ToastMessage ToastSuccessMessage(string title, string message)
+	{
+		return new ToastMessage
+		{
+			Title = title,
+			Message = message,
+			Type = ToastType.Success,
+			HelpText = $"{DateTime.Now}"
+		};
+	}
+
+	private ToastMessage ToastFailureMessage(string title, string message)
+	{
+		return new ToastMessage
+		{
+			Title = title,
+			Message = message,
+			Type = ToastType.Danger,
+			HelpText = $"{DateTime.Now}"
+		};
+	}
+
 }

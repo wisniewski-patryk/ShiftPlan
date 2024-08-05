@@ -21,9 +21,7 @@ public class UserIdentityClient(HttpClient httpClient, ISessionStorageService se
 		var result = await httpClient.PostAsync("login", JsonContent.Create(userData));
 
 		if (result is null)
-		{
 			return new(false);
-		}
 
 		var e = await result.Content.ReadFromJsonAsync<UserLoginRespond>();
 
@@ -39,12 +37,17 @@ public class UserIdentityClient(HttpClient httpClient, ISessionStorageService se
 	public async Task<UserRegistrationResult> RegisterNewUser(UserRegistrationRequest userData)
 	{
 		var result = await httpClient.PostAsync("register", JsonContent.Create(userData));
-		return result.IsSuccessStatusCode is false ? new(false) : new(result.IsSuccessStatusCode);
+		return new(result.IsSuccessStatusCode);
 	}
 
 }
+
 public record UserRegistrationRequest(string Email, string Password);
+
 public record UserRegistrationResult(bool IsSuccess);
+
 public record UserLoginRequest(string Email, string Password);
+
 public record UserLoginResult(bool IsSuccess);
+
 public record UserLoginRespond(string TokenType, string AccessToken, string RefreshToken, int ExpiresIn);
