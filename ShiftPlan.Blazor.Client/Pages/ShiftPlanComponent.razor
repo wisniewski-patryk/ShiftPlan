@@ -12,6 +12,8 @@
 @using ShiftPlan.Blazor.Client.Services
 @using ShiftPlan.Blazor.Client.Pages.Components.UserIdentity
 
+<Toasts Class="p-3" Messages="toastMessages" Placement="ToastsPlacement.TopRight"/>
+
 <div class="row d-flex">
 	<div class="col-3 justify-content-start">
 		<h3>ShiftPlan</h3>
@@ -56,10 +58,23 @@
 @code {
 	protected override async Task OnInitializedAsync()
 	{
-		employees = (await employeeService.GetAll()).ToList();
-		shifts = (await shiftService.GetAll()).ToList();
+		var employeesRequestResult = await employeeService.GetAll();
+		if (employeesRequestResult is null)
+		{
+			toastMessages.Add(new ToastMessage(ToastType.Danger, "Failed to load employees"));
+		}
+		employees = employeesRequestResult?.ToList() ?? [];
+
+		var shiftRequestResult = await shiftService.GetAll();
+		if (shiftRequestResult is null)
+		{
+			toastMessages.Add(new ToastMessage(ToastType.Danger, "Failed to load shifts"));
+		}
+		shifts = shiftRequestResult?.ToList() ?? [];
 		days = GenerateDays();
 	}
+
+	List<ToastMessage> toastMessages = new();
 
 	public List<Employee> employees = [];
 	public List<Shift> shifts = [];
@@ -78,7 +93,11 @@
 	private async Task InsertOrUpdateShift(Shift shift)
 	{
 		var newShift = await shiftService.InsertOrUpdate(shift);
-		if (newShift is null) return;
+		if (newShift is null)
+		{
+			toastMessages.Add(new ToastMessage(ToastType.Danger, "Failed to insert shift"));
+			return;
+		}
 
 		var existingShift = shifts.FirstOrDefault(s => s.Id == newShift.Id);
 		if (existingShift != null)
@@ -86,18 +105,24 @@
 			shifts.Remove(existingShift);
 		}
 		shifts.Add(newShift);
+		toastMessages.Add(new ToastMessage(ToastType.Success, "Shift inserted"));
 	}
 
 	private async Task RemoveShift(Shift shift)
 	{
 		await shiftService.Remove(shift);
 		shifts.Remove(shift);
+		toastMessages.Add(new ToastMessage(ToastType.Success, "Shift removed"));
 	}
 
 	private async Task InsertOrUpdateEmployee(Employee employee)
 	{
 		var newEmployee = await employeeService.InsertOrUpdate(employee);
-		if (newEmployee is null) return;
+		if (newEmployee is null)
+		{
+			toastMessages.Add(new ToastMessage(ToastType.Danger, "Failed to insert employee"));
+			return;
+		}
 
 		var existingEmployee = employees.FirstOrDefault(e => e.Id == newEmployee.Id);
 		if (existingEmployee is not null)
@@ -105,6 +130,7 @@
 			employees.Remove(existingEmployee);
 		}
 		employees.Add(newEmployee);
+		toastMessages.Add(new ToastMessage(ToastType.Success, "Employee inserted"));
 	}
 
 	private async Task RemoveEmployee(Employee employee)
@@ -112,6 +138,7 @@
 		if (employee is null) return;
 		await employeeService.Remove(employee);
 		employees.Remove(employee);
+		toastMessages.Add(new ToastMessage(ToastType.Success, "Employee removed"));
 	}
 
 	private Shift? PickShiftFromList(DateOnly day, Employee employ)

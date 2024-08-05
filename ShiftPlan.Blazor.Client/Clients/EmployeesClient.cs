@@ -18,17 +18,20 @@ public class EmployeesClient(HttpClient httpClient, ISessionStorageService sessi
 {
 	public async Task<IEnumerable<Employee>?> GetAll()
 	{
-		var result = await httpClient.GetAsync("api/employees");
-		result.EnsureSuccessStatusCode();
-		var employees = await result.Content.ReadFromJsonAsync<IEnumerable<Employee>>();
-		return employees;
+		var respons = await httpClient.GetAsync("api/employees");
+
+		return respons.StatusCode != HttpStatusCode.OK ?
+			null :
+			await respons.Content.ReadFromJsonAsync<IEnumerable<Employee>>() ?? [];
 	}
 
 	public async Task<Employee?> Get(int id)
 	{
 		var request = new HttpRequestMessage(HttpMethod.Get, $"api/employees/{id}");
 		var response = await SendRequestAsync(request);
-		return await response.Content.ReadFromJsonAsync<Employee>();
+		return response.StatusCode != HttpStatusCode.OK ?
+			null :
+			await response.Content.ReadFromJsonAsync<Employee>();
 	}
 
 	public async Task<Employee?> InsertOrUpdate(Employee employee)
@@ -38,7 +41,9 @@ public class EmployeesClient(HttpClient httpClient, ISessionStorageService sessi
 			Content = JsonContent.Create(employee)
 		};
 		var response = await SendRequestAsync(request);
-		return await response.Content.ReadFromJsonAsync<Employee>();
+		return response.StatusCode != HttpStatusCode.OK ?
+			null :
+			await response.Content.ReadFromJsonAsync<Employee>();
 	}
 
 	public async Task Remove(Employee employee)
@@ -47,16 +52,14 @@ public class EmployeesClient(HttpClient httpClient, ISessionStorageService sessi
 		{
 			Content = JsonContent.Create(employee)
 		};
-		await SendRequestAsync(request);
+		var response = await SendRequestAsync(request);
+		response.EnsureSuccessStatusCode();
 	}
 
 	private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request)
 	{
 		var token = await sessionStorage.GetItemAsStringAsync("accessToken");
-		var authHeader = new AuthenticationHeaderValue("Bearer", token);
-		request.Headers.Authorization = authHeader;
-		var respond = await httpClient.SendAsync(request);
-		respond.EnsureSuccessStatusCode();
-		return respond;
+		request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		return await httpClient.SendAsync(request);
 	}
 }

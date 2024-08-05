@@ -7,13 +7,13 @@
 <div class="container">
 	@if (userIsLogin)
 	{
-		<span class="btn btn-danger" @onclick="OnShowLogoutModalClick">Logout</span>
+		<Button Color="ButtonColor.Danger" @onclick="OnShowLogoutModalClick">Logout</Button>
 	} else
 	{
-		<span class="btn btn-primary" @onclick="OnShowLoginModalClick">Login</span>
+		<Button Color="ButtonColor.Primary" @onclick="OnShowLoginModalClick">Login</Button>
+		<Button Color="ButtonColor.Secondary" @onclick="OnShowRegisterModalClick">Register</Button>
 	}
 </div>
-<span class="btn btn-secondary" @onclick="OnShowRegisterModalClick">Register</span>
 
 <Modal @ref="loginModal" Title="@modalTitle" ShowCloseButton="true">
 	<BodyTemplate>
