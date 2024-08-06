@@ -7,9 +7,11 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["ShiftPlan.Api.csproj", "ShiftPlan.Api/"]
+COPY ["ShiftPlan.Api/ShiftPlan.Api.csproj", "ShiftPlan.Api/"]
+COPY ["ShiftPlan.UsersIdentity/ShiftPlan.UsersIdentity.csproj", "ShiftPlan.UsersIdentity/"]
 RUN dotnet restore "./ShiftPlan.Api/ShiftPlan.Api.csproj"
-COPY . ./ShiftPlan.Api/
+COPY ./ShiftPlan.Api/ ./ShiftPlan.Api/
+COPY ./ShiftPlan.UsersIdentity/ ./ShiftPlan.UsersIdentity/
 WORKDIR "/src/ShiftPlan.Api"
 RUN dotnet build "./ShiftPlan.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

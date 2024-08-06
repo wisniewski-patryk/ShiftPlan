@@ -19,7 +19,8 @@ services:
   shiftplan-api:
     container_name: shiftplan-api
     build:
-      context: ./ShiftPlan.Api/
+      context: .
+      dockerfile: Dockerfile.backend
     image: shiftplan-api:0.1
     restart: always
     depends_on:
@@ -31,6 +32,7 @@ services:
     container_name: shiftplan-blazor
     build:
       context: .
+      dockerfile: Dockerfile.frontend
     image: shiftplan-blazor:0.1
     restart: always
     env_file:
@@ -39,12 +41,3 @@ services:
       - shiftplan-api
     ports:
       - 8000:8080
-
-  ubuntu:
-    container_name: shiftplan-ubuntu
-    image: ubuntu:latest
-    restart: always
-    tty: true
-    stdin_open: true
-    ports:
-      - 9000:8080
