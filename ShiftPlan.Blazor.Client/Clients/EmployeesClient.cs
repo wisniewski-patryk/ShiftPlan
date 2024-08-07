@@ -1,4 +1,7 @@
-﻿using ShiftPlan.Blazor.Client.Models;
+﻿using Blazored.SessionStorage;
+using ShiftPlan.Blazor.Client.Models;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace ShiftPlan.Blazor.Client.Clients;
@@ -11,35 +14,52 @@ public interface IEmployeesClient
 	Task Remove(Employee employee);
 }
 
-public class EmployeesClient(HttpClient httpClient) : IEmployeesClient
+public class EmployeesClient(HttpClient httpClient, ISessionStorageService sessionStorage) : IEmployeesClient
 {
 	public async Task<IEnumerable<Employee>?> GetAll()
 	{
-		var result = await httpClient.GetAsync("employees");
-		result.EnsureSuccessStatusCode();
-		var employees = await result.Content.ReadFromJsonAsync<IEnumerable<Employee>>();
-		return employees;
+		var respons = await httpClient.GetAsync("api/employees");
+
+		return respons.StatusCode != HttpStatusCode.OK ?
+			null :
+			await respons.Content.ReadFromJsonAsync<IEnumerable<Employee>>() ?? [];
 	}
 
 	public async Task<Employee?> Get(int id)
 	{
-		return await httpClient.GetFromJsonAsync<Employee>($"employees/{id}");
+		var request = new HttpRequestMessage(HttpMethod.Get, $"api/employees/{id}");
+		var response = await SendRequestAsync(request);
+		return response.StatusCode != HttpStatusCode.OK ?
+			null :
+			await response.Content.ReadFromJsonAsync<Employee>();
 	}
 
 	public async Task<Employee?> InsertOrUpdate(Employee employee)
 	{
-		var response = await httpClient.PostAsJsonAsync("employees/insertOrUpdate", employee);
-		response.EnsureSuccessStatusCode();
-		return await response.Content.ReadFromJsonAsync<Employee>();
+		var request = new HttpRequestMessage(HttpMethod.Post, "api/employees/insertOrUpdate")
+		{
+			Content = JsonContent.Create(employee)
+		};
+		var response = await SendRequestAsync(request);
+		return response.StatusCode != HttpStatusCode.OK ?
+			null :
+			await response.Content.ReadFromJsonAsync<Employee>();
 	}
 
 	public async Task Remove(Employee employee)
 	{
-		var request = new HttpRequestMessage(HttpMethod.Delete, "employees/delete")
+		var request = new HttpRequestMessage(HttpMethod.Delete, "api/employees/delete")
 		{
 			Content = JsonContent.Create(employee)
 		};
-		var response = await httpClient.SendAsync(request);
+		var response = await SendRequestAsync(request);
 		response.EnsureSuccessStatusCode();
+	}
+
+	private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request)
+	{
+		var token = await sessionStorage.GetItemAsStringAsync("accessToken");
+		request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		return await httpClient.SendAsync(request);
 	}
 }

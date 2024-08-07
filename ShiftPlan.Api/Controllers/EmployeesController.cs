@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ShiftPlan.Api.Models;
 using ShiftPlan.Api.Repository;
 
@@ -14,13 +15,14 @@ public class EmployeesController(IRepository<Employee> employeesRepository) : Co
 		var employees = employeesRepository.GetAll();
 		return Ok(employees);
 	}
-	[HttpGet("{id}")]
+
+	[HttpGet("{id}"), Authorize]
 	public async Task<ActionResult<Employee>> Get(int id) => Ok(await employeesRepository.Get(id));
 
-	[HttpPost("insertOrUpdate")]
+	[HttpPost("insertOrUpdate"), Authorize]
 	public async Task<ActionResult<Employee>> InsertOrUpdate([FromBody] Employee employee) => Ok(await employeesRepository.InsertOrUpdate(employee));
 
-	[HttpDelete("delete")]
+	[HttpDelete("delete"), Authorize]
 	public async Task<IActionResult> Delete([FromBody] Employee employee)
 	{
 		await employeesRepository.Delete(employee);
