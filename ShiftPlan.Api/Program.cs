@@ -54,6 +54,8 @@ app.MapIdentityApi<IdentityUser>();
 
 app.UseHttpsRedirection();
 
+app.UseCors(origins);
+
 app.UseAuthorization();
 
 app.MapControllers();
