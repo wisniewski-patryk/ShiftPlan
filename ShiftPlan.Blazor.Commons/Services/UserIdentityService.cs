@@ -1,7 +1,6 @@
-﻿using ShiftPlan.Blazor.Client.Clients;
+﻿using ShiftPlan.Blazor.Commons.Clients;
 
-namespace ShiftPlan.Blazor.Client.Services;
-
+namespace ShiftPlan.Blazor.Commons.Services;
 
 public interface IUserIdentityService
 {

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ShiftPlan.Blazor.Client\ShiftPlan.Blazor.Client.csproj" />
+    <ProjectReference Include="..\ShiftPlan.Blazor.Commons\ShiftPlan.Blazor.Commons.csproj" />
     <PackageReference Include="Blazor.Bootstrap" Version="2.1.0" />
     <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.3" />

@@ -1,0 +1,96 @@
+﻿@namespace ShiftPlan.Blazor.Client.Pages.Components
+
+@rendermode InteractiveWebAssembly
+
+@inject IShiftsService shiftService
+@inject IEmployeesService employeeService
+
+@using ShiftPlan.Blazor.Commons.Models
+@using ShiftPlan.Blazor.Commons.Services
+@using ShiftPlan.Blazor.Client.Pages.Components
+@using ShiftPlan.Blazor.Client.Pages.Components.UserIdentity
+
+<div class="row d-flex">
+	<div class="col-3 justify-content-start">
+		<h3>ShiftPlan</h3>
+	</div>
+	<div class="col-9 justify-content-end">
+		<div class="btn-group" role="group">
+			<Button @onclick="Throw">throw</Button>
+			<AddEmployeeModal InsertEmployee="InsertOrUpdateEmployee" />
+			<RemoveEmployeeModal RemoveEmployee="RemoveEmployee" Employees="employees" />
+		</div>
+	</div>
+	<UserComponent />
+</div>
+
+<ShiftPlanTableComponent employees="employees" shifts="shifts" OnRemoveShift="RemoveShift" OnShiftInsertOrUpdate="InsertOrUpdateShift" />
+
+@code {
+	[Parameter]
+	public EventCallback<string> ToastOnSuccess { get; set; }
+
+	public List<Employee> employees = [];
+	public List<Shift> shifts = [];
+
+	private void Throw()
+	{
+		throw new Exception("This is a test exception");
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		var employeesRequestResult = await employeeService.GetAll();
+		employees = employeesRequestResult?.ToList() ?? [];
+		await ToastOnSuccess.InvokeAsync("Employees loaded");
+
+		var shiftRequestResult = await shiftService.GetAll();
+		shifts = shiftRequestResult?.ToList() ?? [];
+		await ToastOnSuccess.InvokeAsync("Shifts loaded");
+	}
+
+	private async Task RemoveShift(Shift shift)
+	{
+		await shiftService.Remove(shift);
+		shifts.Remove(shift);
+		await ToastOnSuccess.InvokeAsync("Shift removed");
+	}
+
+	private async Task InsertOrUpdateEmployee(Employee employee)
+	{
+		var newEmployee = await employeeService.InsertOrUpdate(employee);
+
+		var existingEmployee = employees.FirstOrDefault(e => e.Id == newEmployee.Id);
+		if (existingEmployee is not null)
+		{
+			employees.Remove(existingEmployee);
+		}
+		employees.Add(newEmployee);
+		await ToastOnSuccess.InvokeAsync("Employee inserted");
+	}
+
+	private async Task RemoveEmployee(Employee employee)
+	{
+		if (employee is null) return;
+		await employeeService.Remove(employee);
+		employees.Remove(employee);
+		await ToastOnSuccess.InvokeAsync("Employee removed");
+	}
+
+	private async Task InsertOrUpdateShift(Shift shift)
+	{
+		var newShift = await shiftService.InsertOrUpdate(shift);
+
+		var existingShift = shifts.FirstOrDefault(s => s.Id == newShift.Id);
+		if (existingShift != null)
+		{
+			shifts.Remove(existingShift);
+		}
+		shifts.Add(newShift);
+		await ToastOnSuccess.InvokeAsync("Shift inserted");
+	}
+
+	
+	
+
+}

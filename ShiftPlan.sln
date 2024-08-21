@@ -28,6 +28,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "frontend", "frontend", "{C7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftPlan.UsersIdentity", "ShiftPlan.UsersIdentity\ShiftPlan.UsersIdentity.csproj", "{EE4E99EC-7185-41B3-A2EB-A3ED3E6A5DA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShiftPlan.Blazor.Commons", "ShiftPlan.Blazor.Commons\ShiftPlan.Blazor.Commons.csproj", "{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{EE4E99EC-7185-41B3-A2EB-A3ED3E6A5DA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE4E99EC-7185-41B3-A2EB-A3ED3E6A5DA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE4E99EC-7185-41B3-A2EB-A3ED3E6A5DA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,6 +65,7 @@ Global
 		{2F24D27E-AE8D-46E9-9BB6-22760DCBA539} = {C74C22BC-B241-4956-AD87-006F18AED77A}
 		{6EC5F1C1-AF78-4698-873D-D7778E5D752C} = {C74C22BC-B241-4956-AD87-006F18AED77A}
 		{EE4E99EC-7185-41B3-A2EB-A3ED3E6A5DA4} = {7CBFDD06-C554-473F-B0A4-68362ABE1FBE}
+		{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B} = {C74C22BC-B241-4956-AD87-006F18AED77A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B817F357-A483-4173-8178-4198E9EDE6F8}

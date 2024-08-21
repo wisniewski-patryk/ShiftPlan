@@ -1,7 +1,7 @@
 ﻿using Blazored.SessionStorage;
 using System.Net.Http.Json;
 
-namespace ShiftPlan.Blazor.Client.Clients;
+namespace ShiftPlan.Blazor.Commons.Clients;
 
 public interface IUserIdentityClient
 {

@@ -1,7 +1,7 @@
-﻿using ShiftPlan.Blazor.Client.Clients;
-using ShiftPlan.Blazor.Client.Models;
+﻿using ShiftPlan.Blazor.Commons.Clients;
+using ShiftPlan.Blazor.Commons.Models;
 
-namespace ShiftPlan.Blazor.Client.Services;
+namespace ShiftPlan.Blazor.Commons.Services;
 
 public interface IShiftsService
 {

@@ -1,10 +1,10 @@
 ﻿using Blazored.SessionStorage;
-using ShiftPlan.Blazor.Client.Models;
+using ShiftPlan.Blazor.Commons.Models;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
-namespace ShiftPlan.Blazor.Client.Clients;
+namespace ShiftPlan.Blazor.Commons.Clients;
 
 public interface IEmployeesClient
 {
@@ -19,10 +19,8 @@ public class EmployeesClient(HttpClient httpClient, ISessionStorageService sessi
 	public async Task<IEnumerable<Employee>?> GetAll()
 	{
 		var respons = await httpClient.GetAsync("api/employees");
-
-		return respons.StatusCode != HttpStatusCode.OK ?
-			null :
-			await respons.Content.ReadFromJsonAsync<IEnumerable<Employee>>() ?? [];
+		respons.EnsureSuccessStatusCode();
+		return await respons.Content.ReadFromJsonAsync<IEnumerable<Employee>>();
 	}
 
 	public async Task<Employee?> Get(int id)
@@ -41,6 +39,7 @@ public class EmployeesClient(HttpClient httpClient, ISessionStorageService sessi
 			Content = JsonContent.Create(employee)
 		};
 		var response = await SendRequestAsync(request);
+		
 		return response.StatusCode != HttpStatusCode.OK ?
 			null :
 			await response.Content.ReadFromJsonAsync<Employee>();
@@ -56,10 +55,20 @@ public class EmployeesClient(HttpClient httpClient, ISessionStorageService sessi
 		response.EnsureSuccessStatusCode();
 	}
 
-	private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request)
+	private async Task<HttpResponseMessage?> SendRequestAsync(HttpRequestMessage request)
 	{
 		var token = await sessionStorage.GetItemAsStringAsync("accessToken");
 		request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-		return await httpClient.SendAsync(request);
+		HttpResponseMessage? response = null;
+		try
+		{
+			response = await httpClient.SendAsync(request);
+			response.EnsureSuccessStatusCode();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex.Message);
+		}
+		return response;
 	}
 }

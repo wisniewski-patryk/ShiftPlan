@@ -1,0 +1,21 @@
+﻿@namespace ShiftPlan.Blazor.Client.Pages
+
+@rendermode InteractiveWebAssembly
+
+@page "/"
+
+@using ShiftPlan.Blazor.Client.Pages.Components
+
+<ErrorBoundary @ref=errorBoundary>
+	<ChildContent>
+		<ShiftPlanDashboard/>
+	</ChildContent>
+	<ErrorContent>
+		<h1>Something went wrong</h1>
+		<p>Try to refresh the page or contact the support</p>
+	</ErrorContent>
+</ErrorBoundary>
+
+@code {
+	public ErrorBoundary? errorBoundary { get; set; }
+}
