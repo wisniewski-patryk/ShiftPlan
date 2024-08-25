@@ -1,5 +1,5 @@
-using ShiftPlan.Blazor.Components;
 using ShiftPlan.Blazor.Commons.Extensions;
+using ShiftPlan.Blazor.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,10 +8,12 @@ builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents()
 	.AddInteractiveWebAssemblyComponents();
 
-builder.Services.RegisterExternalLibrary();
-var backendApiUrl = new Uri(builder.Configuration.GetConnectionString("ShiftPlanBackendApiUrl") ?? throw new Exception("Backend api url not available."));
-builder.Services.RegisterHttpClient(backendApiUrl);
-builder.Services.RegisterServices();
+builder.Services.AddMediatR(cfg =>
+{
+	cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+});
+
+builder.Services.RegisterServices(builder.Configuration);
 
 var app = builder.Build();
 

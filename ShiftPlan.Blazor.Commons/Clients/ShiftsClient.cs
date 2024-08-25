@@ -1,4 +1,5 @@
 ﻿using Blazored.SessionStorage;
+using ShiftPlan.Blazor.Commons.Exceptions;
 using ShiftPlan.Blazor.Commons.Models;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -13,20 +14,26 @@ public interface IShiftsClient
 	Task Remove(Shift shift);
 }
 
-public class ShiftsClient(HttpClient httpClient, ISessionStorageService sessionStorage) : IShiftsClient
+public class ShiftsClient(HttpClient httpClient) : IShiftsClient
 {
 	public async Task<IEnumerable<Shift>?> GetAll()
 	{
 		var respond = await httpClient.GetAsync("api/shifts");
+		if (respond.IsSuccessStatusCode)
+			return await respond.Content.ReadFromJsonAsync<IEnumerable<Shift>>();
 
-		return await respond.Content.ReadFromJsonAsync<IEnumerable<Shift>>() ?? [];
+		throw new HttpCommunicationException(respond.ReasonPhrase ?? "Communication error", respond.StatusCode);
 	}
 
 	public async Task<Shift?> Get(int id)
 	{
 		var request = new HttpRequestMessage(HttpMethod.Get, $"api/shifts/{id}");
-		var response = await SendRequestAsync(request);
-		return await response.Content.ReadFromJsonAsync<Shift>();
+		var response = await httpClient.SendAsync(request);
+
+		if (response.IsSuccessStatusCode)
+			return await response.Content.ReadFromJsonAsync<Shift>();
+
+		throw new HttpCommunicationException(response.ReasonPhrase ?? "Communication error", response.StatusCode);
 	}
 
 	public async Task<Shift?> InsertOrUpdate(Shift shift)
@@ -35,8 +42,11 @@ public class ShiftsClient(HttpClient httpClient, ISessionStorageService sessionS
 		{
 			Content = JsonContent.Create(shift)
 		};
-		var response = await SendRequestAsync(request);
-		return await response.Content.ReadFromJsonAsync<Shift>();
+		var response = await httpClient.SendAsync(request);
+		if (response.IsSuccessStatusCode)
+			return await response.Content.ReadFromJsonAsync<Shift>();
+
+		throw new HttpCommunicationException(response.ReasonPhrase ?? "Communication error", response.StatusCode);
 	}
 
 	public async Task Remove(Shift shift)
@@ -45,19 +55,8 @@ public class ShiftsClient(HttpClient httpClient, ISessionStorageService sessionS
 		{
 			Content = JsonContent.Create(shift)
 		};
-		var response = await SendRequestAsync(request);
-		response.EnsureSuccessStatusCode();
-	}
-
-	private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request)
-	{
-		var token = await sessionStorage.GetItemAsStringAsync("accessToken");
-		var authHeader = new AuthenticationHeaderValue("Bearer", token);
-		request.Headers.Authorization = authHeader;
-		var respond = await httpClient.SendAsync(request);
-		respond.EnsureSuccessStatusCode();
-		return respond;
+		var response = await httpClient.SendAsync(request);
+		if (!response.IsSuccessStatusCode)
+			throw new HttpCommunicationException(response.ReasonPhrase ?? "Communication error", response.StatusCode);
 	}
 }
-
-// IDEAS TODO: Implement responses for requests, example - InsertOrUpdate return InsertOrUpdateResponse(Status.Inserted/Status.Updated, shift?) etc. 

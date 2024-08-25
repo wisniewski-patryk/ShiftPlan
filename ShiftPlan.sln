@@ -9,8 +9,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.dockerignore = .dockerignore
 		.editorconfig = .editorconfig
+		Database-postgres\.env = Database-postgres\.env
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		Database-postgres\docker-compose.database.yml = Database-postgres\docker-compose.database.yml
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
 	EndProjectSection
@@ -28,7 +30,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "frontend", "frontend", "{C7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftPlan.UsersIdentity", "ShiftPlan.UsersIdentity\ShiftPlan.UsersIdentity.csproj", "{EE4E99EC-7185-41B3-A2EB-A3ED3E6A5DA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShiftPlan.Blazor.Commons", "ShiftPlan.Blazor.Commons\ShiftPlan.Blazor.Commons.csproj", "{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftPlan.Blazor.Commons", "ShiftPlan.Blazor.Commons\ShiftPlan.Blazor.Commons.csproj", "{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database-postgres", "Database-postgres", "{4D0EF708-76E6-4A93-903E-0457A2C1EE44}"
+	ProjectSection(SolutionItems) = preProject
+		Database-postgres\.env = Database-postgres\.env
+		Database-postgres\docker-compose.database.yml = Database-postgres\docker-compose.database.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +74,7 @@ Global
 		{6EC5F1C1-AF78-4698-873D-D7778E5D752C} = {C74C22BC-B241-4956-AD87-006F18AED77A}
 		{EE4E99EC-7185-41B3-A2EB-A3ED3E6A5DA4} = {7CBFDD06-C554-473F-B0A4-68362ABE1FBE}
 		{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B} = {C74C22BC-B241-4956-AD87-006F18AED77A}
+		{4D0EF708-76E6-4A93-903E-0457A2C1EE44} = {C9224C94-ACB0-4EEE-9F49-1A6EDED904D9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B817F357-A483-4173-8178-4198E9EDE6F8}

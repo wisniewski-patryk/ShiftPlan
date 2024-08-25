@@ -5,17 +5,25 @@
 @page "/"
 
 @using ShiftPlan.Blazor.Client.Pages.Components
+<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
 
 <ErrorBoundary @ref=errorBoundary>
 	<ChildContent>
 		<ShiftPlanDashboard/>
 	</ChildContent>
-	<ErrorContent>
+	<ErrorContent Context="ex">
 		<h1>Something went wrong</h1>
 		<p>Try to refresh the page or contact the support</p>
+		<p>Error message: @ex.Message</p>
+		<Button class="m-3" Color="ButtonColor.Primary" @onclick="ResetError">Refresh</Button>
 	</ErrorContent>
 </ErrorBoundary>
 
 @code {
-	public ErrorBoundary? errorBoundary { get; set; }
+	public ErrorBoundary errorBoundary { get; set; } = new();
+
+	private void ResetError()
+	{
+		errorBoundary.Recover();
+	}
 }

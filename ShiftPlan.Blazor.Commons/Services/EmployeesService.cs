@@ -8,7 +8,7 @@ public interface IEmployeesService
 	Task<IEnumerable<Employee>?> GetAll();
 	Task<Employee?> GetEmployee(int id);
 	Task<Employee?> InsertOrUpdate(Employee employ);
-	Task<bool> Remove(Employee employ);
+	Task Remove(Employee employ);
 }
 
 public class EmployeesService(IEmployeesClient client) : IEmployeesService
@@ -19,17 +19,9 @@ public class EmployeesService(IEmployeesClient client) : IEmployeesService
 
 	public async Task<Employee?> InsertOrUpdate(Employee employ) => await client.InsertOrUpdate(employ);
 
-	public async Task<bool> Remove(Employee employ)
+	public async Task Remove(Employee employ)
 	{
-		try
-		{
-			await client.Remove(employ);
-			return true;
-		}
-		catch
-		{
-			return false;
-		}
+		await client.Remove(employ);
 	}
 }
 

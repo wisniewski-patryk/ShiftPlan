@@ -8,7 +8,7 @@ public interface IShiftsService
 	Task<IEnumerable<Shift>?> GetAll();
 	Task<Shift?> GetShift(int id);
 	Task<Shift?> InsertOrUpdate(Shift shift);
-	Task<bool> Remove(Shift shift);
+	Task Remove(Shift shift);
 }
 
 public class ShiftsService(IShiftsClient client) : IShiftsService
@@ -19,17 +19,9 @@ public class ShiftsService(IShiftsClient client) : IShiftsService
 
 	public async Task<Shift?> InsertOrUpdate(Shift shift) => await client.InsertOrUpdate(shift);
 
-	public async Task<bool> Remove(Shift shift)
+	public async Task Remove(Shift shift)
 	{
-		try
-		{
-			await client.Remove(shift);
-			return true;
-		}
-		catch
-		{
-			return false;
-		}
+		await client.Remove(shift);
 	}
 }
 

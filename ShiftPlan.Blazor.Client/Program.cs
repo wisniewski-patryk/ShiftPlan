@@ -3,11 +3,11 @@ using ShiftPlan.Blazor.Commons.Extensions;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-builder.Services.RegisterExternalLibrary();
+builder.Services.AddMediatR(cfg =>
+{
+	cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+});
 
-var backendApiUrl = new Uri(builder.Configuration.GetConnectionString("ShiftPlanBackendApiUrl") ?? throw new Exception("Backend api url not available."));
-
-builder.Services.RegisterHttpClient(backendApiUrl);
-builder.Services.RegisterServices();
+builder.Services.RegisterServices(builder.Configuration);
 
 await builder.Build().RunAsync();

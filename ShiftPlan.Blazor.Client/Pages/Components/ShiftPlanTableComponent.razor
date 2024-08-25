@@ -31,10 +31,10 @@
 
 @code {
 	[Parameter]
-	public List<Employee> employees { get; set; }
+	public List<Employee> employees { get; set; } = [];
 
 	[Parameter]
-	public List<Shift> shifts { get; set; }
+	public List<Shift> shifts { get; set; } = [];
 
 	[Parameter]
 	public EventCallback<Shift> OnShiftInsertOrUpdate { get; set; }

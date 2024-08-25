@@ -1,7 +1,5 @@
-﻿using Blazored.SessionStorage;
+﻿using ShiftPlan.Blazor.Commons.Exceptions;
 using ShiftPlan.Blazor.Commons.Models;
-using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace ShiftPlan.Blazor.Commons.Clients;
@@ -14,22 +12,28 @@ public interface IEmployeesClient
 	Task Remove(Employee employee);
 }
 
-public class EmployeesClient(HttpClient httpClient, ISessionStorageService sessionStorage) : IEmployeesClient
+public class EmployeesClient(HttpClient httpClient) : IEmployeesClient
 {
 	public async Task<IEnumerable<Employee>?> GetAll()
 	{
 		var respons = await httpClient.GetAsync("api/employees");
-		respons.EnsureSuccessStatusCode();
-		return await respons.Content.ReadFromJsonAsync<IEnumerable<Employee>>();
+
+		if (respons.IsSuccessStatusCode)
+			return await respons.Content.ReadFromJsonAsync<IEnumerable<Employee>>();
+
+		throw new HttpCommunicationException(respons.ReasonPhrase ?? "Communication error", respons.StatusCode);
+
 	}
 
 	public async Task<Employee?> Get(int id)
 	{
 		var request = new HttpRequestMessage(HttpMethod.Get, $"api/employees/{id}");
-		var response = await SendRequestAsync(request);
-		return response.StatusCode != HttpStatusCode.OK ?
-			null :
-			await response.Content.ReadFromJsonAsync<Employee>();
+		var response = await httpClient.SendAsync(request);
+
+		if (response.IsSuccessStatusCode)
+			return await response.Content.ReadFromJsonAsync<Employee>();
+
+		throw new HttpCommunicationException(response.ReasonPhrase ?? "Communication error", response.StatusCode);
 	}
 
 	public async Task<Employee?> InsertOrUpdate(Employee employee)
@@ -38,11 +42,11 @@ public class EmployeesClient(HttpClient httpClient, ISessionStorageService sessi
 		{
 			Content = JsonContent.Create(employee)
 		};
-		var response = await SendRequestAsync(request);
-		
-		return response.StatusCode != HttpStatusCode.OK ?
-			null :
-			await response.Content.ReadFromJsonAsync<Employee>();
+		var response = await httpClient.SendAsync(request);
+		if (response.IsSuccessStatusCode)
+			return await response.Content.ReadFromJsonAsync<Employee>();
+
+		throw new HttpCommunicationException(response.ReasonPhrase ?? "Communication error", response.StatusCode);
 	}
 
 	public async Task Remove(Employee employee)
@@ -51,24 +55,8 @@ public class EmployeesClient(HttpClient httpClient, ISessionStorageService sessi
 		{
 			Content = JsonContent.Create(employee)
 		};
-		var response = await SendRequestAsync(request);
-		response.EnsureSuccessStatusCode();
-	}
-
-	private async Task<HttpResponseMessage?> SendRequestAsync(HttpRequestMessage request)
-	{
-		var token = await sessionStorage.GetItemAsStringAsync("accessToken");
-		request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-		HttpResponseMessage? response = null;
-		try
-		{
-			response = await httpClient.SendAsync(request);
-			response.EnsureSuccessStatusCode();
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine(ex.Message);
-		}
-		return response;
+		var response = await httpClient.SendAsync(request);
+		if (!response.IsSuccessStatusCode)
+			throw new HttpCommunicationException(response.ReasonPhrase ?? "Communication error", response.StatusCode);
 	}
 }
