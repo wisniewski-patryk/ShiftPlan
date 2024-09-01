@@ -16,19 +16,19 @@
 	<div class="col-3 justify-content-start">
 		<h3>ShiftPlan</h3>
 	</div>
-	<div class="col-9 justify-content-end">
-		<div class="btn-group" role="group">
-			<AddEmployeeModal InsertEmployee="InsertOrUpdateEmployee" />
-			<RemoveEmployeeModal RemoveEmployee="RemoveEmployee" Employees="employees" />
-		</div>
+	<div class="col-6 justify-content-center">
+		<AddEmployeeModal InsertEmployee="InsertOrUpdateEmployee" />
+		<RemoveEmployeeModal RemoveEmployee="RemoveEmployee" Employees="employees" />
 	</div>
-	<UserComponent />
+	<div class="col-3 justify-content-end">
+		<UserComponent />
+	</div>
 </div>
 
 <ShiftPlanTableComponent employees="employees" shifts="shifts" OnRemoveShift="RemoveShift" OnShiftInsertOrUpdate="InsertOrUpdateShift" />
 
 @code {
-	[Inject] protected ToastService toastService { get; set; }
+	[Inject] protected ToastService? toastService { get; set; }
 
 	public List<Employee> employees = [];
 	public List<Shift> shifts = [];
