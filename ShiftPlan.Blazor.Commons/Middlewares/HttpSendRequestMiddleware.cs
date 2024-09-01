@@ -15,7 +15,7 @@ public class HttpSendRequestMiddleware(ToastService toastService, ISessionStorag
 	protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
 	{
 		var token = await sessionStorage.GetItemAsStringAsync("accessToken", cancellationToken);
-		request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token ?? string.Empty);
 		var response = await base.SendAsync(request, cancellationToken);
 		if (!response.IsSuccessStatusCode)
 			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", response.ReasonPhrase ?? "Unknow error"));

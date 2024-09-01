@@ -36,7 +36,7 @@ public class UserIdentityClient(HttpClient httpClient, ISessionStorageService se
 		var response = await httpClient.PostAsync("register", JsonContent.Create(userData));
 		if (response.IsSuccessStatusCode)
 			return;
-		throw new HttpCommunicationException(response.ReasonPhrase ?? "Communication error", response.StatusCode);
+		throw new HttpCommunicationException($"{response.StatusCode} - Invalid Register request. Password need to contain non-alphanumeric char, numer, at least one big lether."); // TODO: handle many posibility to get bad request - not valid/insecure passwords etc. 
 	}
 }
 
