@@ -28,7 +28,7 @@
 <ShiftPlanTableComponent employees="employees" shifts="shifts" OnRemoveShift="RemoveShift" OnShiftInsertOrUpdate="InsertOrUpdateShift" />
 
 @code {
-	[Inject] protected ToastService? toastService { get; set; }
+	[Inject] protected ToastService toastService { get; set; } = new();
 
 	public List<Employee> employees = [];
 	public List<Shift> shifts = [];

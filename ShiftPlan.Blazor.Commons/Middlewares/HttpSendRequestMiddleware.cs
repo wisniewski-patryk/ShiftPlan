@@ -18,7 +18,7 @@ public class HttpSendRequestMiddleware(ToastService toastService, ISessionStorag
 		request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 		var response = await base.SendAsync(request, cancellationToken);
 		if (!response.IsSuccessStatusCode)
-			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", response.ReasonPhrase));
+			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", response.ReasonPhrase ?? "Unknow error"));
 
 		return response;
 	}
