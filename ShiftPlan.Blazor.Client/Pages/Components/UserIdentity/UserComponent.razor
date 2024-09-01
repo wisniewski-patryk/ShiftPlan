@@ -1,10 +1,9 @@
 ﻿@namespace ShiftPlan.Blazor.Client.Pages.Components.UserIdentity
 
+@using Blazored.SessionStorage
 @using ShiftPlan.Blazor.Commons.Exceptions
 @using ShiftPlan.Blazor.Commons.Helpers
 @using ShiftPlan.Blazor.Commons.Services
-
-@inject IUserIdentityService userService
 
 <div class="container">
 	@if (userIsLogin)
@@ -38,7 +37,7 @@
 		<p>Do you want logout?</p>
 	</BodyTemplate>
 	<FooterTemplate>
-		<Button Color="ButtonColor.Primary" @onclick="LogoutUser">Logout</Button>
+		<Button Color="ButtonColor.Danger" @onclick="LogoutUser">Logout</Button>
 	</FooterTemplate>
 </Modal>
 
@@ -60,6 +59,9 @@
 
 @code {
 	[Inject] protected ToastService toastService { get; set; }
+	[Inject] protected IUserIdentityService userService { get; set; }
+	[Inject] protected ISessionStorageService sessionStorage { get; set; }
+
 	private bool userIsLogin = false;
 
 	private string modalTitle => userIsLogin ? "Logout" : "Login";
@@ -67,15 +69,34 @@
 	private string userEmail = string.Empty;
 	private string userPassword = string.Empty;
 
+	protected override async Task OnInitializedAsync()
+	{
+		var accessTokenAvaiable = await sessionStorage.GetItemAsStringAsync("accessToken");
+		if (accessTokenAvaiable is "" || accessTokenAvaiable is null)
+		{
+			userIsLogin = false;
+		} else
+		{
+			userIsLogin = true;
+		}
+	}
+
 	private Modal loginModal = new();
 	private async Task OnShowLoginModalClick() => await loginModal.ShowAsync();
 	private async Task OnHideLoginModalClick() => await loginModal.HideAsync();
 	private async Task LoginUser()
 	{
+		if (string.IsNullOrWhiteSpace(userEmail) || string.IsNullOrWhiteSpace(userPassword))
+		{
+			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Credential error", "User email lub password is not provided"));
+			return;
+		}
 		try
 		{
 			await userService.LoginUser(userEmail, userPassword);
 			userIsLogin = true;
+			userEmail = string.Empty;
+			userPassword = string.Empty;
 		}
 		catch
 		(HttpCommunicationException ex)
@@ -92,6 +113,7 @@
 	{
 		await userService.LogoutUser();
 		toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Success", "Logout successful"));
+		userIsLogin = false;
 		await OnHideLogoutModalClick();
 	}
 
@@ -104,6 +126,8 @@
 		try
 		{
 			await userService.RegisterNewUser(userEmail, userPassword);
+			userEmail = string.Empty;
+			userPassword = string.Empty;
 		}
 		catch (HttpCommunicationException ex)
 		{
