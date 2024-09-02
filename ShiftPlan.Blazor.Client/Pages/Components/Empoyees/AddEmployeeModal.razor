@@ -1,8 +1,7 @@
 ﻿@namespace ShiftPlan.Blazor.Client.Pages.Components
-@using ShiftPlan.Blazor.Client.Models
-@using ShiftPlan.Blazor.Client.Services
 
-@rendermode InteractiveServer
+@using ShiftPlan.Blazor.Commons.Models
+@using ShiftPlan.Blazor.Commons.Services
 
 @inject IEmployeesService employeeService
 
@@ -10,10 +9,10 @@
 	<Icon Name="IconName.Plus"/> Add new employee
 </Button>
 
-<Modal @ref="modal" Title="Add employee" ShowCloseButton="true">
+<Modal @ref="modal" Title="Add employee" ShowCloseButton="true" IsVerticallyCentered="true">
 	<BodyTemplate>
-		<label>Employee name</label>
-		<InputText @bind-Value="EmployeeName" />
+		<label class="form-label">Employee name</label>
+		<InputText class="form-control" @bind-Value="EmployeeName" />
 	</BodyTemplate>
 	<FooterTemplate>
 		<Button Color="ButtonColor.Primary" @onclick="InsertNewEmployee">Insert</Button>
@@ -23,7 +22,7 @@
 @code {
 	[Parameter]
 	public EventCallback<Employee> InsertEmployee { get; set; }
-	private Button addButton;
+	private Button addButton = new();
 	private Modal modal = new();
 
 	private string EmployeeName { get; set; } = string.Empty;

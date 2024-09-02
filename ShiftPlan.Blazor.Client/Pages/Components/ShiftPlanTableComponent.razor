@@ -1,0 +1,85 @@
+﻿@namespace ShiftPlan.Blazor.Client.Pages.Components
+
+@using ShiftPlan.Blazor.Commons.Models
+
+<table class="table table-bordered align-middle">
+	<thead class="table-primary">
+		<tr class="fw-bold text-center d-flex">
+			<td class="col-1">Hours</td>
+			<td class="col-1">Day</td>
+			@foreach (var employ in employees)
+			{
+				<td class="col-2">@employ.Name</td>
+			}
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var day in days)
+		{
+			<tr class="@SetDayBackgroundColor(day) d-flex">
+				<td class="col-1">@day</td>
+				<td class="col-1">@day.DayOfWeek</td>
+				@foreach (var employ in employees)
+				{
+					<ShiftComponent Date="@day" Employee="@employ" Shift="PickShiftFromList(day, employ)" OnShiftInsertOrUpdate="OnShiftInsertOrUpdate" OnShiftRemoved="OnRemoveShift" />
+				}
+			</tr>
+		}
+	</tbody>
+</table>
+<Button Color="ButtonColor.Primary" @onclick="LoadMoreDays">Load more day</Button>
+
+@code {
+	[Parameter]
+	public List<Employee> employees { get; set; } = [];
+
+	[Parameter]
+	public List<Shift> shifts { get; set; } = [];
+
+	[Parameter]
+	public EventCallback<Shift> OnShiftInsertOrUpdate { get; set; }
+
+	[Parameter]
+	public EventCallback<Shift> OnRemoveShift { get; set; }
+
+	private List<DateOnly> days = [];
+
+	protected override void OnInitialized()
+	{
+		days = GenerateDays();
+	}
+
+	private void LoadMoreDays()
+	{
+		for (int i = 7; i < 14; i++)
+		{
+			days.Add(DateOnly.FromDateTime(DateTime.Now.AddDays(i)));
+		}
+	}
+
+	private List<DateOnly> GenerateDays()
+	{
+		var daysList = new List<DateOnly>();
+		for (int i = -7; i < 7; i++)
+		{
+			daysList.Add(DateOnly.FromDateTime(DateTime.Now.AddDays(i)));
+		}
+		return daysList;
+	}
+
+	private string SetDayBackgroundColor(DateOnly day)
+	{
+		if (day == DateOnly.FromDateTime(DateTime.Now)) return "table-success";
+		return day.DayOfWeek switch
+		{
+			DayOfWeek.Saturday => "table-warning",
+			DayOfWeek.Sunday => "table-danger",
+			_ => string.Empty
+		};
+	}
+
+	private Shift? PickShiftFromList(DateOnly day, Employee employ)
+	{
+		return shifts.Where(s => s.Date == day && s.Employee == employ).FirstOrDefault();
+	}
+}

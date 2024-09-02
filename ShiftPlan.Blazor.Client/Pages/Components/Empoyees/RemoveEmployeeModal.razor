@@ -1,9 +1,7 @@
 ﻿@namespace ShiftPlan.Blazor.Client.Pages.Components
 
-@rendermode InteractiveServer
-
-@using ShiftPlan.Blazor.Client.Models
-@using ShiftPlan.Blazor.Client.Services
+@using ShiftPlan.Blazor.Commons.Models
+@using ShiftPlan.Blazor.Commons.Services
 
 @inject IEmployeesService employeeService
 
@@ -11,7 +9,7 @@
 	<Icon Name="IconName.Trash" /> Remove employee
 </Button>
 
-<Modal @ref="modal" Title="Remove employee" ShowCloseButton="true">
+<Modal @ref="modal" Title="Remove employee" ShowCloseButton="true" IsVerticallyCentered="true">
 	<BodyTemplate>
 		<label>Employee name</label>
 		<InputSelect class="form-control" TValue="int" @bind-Value="SelectedEmployee">
@@ -28,7 +26,7 @@
 </Modal>
 @code {
 	private Modal modal = new();
-	private Button removeButton;
+	private Button removeButton = new();
 
 	[Parameter]
 	public List<Employee> Employees { get; set; } = [];

@@ -1,0 +1,138 @@
+﻿@namespace ShiftPlan.Blazor.Client.Pages.Components
+
+@rendermode InteractiveWebAssembly
+
+@inject IShiftsService shiftService
+@inject IEmployeesService employeeService
+
+@using ShiftPlan.Blazor.Commons.Exceptions
+@using ShiftPlan.Blazor.Commons.Helpers
+@using ShiftPlan.Blazor.Commons.Models
+@using ShiftPlan.Blazor.Commons.Services
+@using ShiftPlan.Blazor.Client.Pages.Components
+@using ShiftPlan.Blazor.Client.Pages.Components.UserIdentity
+
+<div class="row d-flex">
+	<div class="col-3 justify-content-start">
+		<h3>ShiftPlan</h3>
+	</div>
+	<div class="col-6 justify-content-center">
+		<AddEmployeeModal InsertEmployee="InsertOrUpdateEmployee" />
+		<RemoveEmployeeModal RemoveEmployee="RemoveEmployee" Employees="employees" />
+	</div>
+	<div class="col-3 justify-content-end">
+		<UserComponent />
+	</div>
+</div>
+
+<ShiftPlanTableComponent employees="employees" shifts="shifts" OnRemoveShift="RemoveShift" OnShiftInsertOrUpdate="InsertOrUpdateShift" />
+
+@code {
+	[Inject] protected ToastService toastService { get; set; } = new();
+
+	public List<Employee> employees = [];
+	public List<Shift> shifts = [];
+
+	protected override async Task OnInitializedAsync()
+	{
+		await TryGetEmployees();
+		await TryGetShifts();
+
+		async Task TryGetEmployees()
+		{
+			try
+			{
+				employees = (await employeeService.GetAll())?.ToList() ?? [];
+			}
+			catch (HttpCommunicationException ex)
+			{
+				toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+			}
+		}
+
+		async Task TryGetShifts()
+		{
+			try
+			{
+				var shiftRequestResult = await shiftService.GetAll();
+				shifts = shiftRequestResult?.ToList() ?? [];
+			}
+			catch (HttpCommunicationException ex)
+			{
+				toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+			}
+		}
+	}
+
+
+	private async Task RemoveShift(Shift shift)
+	{
+		try
+		{
+			await shiftService.Remove(shift);
+			shifts.Remove(shift);
+		}
+		catch (HttpCommunicationException ex)
+		{
+			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+		}
+	}
+
+	private async Task InsertOrUpdateEmployee(Employee employee)
+	{
+		try
+		{
+			var newEmployee = await employeeService.InsertOrUpdate(employee);
+			var existingEmployee = employees.FirstOrDefault(e => e.Id == newEmployee?.Id);
+			if (existingEmployee is not null)
+			{
+				employees.Remove(existingEmployee);
+			}
+			if (newEmployee is null) return;
+			employees.Add(newEmployee);
+		}
+		catch (HttpCommunicationException ex)
+		{
+			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+		}
+
+	}
+
+	private async Task RemoveEmployee(Employee employee)
+	{
+		try
+		{
+			await employeeService.Remove(employee);
+			employees.Remove(employee);
+		}
+		catch (HttpCommunicationException ex)
+		{
+			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+		}
+		catch (Exception ex)
+		{
+			return;
+		}
+	}
+
+	private async Task InsertOrUpdateShift(Shift shift)
+	{
+		try
+		{
+			var newShift = await shiftService.InsertOrUpdate(shift);
+
+			var existingShift = shifts.FirstOrDefault(s => s.Id == newShift?.Id);
+			if (existingShift != null)
+			{
+				shifts.Remove(existingShift);
+			}
+			if (newShift is null) return;
+			shifts.Add(newShift);
+			
+		}
+		catch (HttpCommunicationException ex)
+		{
+			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+		}
+	}
+}

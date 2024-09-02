@@ -1,4 +1,4 @@
-﻿namespace ShiftPlan.Blazor.Client.Models;
+﻿namespace ShiftPlan.Blazor.Commons.Models;
 
 public record Employee(string Name, int? Id = null);
 
