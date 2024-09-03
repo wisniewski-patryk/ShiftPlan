@@ -9,6 +9,14 @@ public static class RegisterExtenstions
 	{
 		services.RegisterExternalLibrary();
 		services.RegisterAddTokenMiddleware();
+
+		var offlineMode = configuration.GetSection("OfflineMode").Value;
+		if (bool.TryParse(offlineMode, out bool isOfflineModeEnabled))
+		{
+			services.RegisterOfflineServices();
+			return services;
+		}
+
 		var backendApiUrl = new Uri(configuration.GetConnectionString("ShiftPlanBackendApiUrl") ?? throw new Exception("Backend api url not available."));
 		services.RegisterHttpClient(backendApiUrl);
 
