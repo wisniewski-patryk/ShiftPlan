@@ -30,7 +30,7 @@ public class UserIdentityClient(HttpClient httpClient, ISessionStorageService se
     
 		throw response.StatusCode switch
 		{
-			HttpStatusCode.BadRequest => new HttpCommunicationException("Invalid login request. Password need to contain non-alphanumeric char, numer, at least one big lether.", response.StatusCode),
+			HttpStatusCode.BadRequest => new HttpCommunicationException("Invalid login request. Password need to contain non-alphanumeric char, digit, at least one big lether.", response.StatusCode),
 			HttpStatusCode.Unauthorized => new HttpCommunicationException("Authentication failed. Please check your credentials and try again.", response.StatusCode),
 			_ => new HttpCommunicationException(response.ReasonPhrase ?? "Communication error", response.StatusCode),
 		};
