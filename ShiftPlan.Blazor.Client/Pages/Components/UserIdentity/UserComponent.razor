@@ -43,6 +43,7 @@
 
 <Modal @ref="registerModal" Title="Register" ShowCloseButton="true">
 	<BodyTemplate>
+		<p>Password should contain at least 8 characters, including at least one uppercase letter, one number, and one non alphanumeric character.</p>
 		<div>
 			<label class="form-label" for="userEmail">Email</label>
 			<InputText class="form-control" id="userEmail" @bind-Value="userEmail" placeholder="address@email.com" />
