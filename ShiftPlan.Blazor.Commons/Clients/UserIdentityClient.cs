@@ -1,5 +1,6 @@
 ﻿using Blazored.SessionStorage;
 using ShiftPlan.Blazor.Commons.Exceptions;
+using System.Net;
 using System.Net.Http.Json;
 
 namespace ShiftPlan.Blazor.Commons.Clients;
@@ -26,7 +27,12 @@ public class UserIdentityClient(HttpClient httpClient, ISessionStorageService se
 			await sessionStorage.SetItemAsStringAsync(loginTokenName, e?.AccessToken);
 			return;
 		}
-		throw new HttpCommunicationException(response.ReasonPhrase ?? "Communication error", response.StatusCode);
+		throw response.StatusCode switch
+		{
+			HttpStatusCode.BadRequest => new HttpCommunicationException("Invalid login request. Password need to contain non-alphanumeric char, numer, at least one big lether.", response.StatusCode),
+			HttpStatusCode.Unauthorized => new HttpCommunicationException("Authentication failed. Please check your credentials and try again.", response.StatusCode),
+			_ => new HttpCommunicationException(response.ReasonPhrase ?? "Communication error", response.StatusCode),
+		};
 	}
 
 	public async Task LogoutUser() => await sessionStorage.RemoveItemAsync(loginTokenName);
