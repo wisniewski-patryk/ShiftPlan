@@ -27,6 +27,7 @@ public class UserIdentityClient(HttpClient httpClient, ISessionStorageService se
 			await sessionStorage.SetItemAsStringAsync(loginTokenName, e?.AccessToken);
 			return;
 		}
+    
 		throw response.StatusCode switch
 		{
 			HttpStatusCode.BadRequest => new HttpCommunicationException("Invalid login request. Password need to contain non-alphanumeric char, numer, at least one big lether.", response.StatusCode),
@@ -40,9 +41,20 @@ public class UserIdentityClient(HttpClient httpClient, ISessionStorageService se
 	public async Task RegisterNewUser(UserRegistrationRequest userData)
 	{
 		var response = await httpClient.PostAsync("register", JsonContent.Create(userData));
+
+		var responseAsObject = await response.Content.ReadFromJsonAsync<RegistrationResponse>();
 		if (response.IsSuccessStatusCode)
 			return;
-		throw new HttpCommunicationException($"{response.StatusCode} - Invalid Register request. Password need to contain non-alphanumeric char, numer, at least one big lether."); // TODO: handle many posibility to get bad request - not valid/insecure passwords etc. 
+
+		throw (responseAsObject?.Errors) switch
+		{
+			{ InvalidEmail: not null } => new HttpCommunicationException("The provided email address is invalid. Please enter a valid email address."),
+			{ DuplicateUserName: not null } => new HttpCommunicationException("The email address is already in use. Please use a different email address."),
+			{ PasswordRequiresNonAlphanumeric: not null } or
+			{ PasswordRequiresDigit: not null } or
+			{ PasswordRequiresUpper: not null } => new HttpCommunicationException("Password should contain at least 8 characters, including at least one uppercase letter, one digit, and one non alphanumeric character."),
+			_ => new HttpCommunicationException($"{response.StatusCode} - Invalid Registration request. Please contact with support."),
+		};
 	}
 }
 
@@ -51,3 +63,6 @@ public record UserRegistrationRequest(string Email, string Password);
 public record UserLoginRequest(string Email, string Password);
 
 public record UserLoginRespond(string TokenType, string AccessToken, string RefreshToken, int ExpiresIn);
+
+public record RegistrationResponse(string Type, string Title, int Status, Errors Errors);
+public record Errors(string[]? PasswordRequiresNonAlphanumeric, string[]? PasswordRequiresDigit, string[]? PasswordRequiresUpper, string[]? DuplicateUserName, string[]? InvalidEmail);
