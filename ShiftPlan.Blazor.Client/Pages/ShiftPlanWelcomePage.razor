@@ -1,0 +1,70 @@
+﻿@namespace ShiftPlan.Blazor.Client.Pages
+
+@rendermode InteractiveWebAssembly
+
+@page "/welcome"
+
+@using ShiftPlan.Blazor.Client.Pages.Components
+@using ShiftPlan.Blazor.Client.Pages.Components.UserIdentity
+@using Blazored.SessionStorage
+
+<div class="text-center">
+    <div class="row shadow-lg">
+        <div class="card-header" style="background-color: lightblue;">
+            Welcome
+        </div>
+        <div class="card-body col-sm-8">
+            <img class="card-img-top" src="https://plus.unsplash.com/premium_photo-1661546333305-667b3326bb99?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Card image cap">
+            <div class="card shadow border">
+                <h5 class="card-title"></h5>
+                <p style="font-family: cursive; font-size: 14px;" class="card-text">Settings shift plan for workers</p>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <img class="card-img-top" src="https://images.unsplash.com/photo-1556740758-90de374c12ad?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');" alt="Card image cap">
+            <div class="card shadow border">
+                <h5 class="card-title">Register or Login</h5>
+                <p style="font-family: cursive; font-size: 14px;" class="card-text">Shift planner</p>
+                <ErrorBoundary @ref=errorBoundary>
+                    <ChildContent>
+                        <UserComponent />
+                    </ChildContent>
+                    <ErrorContent Context="ex">
+                        <h1>Something went wrong</h1>
+                        <p>Try to refresh the page or contact the support</p>
+                        <p>Error message: @ex.Message</p>
+                        <Button class="m-3" Color="ButtonColor.Primary" @onclick="ResetError">Refresh</Button>
+                    </ErrorContent>
+                </ErrorBoundary>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card shadow border col-xs-6">
+    <h5 class="card-title">Planning</h5>
+    <ErrorBoundary @ref=errorBoundary>
+        <ChildContent>
+            <ShiftPlanDashboard />
+        </ChildContent>
+        <ErrorContent Context="ex">
+            <h1>Something went wrong</h1>
+            <p>Try to refresh the page or contact the support</p>
+            <p>Error message: @ex.Message</p>
+            <Button class="m-3" Color="ButtonColor.Primary" @onclick="ResetError">Refresh</Button>
+        </ErrorContent>
+    </ErrorBoundary>
+</div>
+<footer class="border-top footer text-muted">
+    <div class="container">
+        &copy; 2024 - Shift plan - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    </div>
+</footer>
+
+@code {
+    public ErrorBoundary errorBoundary { get; set; } = new();
+
+    private void ResetError()
+    {
+        errorBoundary.Recover();
+    }
+}
