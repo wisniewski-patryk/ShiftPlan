@@ -50,11 +50,8 @@ h1:focus {
     border-color: #929292;
 }
 
-.button-rot {
-    --c: #fff;
-    /* text color */
+.button-rotZ {
     background: linear-gradient(90deg, #0000 33%, #fff5, #0000 67%) var(--_p,100%)/300% no-repeat, #004dff;
-    /* background color */
     color: #0000;
     border: none;
     transform: perspective(500px) rotateY(calc(20deg*var(--_i,-1)));
@@ -63,20 +60,19 @@ h1:focus {
     transition: 0.3s;
 }
 
-.button-rot:hover,
-.button-rot:focus-visible {
-    --_p: 0%;
-    --_i: 1;
-}
+    .button-rotZ:hover,
+    .button-rotZ:focus-visible {
+        --_p: 0%;
+        --_i: 1;
+    }
 
-.button-rot:active {
-    text-shadow: none;
-    color: var(--c);
-    box-shadow: inset 0 0 9e9q #0005;
-    transition: 0s;
-}
+    .button-rotZ:active {
+        text-shadow: none;
+        color: var(--c);
+        transition: 0s;
+    }
 
-.button-rot {
+.button-rotZ {
     font-weight: bold;
     font-size: 2rem;
     margin: 0;
