@@ -16,15 +16,15 @@
 	}
 </div>
 
-<Modal @ref="loginModal" Title="@modalTitle" ShowCloseButton="true">
+<Modal @ref="loginModal" Title="@modalTitle" ShowCloseButton="true" OnHidden="ResetInputFields">
 	<BodyTemplate>
 		<div>
-			<label class="form-label" for="userEmail">Email</label>
-			<InputText class="form-control" id="userEmail" @bind-Value="userEmail" placeholder="address@email.com"/>
+			<label class="form-label" for="userEmailId">Email</label>
+			<InputText class="form-control" id="userEmailId" @bind-Value="userEmail" placeholder="address@email.com"/>
 		</div>
 		<div>
-			<label class="form-label" for="userPassword">password</label>
-			<InputText class="form-control" id="userPassword" @bind-Value="userPassword" type="password" placeholder="Password"/>
+			<label class="form-label" for="userPasswordId">password</label>
+			<InputText class="form-control" id="userPasswordId" @bind-Value="userPassword" type="password" placeholder="Password"/>
 		</div>
 	</BodyTemplate>
 	<FooterTemplate>
@@ -41,16 +41,16 @@
 	</FooterTemplate>
 </Modal>
 
-<Modal @ref="registerModal" Title="Register" ShowCloseButton="true">
+<Modal @ref="registerModal" Title="Register" ShowCloseButton="true" OnHidden="ResetInputFields">
 	<BodyTemplate>
 		<p>Password should contain at least 8 characters, including at least one uppercase letter, one number, and one non alphanumeric character.</p>
 		<div>
-			<label class="form-label" for="userEmail">Email</label>
-			<InputText class="form-control" id="userEmail" @bind-Value="userEmail" placeholder="address@email.com" />
+			<label class="form-label" for="userEmailId">Email</label>
+			<InputText class="form-control" id="userEmailId" @bind-Value="userEmail" placeholder="address@email.com" />
 		</div>
 		<div>
-			<label class="form-label" for="userPassword">password</label>
-			<InputText class="form-control" id="userPassword" @bind-Value="userPassword" type="password" placeholder="Password" />
+			<label class="form-label" for="userPasswordId">password</label>
+			<InputText class="form-control" id="userPasswordId" @bind-Value="userPassword" type="password" placeholder="Password" />
 		</div>
 	</BodyTemplate>
 	<FooterTemplate>
@@ -84,20 +84,23 @@
 
 	private Modal loginModal = new();
 	private async Task OnShowLoginModalClick() => await loginModal.ShowAsync();
-	private async Task OnHideLoginModalClick() => await loginModal.HideAsync();
+	private async Task OnHideLoginModalClick()
+	{
+		ResetInputFields();
+		await loginModal.HideAsync();
+	}
+
 	private async Task LoginUser()
 	{
 		if (string.IsNullOrWhiteSpace(userEmail) || string.IsNullOrWhiteSpace(userPassword))
 		{
-			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Credential error", "User email lub password is not provided"));
+			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Credential error", "User email or password is not provided"));
 			return;
 		}
 		try
 		{
 			await userService.LoginUser(userEmail, userPassword);
 			userIsLogin = true;
-			userEmail = string.Empty;
-			userPassword = string.Empty;
 		}
 		catch
 		(HttpCommunicationException ex)
@@ -120,20 +123,28 @@
 
 	private Modal registerModal = new();
 	private async Task OnShowRegisterModalClick() => await registerModal.ShowAsync();
-	private async Task OnHideRegisterModalClick() => await registerModal.HideAsync();
+	private async Task OnHideRegisterModalClick()
+	{
+		ResetInputFields();
+		await registerModal.HideAsync();
+	}
 
 	private async Task RegisterUser()
 	{
 		try
 		{
 			await userService.RegisterNewUser(userEmail, userPassword);
-			userEmail = string.Empty;
-			userPassword = string.Empty;
 		}
 		catch (HttpCommunicationException ex)
 		{
 			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
 		}
 		await OnHideRegisterModalClick();
+	}
+
+	private void ResetInputFields()
+	{
+		userEmail = string.Empty;
+		userPassword = string.Empty;
 	}
 }
