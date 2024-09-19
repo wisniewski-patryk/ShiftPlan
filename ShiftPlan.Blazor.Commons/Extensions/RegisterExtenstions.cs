@@ -11,8 +11,9 @@ public static class RegisterExtenstions
 		services.RegisterAddTokenMiddleware();
 
 		var offlineMode = configuration.GetSection("OfflineMode").Value;
-		if (bool.TryParse(offlineMode, out bool isOfflineModeEnabled))
-		{
+        bool.TryParse(offlineMode, out bool isOfflineModeEnabled);
+        if (isOfflineModeEnabled)
+        {
 			services.RegisterOfflineServices();
 			return services;
 		}
