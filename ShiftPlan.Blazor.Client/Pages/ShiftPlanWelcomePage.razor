@@ -56,14 +56,11 @@
         </ErrorContent>
     </ErrorBoundary>
 </div>
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2024 - Shift plan - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-    </div>
-</footer>
+<FooterComponent title="Shift plan" thisyear=@DateTime.Now.Year.ToString()/>
 
 @code {
     public ErrorBoundary errorBoundary { get; set; } = new();
+    public DateTime DateTime;
 
     private void ResetError()
     {
