@@ -42,20 +42,7 @@
         </div>
     </div>
 </div>
-<div class="card shadow border col-xs-6">
-    <h5 class="card-title">Planning</h5>
-    <ErrorBoundary @ref=errorBoundary>
-        <ChildContent>
-            <ShiftPlanDashboard />
-        </ChildContent>
-        <ErrorContent Context="ex">
-            <h1>Something went wrong</h1>
-            <p>Try to refresh the page or contact the support</p>
-            <p>Error message: @ex.Message</p>
-            <Button class="m-3" Color="ButtonColor.Primary" @onclick="ResetError">Refresh</Button>
-        </ErrorContent>
-    </ErrorBoundary>
-</div>
+
 <FooterComponent title="Shift plan" thisyear=@DateTime.Now.Year.ToString()/>
 
 @code {
