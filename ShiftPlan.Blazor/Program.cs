@@ -6,17 +6,21 @@ using ShiftPlan.Blazor.Components;
 var builder = WebApplication.CreateBuilder(args);
 
 IReadService<Employee> test = new ServiceJson<Employee>();
-var name = test.DeserializeFileSingle(@"C:/temp/test.json").Name;
-
-test.DeserializeFileAsList(@"C:/temp/test2.json").ToList().ForEach(x => Console.WriteLine(x.Name));
+var jsonFile = Path.Combine(Path.GetTempPath(), "test1.json");
 
 var employee = new Employee("test1", 1);
-test.SerializeFileSingle(employee, @"C:/temp/test3.json");
+test.SerializeFileSingle(employee, jsonFile);
 
 var employees = new List<Employee>();
 employees.Add(employee);
-employees.Add(new Employee("test2",2));
-test.SerializeFileAsList(employees, @"C:/temp/test4.json");
+employees.Add(new Employee("test2", 2));
+test.SerializeFileAsList(employees, Path.Combine(Path.GetTempPath(), "test2.json"));
+
+var name = test.DeserializeFileSingle(jsonFile).Name;
+
+test.DeserializeFileAsList(Path.Combine(Path.GetTempPath(), "test2.json")).ToList().ForEach(x => Console.WriteLine(x.Name));
+
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
