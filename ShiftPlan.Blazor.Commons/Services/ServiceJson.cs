@@ -12,7 +12,7 @@ namespace ShiftPlan.Blazor.Commons.Services
                 IList<T> result = JsonConvert.DeserializeObject<List<T>>(jsonString);
                 return result;
             }
-            return default;
+            throw new Exception("json file is not correct!");
         }
 
         public T DeserializeFileSingle(string file)
@@ -23,7 +23,7 @@ namespace ShiftPlan.Blazor.Commons.Services
                 T result = JsonConvert.DeserializeObject<T>(jsonString);
                 return result;
             }
-            return default;
+            throw new Exception("json file is not correct!");
         }
 
         public void SerializeFileSingle(T o, string fileName)
