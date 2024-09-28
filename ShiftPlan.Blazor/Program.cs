@@ -8,19 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 //test reading and saving jsonfile to temp folder
 var jsonFileSingle = Path.Combine(Path.GetTempPath(), "test1.json");
 var jsonFileAsList = Path.Combine(Path.GetTempPath(), "test2.json");
-IReadService<Employee> test = new ServiceJson<Employee>();
+ILoadSaveService<Employee> test = new ServiceJson<Employee>();
 var employee = new Employee("test1", 1);
-test.SerializeFileSingle(employee, jsonFileSingle);
-
-var employees = new List<Employee>();
-employees.Add(employee);
-employees.Add(new Employee("test2", 2));
-test.SerializeFileAsList(employees, jsonFileAsList);
-
-var name = test.DeserializeFileSingle(jsonFileSingle).Name;
-
-test.DeserializeFileAsList(jsonFileAsList).ToList().ForEach(x => Console.WriteLine(x.Name));
-
+test.SaveFileAsSingle(employee, jsonFileSingle);
+var employees = new List<Employee>() { employee , new Employee("test2", 2) };
+test.SaveFileAsList(employees, jsonFileAsList);
+var name = test.LoadFileAsSingle(jsonFileSingle).Name;
+test.LoadFileAsList(jsonFileAsList).ToList().ForEach(x => Console.WriteLine(x.Name));
+//
 
 
 // Add services to the container.

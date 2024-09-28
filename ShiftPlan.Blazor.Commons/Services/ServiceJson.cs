@@ -2,9 +2,9 @@
 
 namespace ShiftPlan.Blazor.Commons.Services
 {
-    public class ServiceJson<T> : IReadService<T>
+    public class ServiceJson<T> : ILoadSaveService<T>
     {
-        public IEnumerable<T> DeserializeFileAsList(string file)
+        public IEnumerable<T> LoadFileAsList(string file)
         {
             if (File.Exists(file))
             {
@@ -15,7 +15,7 @@ namespace ShiftPlan.Blazor.Commons.Services
             throw new Exception("json file is not correct!");
         }
 
-        public T DeserializeFileSingle(string file)
+        public T LoadFileAsSingle(string file)
         {
             if (File.Exists(file))
             {
@@ -26,7 +26,7 @@ namespace ShiftPlan.Blazor.Commons.Services
             throw new Exception("json file is not correct!");
         }
 
-        public void SerializeFileSingle(T o, string fileName)
+        public void SaveFileAsSingle(T o, string fileName)
         {
             using (var sw = new StreamWriter(fileName))
             {
@@ -34,7 +34,7 @@ namespace ShiftPlan.Blazor.Commons.Services
             }
         }
 
-        public void SerializeFileAsList(IList<T> o, string fileName)
+        public void SaveFileAsList(IList<T> o, string fileName)
         {
             using (var sw = new StreamWriter(fileName))
             {
