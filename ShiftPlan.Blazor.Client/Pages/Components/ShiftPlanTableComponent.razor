@@ -17,7 +17,7 @@
 		@foreach (var day in days)
 		{
 			<tr class="@SetDayBackgroundColor(day) d-flex">
-				<td class="col-1">@day</td>
+				<td class="col-1">@day.ToString("d-MMM")</td>
 				<td class="col-1">@day.DayOfWeek</td>
 				@foreach (var employ in employees)
 				{
