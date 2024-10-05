@@ -1,9 +1,16 @@
 ﻿using Newtonsoft.Json;
 
-namespace ShiftPlan.Blazor.Commons.Services
+namespace ShiftPlan.Blazor.Commons.Services;
+
+public interface ILoadSaveService<T>
 {
-    public class ServiceJson<T> : ILoadSaveService<T>
-    {
+	IEnumerable<T> LoadFileAsList(string file);
+	T LoadFileAsSingle(string file);
+	void SaveFileAsSingle(T o, string file);
+	void SaveFileAsList(IList<T> o, string fileName);
+}
+public class JsonService<T> : ILoadSaveService<T>
+{
         public IEnumerable<T> LoadFileAsList(string file)
         {
             if (File.Exists(file))
@@ -41,5 +48,5 @@ namespace ShiftPlan.Blazor.Commons.Services
                 new JsonSerializer().Serialize(sw, o);
             }
         }
-    }
 }
+

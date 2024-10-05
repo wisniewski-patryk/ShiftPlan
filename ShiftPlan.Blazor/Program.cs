@@ -1,22 +1,7 @@
 using ShiftPlan.Blazor.Commons.Extensions;
-using ShiftPlan.Blazor.Commons.Models;
-using ShiftPlan.Blazor.Commons.Services;
 using ShiftPlan.Blazor.Components;
 
 var builder = WebApplication.CreateBuilder(args);
-
-//test reading and saving jsonfile to temp folder
-var jsonFileSingle = Path.Combine(Path.GetTempPath(), "test1.json");
-var jsonFileAsList = Path.Combine(Path.GetTempPath(), "test2.json");
-ILoadSaveService<Employee> test = new ServiceJson<Employee>();
-var employee = new Employee("test1", 1);
-test.SaveFileAsSingle(employee, jsonFileSingle);
-var employees = new List<Employee>() { employee , new Employee("test2", 2) };
-test.SaveFileAsList(employees, jsonFileAsList);
-var name = test.LoadFileAsSingle(jsonFileSingle).Name;
-test.LoadFileAsList(jsonFileAsList).ToList().ForEach(x => Console.WriteLine(x.Name));
-//
-
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
