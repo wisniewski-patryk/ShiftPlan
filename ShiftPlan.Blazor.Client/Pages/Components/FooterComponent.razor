@@ -1,14 +1,5 @@
 ﻿<footer class="border-top footer text-muted">
     <div class="container">
-        &copy; @ThisYear - @Title - <a>Privacy</a>
+        &copy; @DateTime.Now.Year.ToString() - Shift plan - <a>Privacy</a>
     </div>
 </footer>
-
-@code {
-    [Parameter]
-    public string? Title { get; set; }
-
-    [Parameter]
-    public string? ThisYear { get; set; }
-
-}

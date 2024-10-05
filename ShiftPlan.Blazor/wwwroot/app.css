@@ -50,33 +50,4 @@ h1:focus {
     border-color: #929292;
 }
 
-.button-rotZ {
-    background: linear-gradient(90deg, #0000 33%, #fff5, #0000 67%) var(--_p,100%)/300% no-repeat, #004dff;
-    color: #0000;
-    border: none;
-    transform: perspective(500px) rotateY(calc(20deg*var(--_i,-1)));
-    text-shadow: calc(var(--_i,-1)* 0.08em) -.01em 0 var(--c), calc(var(--_i,-1)*-0.08em) .01em 2px #0004;
-    outline-offset: .1em;
-    transition: 0.3s;
-}
-
-    .button-rotZ:hover,
-    .button-rotZ:focus-visible {
-        --_p: 0%;
-        --_i: 1;
-    }
-
-    .button-rotZ:active {
-        text-shadow: none;
-        color: var(--c);
-        transition: 0s;
-    }
-
-.button-rotZ {
-    font-weight: bold;
-    font-size: 2rem;
-    margin: 0;
-    cursor: pointer;
-    padding: .1em .3em;
-}
 
