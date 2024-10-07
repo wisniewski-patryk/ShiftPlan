@@ -9,9 +9,8 @@ namespace ShiftPlan.Blazor.Client.Services
 		{
 			if (File.Exists(file))
 			{
-				using var reader = new StreamReader(file);
-				var result = await reader.ReadToEndAsync();
-				return JsonSerializer.Deserialize<IEnumerable<T>>(result);
+				using FileStream result = File.OpenRead(file);
+				return await JsonSerializer.DeserializeAsync<IEnumerable<T>>(result);
 			}
 			throw new Exception("json file is not correct!");
 		}
@@ -20,9 +19,8 @@ namespace ShiftPlan.Blazor.Client.Services
 		{
 			if (File.Exists(file))
 			{
-				using var reader = new StreamReader(file);
-				var result = await reader.ReadToEndAsync();
-				return JsonSerializer.Deserialize<T>(result);
+				using FileStream result = File.OpenRead(file);
+				return await JsonSerializer.DeserializeAsync<T>(result);
 			}
 			throw new Exception("json file is not correct!");
 		}
