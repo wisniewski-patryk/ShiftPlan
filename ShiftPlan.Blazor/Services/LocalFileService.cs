@@ -6,22 +6,22 @@ namespace ShiftPlan.Blazor.Services
 	{
 		public Task<IEnumerable<T>> LoadFileAsList(string file)
 		{
-			throw new Exception("works only in offline mode on the client side");
+			throw new NotSupportedException("works only in offline mode on the client side");
 		}
 
 		public Task<T> LoadFileAsSingle(string file)
 		{
-			throw new Exception("works only in offline mode on the client side");
+			throw new NotSupportedException("works only in offline mode on the client side");
 		}
 
 		public Task SaveFileAsList(IList<T> o, string file)
 		{
-			throw new Exception("works only in offline mode on the client side");
+			throw new NotSupportedException("works only in offline mode on the client side");
 		}
 
 		public Task SaveFileAsSingle(T o, string file)
 		{
-			throw new Exception("works only in offline mode on the client side");
+			throw new NotSupportedException("works only in offline mode on the client side");
 		}
 	}
 }
