@@ -17,19 +17,20 @@ namespace ShiftPlan.Blazor.Commons.Tests
 		}
 
 		[Fact]
-		public async Task GetAll_IfNotEmpty_ReturnTrue()
+		public async Task GetAll_AllNamesShouldNotHaveStringEmpty_ReturnTrue()
 		{
 			// Arrange
 			_mockEmployeesClient.Setup(x => x.GetAll()).ReturnsAsync(GetEmployeesClient());
 
 			// Act
 			var users = await _sut.GetAll();
+			var result = users.All(x => x.Name != string.Empty);
 
-			// Assert
-			users.Should().NotBeEmpty();
+            // Assert
+            result.Should().BeTrue();
 		}
 
-		private IEnumerable<Employee> GetEmployeesClient()
+        private IEnumerable<Employee> GetEmployeesClient()
 		{
 			return new List<Employee>() { 
 				new Employee("Test1",1),
