@@ -17,6 +17,7 @@ namespace ShiftPlan.Blazor.Client.Tests
 
         [Theory]
         [InlineData(1, "Test1")]
+        [InlineData(2, "Test2")]
         public async void LoadFileAsList_WhenEmploeeNameIsProperly_ReturnTrue(int id, string expectedName)
         {
             // Arrange
