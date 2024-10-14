@@ -1,1 +1,10 @@
-[{"Name":"Mario","Id":1}]
+[
+  {
+    "Name": "Test1",
+    "Id": 1
+  },
+  {
+    "Name": "Test2",
+    "Id": 2
+  }
+]
