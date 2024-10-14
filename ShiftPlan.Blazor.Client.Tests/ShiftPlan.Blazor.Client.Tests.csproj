@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -25,6 +25,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ShiftPlan.Blazor.Client\ShiftPlan.Blazor.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TestData\Employee.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

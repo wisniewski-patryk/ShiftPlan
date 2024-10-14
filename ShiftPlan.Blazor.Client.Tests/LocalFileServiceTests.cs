@@ -7,7 +7,7 @@ namespace ShiftPlan.Blazor.Client.Tests
 {
     public class LocalFileServiceTests
     {
-        private string jsonFile = Path.Combine( Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).FullName,"Employee.json");
+        private string jsonFile = Path.Combine( "./TestData/Employee.json");
         private ILoadSaveService<Employee> _sut { get; }
 
         public LocalFileServiceTests()
