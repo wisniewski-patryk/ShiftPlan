@@ -7,12 +7,27 @@ namespace ShiftPlan.Blazor.Client.Tests
 {
     public class LocalFileServiceTests
     {
-        private string jsonFile = Path.Combine( "./TestData/Employee.json");
+        private string jsonFile = Path.Combine("./TestData/Employee.json");
         private ILoadSaveService<Employee> _sut { get; }
 
         public LocalFileServiceTests()
         {
             _sut = new LocalFileService<Employee>();
+        }
+
+        [Theory]
+        [InlineData(1, "Mario")]
+        public async void LoadFileAsList_WhenEmploeeNameIsProperly_ReturnTrue(int id, string expectedName)
+        {
+            // Arrange
+            var employee = await _sut.LoadFileAsList(jsonFile) as List<Employee>;
+
+            // Act
+            var result = employee.Where(e=>e.Id == id).Select(e=>e.Name).FirstOrDefault();
+
+            // Assert
+            result.Should().Be(expectedName);
+            result.Should().NotBeNull();
         }
 
         [Fact]
