@@ -2,13 +2,16 @@ using FluentAssertions;
 using ShiftPlan.Blazor.Client.Services;
 using ShiftPlan.Blazor.Commons.Models;
 using ShiftPlan.Blazor.Commons.Services;
+using System.Text.Json;
 
 namespace ShiftPlan.Blazor.Client.Tests
 {
     public class LocalFileServiceTests
     {
-        private string jsonFile = Path.Combine("./TestData/Employee.json");
-        private ILoadSaveService<Employee> _sut { get; }
+        private string jsonEmployeeFile = Path.Combine("./TestData/Employee.json");
+		private string jsonShiftFile = Path.Combine("./TestData/Shift.json");
+		private string emptyFile = Path.Combine("./TestData/Empty.json");
+		private ILoadSaveService<Employee> _sut { get; }
 
         public LocalFileServiceTests()
         {
@@ -18,10 +21,10 @@ namespace ShiftPlan.Blazor.Client.Tests
         [Theory]
         [InlineData(1, "Test1")]
         [InlineData(2, "Test2")]
-        public async void LoadFileAsList_WhenEmploeeNameIsProperly_ReturnTrue(int id, string expectedName)
+        public async void LoadFileAsList_WhenEmploeeNamesAreProperly_ReturnTrue(int id, string expectedName)
         {
             // Arrange
-            var employee = await _sut.LoadFileAsList(jsonFile) as List<Employee>;
+            var employee = await _sut.LoadFileAsList(jsonEmployeeFile) as List<Employee>;
 
             // Act
             var result = employee.Where(e=>e.Id == id).Select(e=>e.Name).FirstOrDefault();
@@ -30,19 +33,6 @@ namespace ShiftPlan.Blazor.Client.Tests
             result.Should().Be(expectedName);
             result.Should().NotBeNull();
         }
-
-        [Fact]
-        public async void LoadFileAsList_WhenNotBeEmpty_ReturnTrue()
-        {
-            // Arrange
-
-            // Act
-            var result = await _sut.LoadFileAsList(jsonFile);
-
-            // Assert
-            result.Should().NotBeEmpty();
-        }
-
 
         [Fact]
         public async void LoadFileAsList_IFileNotExist_ReturnFileNotFoundException()
@@ -55,5 +45,29 @@ namespace ShiftPlan.Blazor.Client.Tests
             // Assert
             await act.Should().ThrowAsync<FileNotFoundException>();
         }
-    }
+
+		[Fact]
+		public async void LoadFileAsList_WhenEmptyFile_ReturnJsonException()
+		{
+			// Arrange
+
+			// Act
+			Func<Task> act = async () => await _sut.LoadFileAsList(emptyFile);
+
+			// Assert
+			await act.Should().ThrowAsync<JsonException>();
+		}
+
+		[Fact]
+		public async void LoadFileAsList_WhenNotCorrectFile_ReturnInvalidDataException()
+		{
+			// Arrange
+
+			// Act
+			Func<Task> act = async () => await _sut.LoadFileAsList(jsonShiftFile);
+
+			// Assert
+			await act.Should().ThrowAsync<InvalidDataException>();
+		}
+	}
 }
