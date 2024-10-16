@@ -33,7 +33,7 @@ namespace ShiftPlan.Blazor.Client.Tests
         }
 
         [Fact]
-        public async void LoadFileAsList_IFileNotExist_ReturnFileNotFoundException()
+        public async void LoadFileAsList_WhenFileNotExist_ReturnFileNotFoundException()
         {
 			// Arrange
 			string notExistFile = Path.Combine("./TestData/notExist.json");
