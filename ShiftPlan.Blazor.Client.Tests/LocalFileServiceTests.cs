@@ -1,17 +1,16 @@
 using FluentAssertions;
 using ShiftPlan.Blazor.Client.Services;
 using ShiftPlan.Blazor.Commons.Models;
-using ShiftPlan.Blazor.Commons.Services;
 using System.Text.Json;
 
 namespace ShiftPlan.Blazor.Client.Tests
 {
-    public class LocalFileServiceTests
+	public class LocalFileServiceTests
     {
         private string jsonEmployeeFile = Path.Combine("./TestData/Employee.json");
 		private string jsonShiftFile = Path.Combine("./TestData/Shift.json");
 		private string emptyFile = Path.Combine("./TestData/Empty.json");
-		private ILoadSaveService<Employee> _sut { get; }
+		private LocalFileService<Employee> _sut { get; }
 
         public LocalFileServiceTests()
         {
