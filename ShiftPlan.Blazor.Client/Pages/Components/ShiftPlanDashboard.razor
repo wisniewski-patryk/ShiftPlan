@@ -36,7 +36,8 @@
 
 	public List<Employee> employees = [];
 	public List<Shift> shifts = [];
-	public record LocalDataObject(List<Employee> Employees, List<Shift> Shifts);
+	public ILoadSaveService<Shift> jsonservice = new LocalFileService<Shift>();
+	public string fileJsonSave = Path.Combine(Path.GetTempPath(), "shifts.json");
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -143,12 +144,9 @@
 
 	private async Task LoadShifts()
 	{
-		string fileJsonSave = Path.Combine(Path.GetTempPath(), "myEmploee.json");
-		ILoadSaveService<Shift> jsonservice = new LocalFileService<Shift>();
 		var getShifts = await jsonservice.LoadFileAsList(fileJsonSave) as List<Shift>;
 		if (getShifts != null)
 			getShifts.ForEach(x=> Console.WriteLine($"{x.Employee.Name} {x.Date} {x.Start} {x.End}"));
-
 		if (File.Exists(fileJsonSave))
 		{
 			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created : {fileJsonSave}"));
@@ -161,11 +159,8 @@
 
 	private async Task SaveShifts()
 	{
-		string fileJsonSave = Path.Combine(Path.GetTempPath(), "myEmploee.json");
-		ILoadSaveService<Shift> jsonservice = new LocalFileService<Shift>();
 		if (shifts.Count() > 0)
 			await jsonservice.SaveFileAsList(shifts, fileJsonSave);
-
 		if (File.Exists(fileJsonSave))
 		{
 			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created : {fileJsonSave}"));
