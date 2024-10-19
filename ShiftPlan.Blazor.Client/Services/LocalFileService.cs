@@ -39,7 +39,7 @@ public class LocalFileService<T> : ILoadSaveService<T>
 
 	public async Task SaveFileAsList(IList<T> o, string file)
 	{
-		await using FileStream createStream = File.Create(file);
+		using FileStream createStream = File.Create(file);
 		await JsonSerializer.SerializeAsync(createStream, o);
 	}
 

@@ -5,12 +5,16 @@
 @inject IShiftsService shiftService
 @inject IEmployeesService employeeService
 
+@using ShiftPlan.Blazor.Client.Services
 @using ShiftPlan.Blazor.Commons.Exceptions
 @using ShiftPlan.Blazor.Commons.Helpers
 @using ShiftPlan.Blazor.Commons.Models
 @using ShiftPlan.Blazor.Commons.Services
 @using ShiftPlan.Blazor.Client.Pages.Components
 @using ShiftPlan.Blazor.Client.Pages.Components.UserIdentity
+
+<Button Color="ButtonColor.Primary" @onclick="LoadShifts">Load shifts</Button>
+<Button Color="ButtonColor.Primary" @onclick="SaveShifts">Save shifts</Button>
 
 <div class="row d-flex">
 	<div class="col-3 justify-content-start">
@@ -32,6 +36,7 @@
 
 	public List<Employee> employees = [];
 	public List<Shift> shifts = [];
+	public record LocalDataObject(List<Employee> Employees, List<Shift> Shifts);
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -128,11 +133,46 @@
 			}
 			if (newShift is null) return;
 			shifts.Add(newShift);
-			
+
 		}
 		catch (HttpCommunicationException ex)
 		{
 			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+		}
+	}
+
+	private async Task LoadShifts()
+	{
+		string fileJsonSave = Path.Combine(Path.GetTempPath(), "myEmploee.json");
+		ILoadSaveService<Shift> jsonservice = new LocalFileService<Shift>();
+		var getShifts = await jsonservice.LoadFileAsList(fileJsonSave) as List<Shift>;
+		if (getShifts != null)
+			getShifts.ForEach(x=> Console.WriteLine($"{x.Employee.Name} {x.Date} {x.Start} {x.End}"));
+
+		if (File.Exists(fileJsonSave))
+		{
+			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created : {fileJsonSave}"));
+		}
+		else
+		{
+			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not created : {fileJsonSave}"));
+		}
+	}
+
+	private async Task SaveShifts()
+	{
+		string fileJsonSave = Path.Combine(Path.GetTempPath(), "myEmploee.json");
+		ILoadSaveService<Shift> jsonservice = new LocalFileService<Shift>();
+		if (shifts.Count() > 0)
+			await jsonservice.SaveFileAsList(shifts, fileJsonSave);
+
+		if (File.Exists(fileJsonSave))
+		{
+			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created : {fileJsonSave}"));
+		}
+		else
+		{
+			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not created : {fileJsonSave}"));
 		}
 	}
 }
