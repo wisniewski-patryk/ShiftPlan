@@ -4,6 +4,7 @@
 
 @inject IShiftsService shiftService
 @inject IEmployeesService employeeService
+@inject IConfiguration configuration
 
 @using ShiftPlan.Blazor.Client.Services
 @using ShiftPlan.Blazor.Commons.Exceptions
@@ -13,8 +14,14 @@
 @using ShiftPlan.Blazor.Client.Pages.Components
 @using ShiftPlan.Blazor.Client.Pages.Components.UserIdentity
 
-<Button Color="ButtonColor.Primary" @onclick="LoadShifts">Load shifts</Button>
-<Button Color="ButtonColor.Primary" @onclick="SaveShifts">Save shifts</Button>
+@{
+	var offlineMode = configuration.GetSection("OfflineMode").Value;
+	if (offlineMode == "True")
+	{
+		<Button Color="ButtonColor.Primary" @onclick="LoadShifts">Load shifts</Button>
+		<Button Color="ButtonColor.Primary" @onclick="SaveShifts">Save shifts</Button>
+	}
+}
 
 <div class="row d-flex">
 	<div class="col-3 justify-content-start">
