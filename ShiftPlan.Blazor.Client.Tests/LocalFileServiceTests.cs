@@ -32,6 +32,23 @@ namespace ShiftPlan.Blazor.Client.Tests
             result.Should().NotBeNull();
         }
 
+        [Theory]
+        [InlineData("Test1")]
+        public async void LoadFileAsSingle_WhenEmploeeNamesAreProperly_ReturnTrue(string expectedName)
+        {
+            // Arrange
+            string jsonFile = Path.Combine("./TestData/Shift.json");
+            var service = new LocalFileService<Shift>();
+            var shift = await service.LoadFileAsSingle(jsonFile);
+
+            // Act
+            var result = shift.Employee.Name;
+
+            // Assert
+            result.Should().Be(expectedName);
+            result.Should().NotBeNull();
+        }
+
         [Fact]
         public async void LoadFileAsList_WhenFileNotExist_ReturnFileNotFoundException()
         {
@@ -70,5 +87,59 @@ namespace ShiftPlan.Blazor.Client.Tests
 			// Assert
 			await act.Should().ThrowAsync<InvalidDataException>();
 		}
-	}
+        
+        [Fact]
+        public async void SaveFileAsList_WhenFileWasCreated_ReturnTrue()
+        {
+            // Arrange
+            string createFile = Path.Combine("./TestData/create.json");
+
+            // Act
+            var result = await _sut.SaveFileAsList(new List<Employee>() { new Employee("Test1",1)}, createFile);
+
+            // Assert
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async void SaveFileAsSingle_WhenFileWasCreated_ReturnTrue()
+        {
+            // Arrange
+            string createFile = Path.Combine("./TestData/create.json");
+
+            // Act
+            var result = await _sut.SaveFileAsSingle(new Employee("Test1", 1), createFile);
+
+            // Assert
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async void SaveFileAsList_WhenFileWasNotCreated_ReturnThrowFileNotFoundException()
+        {
+            // Arrange
+            string createFile = Path.Combine("./TestData/");
+
+            // Act
+            Func<Task> act = async () => await _sut.SaveFileAsList(new List<Employee>(), createFile);
+
+            // Assert
+            await act.Should().ThrowAsync<FileNotFoundException>();
+        }
+
+        [Fact]
+        public async void SaveFileAsSingle_WhenFileWasNotCreated_ReturnThrowFileNotFoundException()
+        {
+            // Arrange
+            string createFile = Path.Combine("./TestData/");
+
+            // Act
+            Func<Task> act = async () => await _sut.SaveFileAsSingle(new Employee("",1), createFile);
+
+            // Assert
+            await act.Should().ThrowAsync<FileNotFoundException>();
+        }
+
+
+    }
 }
