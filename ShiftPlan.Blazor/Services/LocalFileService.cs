@@ -14,12 +14,12 @@ public class LocalFileService<T> : ILoadSaveService<T>
 		throw new NotSupportedException("Supported only in client side application");
 	}
 
-	public Task<bool> SaveFileAsList(IList<T> o, string file)
+	public Task SaveFileAsList(IList<T> o, string file)
 	{
 		throw new NotSupportedException("Supported only in client side application");
 	}
 
-	public Task<bool> SaveFileAsSingle(T o, string file)
+	public Task SaveFileAsSingle(T o, string file)
 	{
 		throw new NotSupportedException("Supported only in client side application");
 	}

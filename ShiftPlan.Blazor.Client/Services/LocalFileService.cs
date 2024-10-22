@@ -37,32 +37,22 @@ public class LocalFileService<T> : ILoadSaveService<T>
             throw new FileNotFoundException("Json file does not exists");
         }
 
-	public async Task<bool> SaveFileAsList(IList<T> o, string file)
+	public async Task SaveFileAsList(IList<T> o, string file)
 	{
 		try
 		{
 			using FileStream createStream = File.Create(file);
 			await JsonSerializer.SerializeAsync(createStream, o);
-			if (File.Exists(file))
-			{
-				return true;
-			}
-		} catch { throw new FileNotFoundException("Json file does not created"); }
-		return false;   
+		} catch { throw new FileNotFoundException("Json file does not created"); } 
     }
 
-	public async Task<bool> SaveFileAsSingle(T o, string file)
+	public async Task SaveFileAsSingle(T o, string file)
 	{
 		try
 		{
 			using FileStream createStream = File.Create(file);
 			await JsonSerializer.SerializeAsync(createStream, o);
-			if (File.Exists(file))
-			{
-				return true;
-			}
 		}
         catch { throw new FileNotFoundException("Json file does not created"); }
-        return false;
     }
 }
