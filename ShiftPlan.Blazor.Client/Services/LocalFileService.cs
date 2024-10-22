@@ -1,11 +1,12 @@
-﻿using ShiftPlan.Blazor.Commons.Services;
+﻿using ShiftPlan.Blazor.Commons.Models;
+using ShiftPlan.Blazor.Commons.Services;
 using System.Text.Json;
 
 namespace ShiftPlan.Blazor.Client.Services;
 
-public class LocalFileService<T> : ILoadSaveService<T>
+public class LocalFileService : ILoadSaveService
 {
-	public async Task<IEnumerable<T>> LoadFileAsList(string file)
+	public async Task<IEnumerable<Shift>> LoadFileAsList(string file)
 	{
 		if (File.Exists(file))
 		{	
@@ -14,14 +15,14 @@ public class LocalFileService<T> : ILoadSaveService<T>
 				throw new JsonException("Json file is empty");
 			try
 			{
-				return await JsonSerializer.DeserializeAsync<IEnumerable<T>>(result);
+				return await JsonSerializer.DeserializeAsync<IEnumerable<Shift>>(result);
 			}
 			catch { throw new InvalidDataException("Json file is not correct"); }
 		}
             throw new FileNotFoundException("Json file does not exists");
         }
 
-	public async Task<T> LoadFileAsSingle(string file)
+	public async Task<Shift> LoadFileAsSingle(string file)
 	{
 		if (File.Exists(file))
 		{
@@ -30,14 +31,14 @@ public class LocalFileService<T> : ILoadSaveService<T>
 				throw new JsonException("Json file is empty");
 			try
 			{
-				return await JsonSerializer.DeserializeAsync<T>(result);
+				return await JsonSerializer.DeserializeAsync<Shift>(result);
 			}
 			catch { throw new InvalidDataException("Json file is not correct"); }
 		}
             throw new FileNotFoundException("Json file does not exists");
         }
 
-	public async Task SaveFileAsList(IList<T> o, string file)
+	public async Task SaveFileAsList(IList<Shift> o, string file)
 	{
 		try
 		{
@@ -46,7 +47,7 @@ public class LocalFileService<T> : ILoadSaveService<T>
 		} catch { throw new FileNotFoundException("Json file does not created"); } 
     }
 
-	public async Task SaveFileAsSingle(T o, string file)
+	public async Task SaveFileAsSingle(Shift o, string file)
 	{
 		try
 		{

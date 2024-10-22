@@ -43,7 +43,7 @@
 
 	public List<Employee> employees = [];
 	public List<Shift> shifts = [];
-	public ILoadSaveService<Shift> jsonservice = new LocalFileService<Shift>();
+	public ILoadSaveService jsonservice = new LocalFileService();
 	public string fileJsonSave = Path.Combine(Path.GetTempPath(), "shifts.json");
 
 	protected override async Task OnInitializedAsync()

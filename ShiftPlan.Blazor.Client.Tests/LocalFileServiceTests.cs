@@ -1,19 +1,18 @@
 using FluentAssertions;
 using ShiftPlan.Blazor.Client.Services;
 using ShiftPlan.Blazor.Commons.Models;
-using System;
 using System.Text.Json;
 
 namespace ShiftPlan.Blazor.Client.Tests
 {
-	public class LocalFileServiceTests
+    public class LocalFileServiceTests
     {
 	
-		private LocalFileService<Employee> _sut { get; }
+		private LocalFileService _sut { get; }
 
         public LocalFileServiceTests()
         {
-            _sut = new LocalFileService<Employee>();
+            _sut = new LocalFileService();
         }
 
         [Theory]
@@ -22,11 +21,11 @@ namespace ShiftPlan.Blazor.Client.Tests
         public async void LoadFileAsList_WhenEmploeeNamesAreProperly_ReturnTrue(int id, string expectedName)
         {
 			// Arrange
-			string jsonEmployeeFile = Path.Combine("./TestData/Employee.json");
-			var employee = await _sut.LoadFileAsList(jsonEmployeeFile) as List<Employee>;
+			string jsonEmployeeFile = Path.Combine("./TestData/Shifts.json");
+			var shifts = await _sut.LoadFileAsList(jsonEmployeeFile);
 
             // Act
-            var result = employee.Where(e=>e.Id == id).Select(e=>e.Name).FirstOrDefault();
+            var result = shifts.Where(e=>e.Id == id).Select(e=>e.Employee.Name).FirstOrDefault();
 
             // Assert
             result.Should().Be(expectedName);
@@ -39,7 +38,7 @@ namespace ShiftPlan.Blazor.Client.Tests
         {
             // Arrange
             string jsonFile = Path.Combine("./TestData/Shift.json");
-            var service = new LocalFileService<Shift>();
+            var service = new LocalFileService();
             var shift = await service.LoadFileAsSingle(jsonFile);
 
             // Act
@@ -96,7 +95,7 @@ namespace ShiftPlan.Blazor.Client.Tests
             string createFile = Path.Combine("./TestData/create.json");
 
             // Act
-            Func<Task> act = async () => await _sut.SaveFileAsList(new List<Employee>() { new Employee("Test1",1)}, createFile);
+            Func<Task> act = async () => await _sut.SaveFileAsList(TestShifts(), createFile);
 
             // Assert
             await act.Should().NotThrowAsync<FileNotFoundException>();
@@ -109,7 +108,7 @@ namespace ShiftPlan.Blazor.Client.Tests
             string createFile = Path.Combine("./TestData/create.json");
 
             // Act
-            Func<Task> act = async () => await _sut.SaveFileAsSingle(new Employee("Test1", 1), createFile);
+            Func<Task> act = async () => await _sut.SaveFileAsSingle(TestShift(), createFile);
 
             // Assert
             await act.Should().NotThrowAsync<FileNotFoundException>();
@@ -122,7 +121,7 @@ namespace ShiftPlan.Blazor.Client.Tests
             string createFile = Path.Combine("./TestData/");
 
             // Act
-            Func<Task> act = async () => await _sut.SaveFileAsList(new List<Employee>(), createFile);
+            Func<Task> act = async () => await _sut.SaveFileAsList(new List<Shift>(), createFile);
 
             // Assert
             await act.Should().ThrowAsync<FileNotFoundException>();
@@ -135,12 +134,32 @@ namespace ShiftPlan.Blazor.Client.Tests
             string createFile = Path.Combine("./TestData/");
 
             // Act
-            Func<Task> act = async () => await _sut.SaveFileAsSingle(new Employee("",1), createFile);
+            Func<Task> act = async () => await _sut.SaveFileAsSingle(TestShift(), createFile);
 
             // Assert
             await act.Should().ThrowAsync<FileNotFoundException>();
         }
 
+        private Shift TestShift()
+        {
+            return new Shift(
+                    new Employee("Mario", 1),
+                    DateOnly.FromDateTime(DateTime.Now),
+                    new TimeOnly(6, 00),
+                    new TimeOnly(14, 00),
+                    1
+            );
+        }
 
+        private List<Shift> TestShifts()
+        {
+            return new List<Shift>() { new Shift(
+                    new Employee("Mario", 1),
+                    DateOnly.FromDateTime(DateTime.Now),
+                    new TimeOnly(6, 00),
+                    new TimeOnly(14, 00),
+                    1
+            )};
+        }
     }
 }

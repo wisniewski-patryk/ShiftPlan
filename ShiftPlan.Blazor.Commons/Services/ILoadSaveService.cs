@@ -1,10 +1,12 @@
-﻿namespace ShiftPlan.Blazor.Commons.Services
+﻿using ShiftPlan.Blazor.Commons.Models;
+
+namespace ShiftPlan.Blazor.Commons.Services
 {
-	public interface ILoadSaveService<T>
+	public interface ILoadSaveService
 	{
-		Task<IEnumerable<T>> LoadFileAsList(string file);
-		Task<T> LoadFileAsSingle(string file);
-		Task SaveFileAsSingle(T o, string file);
-		Task SaveFileAsList(IList<T> o, string file);
+		Task<IEnumerable<Shift>> LoadFileAsList(string file);
+		Task<Shift> LoadFileAsSingle(string file);
+		Task SaveFileAsSingle(Shift o, string file);
+		Task SaveFileAsList(IList<Shift> o, string file);
 	}
 }
