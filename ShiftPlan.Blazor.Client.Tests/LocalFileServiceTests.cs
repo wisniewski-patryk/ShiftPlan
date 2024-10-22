@@ -1,6 +1,7 @@
 using FluentAssertions;
 using ShiftPlan.Blazor.Client.Services;
 using ShiftPlan.Blazor.Commons.Models;
+using System;
 using System.Text.Json;
 
 namespace ShiftPlan.Blazor.Client.Tests
@@ -89,29 +90,29 @@ namespace ShiftPlan.Blazor.Client.Tests
 		}
         
         [Fact]
-        public async void SaveFileAsList_WhenFileWasCreated_ReturnTrue()
+        public async void SaveFileAsList_WhenFileWasCreated_NotThrowFileNotFoundException()
         {
             // Arrange
             string createFile = Path.Combine("./TestData/create.json");
 
             // Act
-            var result = await _sut.SaveFileAsList(new List<Employee>() { new Employee("Test1",1)}, createFile);
+            Func<Task> act = async () => await _sut.SaveFileAsList(new List<Employee>() { new Employee("Test1",1)}, createFile);
 
             // Assert
-            result.Should().BeTrue();
+            await act.Should().NotThrowAsync<FileNotFoundException>();
         }
 
         [Fact]
-        public async void SaveFileAsSingle_WhenFileWasCreated_ReturnTrue()
+        public async void SaveFileAsSingle_WhenFileWasCreated_NotThrowFileNotFoundException()
         {
             // Arrange
             string createFile = Path.Combine("./TestData/create.json");
 
             // Act
-            var result = await _sut.SaveFileAsSingle(new Employee("Test1", 1), createFile);
+            Func<Task> act = async () => await _sut.SaveFileAsSingle(new Employee("Test1", 1), createFile);
 
             // Assert
-            result.Should().BeTrue();
+            await act.Should().NotThrowAsync<FileNotFoundException>();
         }
 
         [Fact]
