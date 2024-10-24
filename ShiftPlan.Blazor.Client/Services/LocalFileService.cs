@@ -16,11 +16,10 @@ public class LocalFileService : ILoadSaveService
 			try
 			{
 				return await JsonSerializer.DeserializeAsync<IEnumerable<Shift>>(result);
-			}
-			catch { throw new InvalidDataException("Json file is not correct"); }
+			} catch { throw new InvalidDataException("Json file is not correct"); }
 		}
-            throw new FileNotFoundException("Json file does not exists");
-        }
+        throw new FileNotFoundException("Json file does not exists");
+    }
 
 	public async Task<Shift> LoadFileAsSingle(string file)
 	{
@@ -32,11 +31,10 @@ public class LocalFileService : ILoadSaveService
 			try
 			{
 				return await JsonSerializer.DeserializeAsync<Shift>(result);
-			}
-			catch { throw new InvalidDataException("Json file is not correct"); }
+			} catch { throw new InvalidDataException("Json file is not correct"); }
 		}
-            throw new FileNotFoundException("Json file does not exists");
-        }
+        throw new FileNotFoundException("Json file does not exists");
+    }
 
 	public async Task SaveFileAsList(IList<Shift> o, string file)
 	{
@@ -53,7 +51,6 @@ public class LocalFileService : ILoadSaveService
 		{
 			using FileStream createStream = File.Create(file);
 			await JsonSerializer.SerializeAsync(createStream, o);
-		}
-        catch { throw new FileNotFoundException("Json file does not created"); }
+		} catch { throw new FileNotFoundException("Json file does not created"); }
     }
 }
