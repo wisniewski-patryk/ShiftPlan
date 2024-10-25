@@ -1,9 +1,8 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace ShiftPlan.UsersIdentity;
+namespace ShiftPlan.UsersIdentity.Context;
 
-public class IdentityUserContext(DbContextOptions<IdentityUserContext> options) : IdentityDbContext<IdentityUser>(options)
+public class IdentityUserContext(DbContextOptions<IdentityUserContext> options) : IdentityDbContext<Models.User>(options)
 {
 }

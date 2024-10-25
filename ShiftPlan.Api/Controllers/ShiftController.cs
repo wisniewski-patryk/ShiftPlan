@@ -4,33 +4,33 @@ using Microsoft.EntityFrameworkCore;
 using ShiftPlan.Api.Models;
 using ShiftPlan.Api.Repository;
 
-namespace ShiftPlan.Api.Controllers;
-
-[ApiController]
-[Route("api/shifts")]
-public class ShiftController(IRepository<Shift> shiftsRepository) : ControllerBase
+namespace ShiftPlan.Api.Controllers
 {
-	[HttpGet]
-	public ActionResult<IAsyncEnumerable<Shift>> GetAll()
+	[ApiController]
+	[Route("api/shifts")]
+	[Authorize]
+	public class ShiftController(IRepository<Shift> shiftsRepository) : ControllerBase
 	{
-		var shifts = shiftsRepository.GetAll().Include(s => s.Employee);
-		return Ok(shifts);
-	}
+		[HttpGet, AllowAnonymous]
+		public ActionResult<IAsyncEnumerable<Shift>> GetAll()
+		{
+			var shifts = shiftsRepository.GetAll().Include(s => s.Employee);
+			return Ok(shifts);
+		}
 
-	[Authorize]
-	[HttpGet("{id}")]
-	public async Task<ActionResult<Shift>> Get(int id) => Ok(await shiftsRepository.Get(id));
+		[HttpGet("{id}")]
+		public async Task<ActionResult<Shift>> Get(int id) => Ok(await shiftsRepository.Get(id));
 
-	[Authorize]
-	[HttpPost("insertOrUpdate")]
-	public async Task<ActionResult<Shift>> InsertOrUpdate([FromBody] Shift shift) =>
-		Ok(await shiftsRepository.InsertOrUpdate(shift));
+		[HttpPost("insertOrUpdate")]
+		public async Task<ActionResult<Shift>> InsertOrUpdate([FromBody] Shift shift) =>
+			Ok(await shiftsRepository.InsertOrUpdate(shift));
 
-	[Authorize]
-	[HttpDelete("delete")]
-	public async Task<IActionResult> Delete([FromBody] Shift shift) 
-	{
-		await shiftsRepository.Delete(shift);
-		return Ok();
+		[HttpDelete("delete")]
+		public async Task<IActionResult> Delete([FromBody] Shift shift)
+		{
+			var userId = this.User.Claims.FirstOrDefault(c => c.Type == "<id claim type>")?.Value;
+			await shiftsRepository.Delete(shift);
+			return Ok();
+		}
 	}
 }

@@ -1,9 +1,7 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.OpenApi.Models;
 using ShiftPlan.Api.Extensions;
 using ShiftPlan.Api.Repository;
-using ShiftPlan.UsersIdentity;
-using Swashbuckle.AspNetCore.Filters;
+using ShiftPlan.UsersIdentity.Extensions;
+using ShiftPlan.UsersIdentity.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,28 +27,26 @@ var config = builder.Configuration;
 // Add Entity Framework
 var postgresConnectionString = config.GetConnectionString("PostgresqlConnection") ?? throw new NullReferenceException("ConnectionString is null.");
 builder.Services.AddEntityFramework(postgresConnectionString);
-builder.Services.AddScoped(typeof(IRepository<>),typeof(Repository<>));
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // Add User Identity
 builder.Services.AddUserIdentity(postgresConnectionString);
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddSwagger();
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options => {
-	options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-	{
-		In = ParameterLocation.Header,
-		Name = "Authorization",
-		Type = SecuritySchemeType.ApiKey,
-	});
-	options.OperationFilter<SecurityRequirementsOperationFilter>();
-});
 
 var app = builder.Build();
 
+//if (app.Environment.IsDevelopment())
+//{
 app.UseSwagger();
 app.UseSwaggerUI();
-app.MapIdentityApi<IdentityUser>();
+//}
+
+app.MapGroup("api/identity")
+	.WithTags("Identity")
+	.MapIdentityApi<User>();
 
 app.UseHttpsRedirection();
 
@@ -61,9 +57,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 // health / isAlive endpoint
-
-app.Map("/health", appBuilder => 
-	appBuilder.Run(async context => 
+app.Map("/health", appBuilder =>
+	appBuilder.Run(async context =>
 		await context.Response.WriteAsync("Healthy")));
 
 app.Run();
