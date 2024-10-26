@@ -15,15 +15,14 @@ public static class UserIdentityModule
 
 	public static IServiceCollection AddUserIdentity(this IServiceCollection services, string connectionString)
 	{
-		services.AddTransient<IUserContext, UserContext>();
+		services.AddTransient<IUserContextService, UserContextService>();
 		services.AddHttpContextAccessor();
 		services.AddDbContext<IdentityUserContext>(options => options.UseNpgsql(connectionString));
 
 		services.AddAuthorization();
-		services.AddIdentityApiEndpoints<Models.User>()
+		services.AddIdentityApiEndpoints<User>()
 			.AddRoles<IdentityRole>()
-			.AddEntityFrameworkStores<IdentityUserContext>()
-			.AddDefaultTokenProviders();
+			.AddEntityFrameworkStores<IdentityUserContext>();
 
 		services.CreateSuperRootUser();
 

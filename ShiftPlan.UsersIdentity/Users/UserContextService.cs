@@ -3,12 +3,12 @@ using System.Security.Claims;
 
 namespace ShiftPlan.UsersIdentity.Users;
 
-public interface IUserContext
+public interface IUserContextService
 {
 	CurrentUser GetCurrentUser();
 }
 
-public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContext
+public class UserContextService(IHttpContextAccessor httpContextAccessor) : IUserContextService
 {
 	public CurrentUser GetCurrentUser()
 	{

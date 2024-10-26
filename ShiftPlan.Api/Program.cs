@@ -63,4 +63,5 @@ app.Map("/health", appBuilder =>
 
 app.Run();
 
-
+public partial class Program
+{ }
