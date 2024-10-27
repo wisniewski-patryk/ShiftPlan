@@ -52,7 +52,7 @@
 	private void LoadMoreDays()
 	{
 		var lastDate = new DateTime(days.Last().Year, days.Last().Month, days.Last().Day).AddDays(1);
-		for (int i = 0; i < 7; i++)
+		for (int i = 0; i < 14; i++)
 		{
 			days.Add(DateOnly.FromDateTime(lastDate.AddDays(i)));
 		}

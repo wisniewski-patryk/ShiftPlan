@@ -43,6 +43,7 @@
 	[Inject] protected ToastService toastService { get; set; } = new();
 	public List<Employee> employees = [];
 	public List<Shift> shifts = [];
+	public List<Shift> currentShifts = [];
 	public ILoadSaveService jsonservice = new LocalFileService();
 	public string fileJsonSave = Path.Combine(Path.GetTempPath(), "employeeshifts.json");
 
@@ -200,30 +201,57 @@
 		var insertedEmploy = employees.Where(x => x.Name == "Employee1").Select(x => x).FirstOrDefault();
 		if (insertedEmploy != null)
 		{
-			currentShifts = SeedShifts(insertedEmploy, ShiftType.First);
+			currentShifts.AddRange(SeedShifts(insertedEmploy, ShiftType.First, 1));
+			currentShifts.AddRange(SeedShifts(insertedEmploy, ShiftType.Second, 2));
+			currentShifts.AddRange(SeedShifts(insertedEmploy, ShiftType.Third, 3));
 		}
 
-		insertedEmploy = employees.Where(x => x.Name == "Employee2").Select(x => x).FirstOrDefault();
-		if (insertedEmploy != null)
+		var insertedEmploy2 = employees.Where(x => x.Name == "Employee2").Select(x => x).FirstOrDefault();
+		if (insertedEmploy2 != null)
 		{
-			currentShifts.AddRange(SeedShifts(insertedEmploy, ShiftType.Second));			
+			currentShifts.AddRange(SeedShifts(insertedEmploy2, ShiftType.First, 3));
+			currentShifts.AddRange(SeedShifts(insertedEmploy2, ShiftType.Second, 1));
+			currentShifts.AddRange(SeedShifts(insertedEmploy2, ShiftType.Third, 2));
 		}
+
 		results = new LocalShiftsAndEmployees(employees, currentShifts);
 		return results;
 	}
 
-	private List<Shift> SeedShifts(Employee employee, ShiftType shiftType)
+	private List<Shift> SeedShifts(Employee employee, ShiftType shiftType, int week)
 	{
 		var startTime = GetShiftType(shiftType).Item1;
 		var endTime = GetShiftType(shiftType).Item2;
-		var currentShifts = new List<Shift>();
-		int daysToFill = 12;//only fill in from monday to friday
+		//only fill in from monday to friday
 		DateTime moveDay = DateTime.Today;
-		for (int i = 0; i < daysToFill; i++)
+		if (week == 1)
 		{
-			moveDay = moveDay.AddDays(1);
-			if (moveDay.DayOfWeek != DayOfWeek.Saturday && moveDay.DayOfWeek != DayOfWeek.Sunday)
-				currentShifts.Add(new Shift(employee, DateOnly.FromDateTime(moveDay), startTime, endTime, 0));
+			for (int i = 0; i < 6; i++)
+			{
+				moveDay = moveDay.AddDays(1);
+				if (moveDay.DayOfWeek != DayOfWeek.Saturday && moveDay.DayOfWeek != DayOfWeek.Sunday)
+					currentShifts.Add(new Shift(employee, DateOnly.FromDateTime(moveDay), startTime, endTime, 0));
+			}
+		}
+		if (week == 2)
+		{
+			moveDay = moveDay.AddDays(7);
+			for (int i = 0; i < 6; i++)
+			{
+				moveDay = moveDay.AddDays(1);
+				if (moveDay.DayOfWeek != DayOfWeek.Saturday && moveDay.DayOfWeek != DayOfWeek.Sunday)
+					currentShifts.Add(new Shift(employee, DateOnly.FromDateTime(moveDay), startTime, endTime, 0));
+			}
+		}
+		if (week == 3)
+		{
+			moveDay = moveDay.AddDays(14);
+			for (int i = 0; i < 6; i++)
+			{
+				moveDay = moveDay.AddDays(1);
+				if (moveDay.DayOfWeek != DayOfWeek.Saturday && moveDay.DayOfWeek != DayOfWeek.Sunday)
+					currentShifts.Add(new Shift(employee, DateOnly.FromDateTime(moveDay), startTime, endTime, 0));
+			}
 		}
 		return currentShifts;
 	}
