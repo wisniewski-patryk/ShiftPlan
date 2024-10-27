@@ -234,13 +234,13 @@
 				var lastDay = System.Linq.Enumerable.Range(0, 6)
 						.Select(i => currentDay.AddDays(i))
 						.Last(day => day.DayOfWeek == DayOfWeek.Friday);
-				var firstShift = new Shift(employee, DateOnly.FromDateTime(currentDay), startTime, endTime, 0);
-				currentShifts.Add(firstShift);
+				var currentShift = new Shift(employee, DateOnly.FromDateTime(currentDay), startTime, endTime, 0);
+				currentShifts.Add(currentShift);
 				while (currentDay != lastDay)
 				{
 					currentDay = currentDay.AddDays(1);
-					var firstShift2 = new Shift(employee, DateOnly.FromDateTime(currentDay), startTime, endTime, 0);
-					currentShifts.Add(firstShift2);
+					var currentShift2 = new Shift(employee, DateOnly.FromDateTime(currentDay), startTime, endTime, 0);
+					currentShifts.Add(currentShift2);
 				};
 			}
 		}
