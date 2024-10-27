@@ -200,20 +200,22 @@
 		var insertedEmploy = employees.Where(x => x.Name == "Employee1").Select(x => x).FirstOrDefault();
 		if (insertedEmploy != null)
 		{
-			currentShifts = SeedShifts(insertedEmploy, "6:00:00","14:00:00");
+			currentShifts = SeedShifts(insertedEmploy, ShiftType.First);
 		}
 
 		insertedEmploy = employees.Where(x => x.Name == "Employee2").Select(x => x).FirstOrDefault();
 		if (insertedEmploy != null)
 		{
-			currentShifts.AddRange(SeedShifts(insertedEmploy, "14:00:00", "22:00:00"));			
+			currentShifts.AddRange(SeedShifts(insertedEmploy, ShiftType.Second));			
 		}
 		results = new LocalShiftsAndEmployees(employees, currentShifts);
 		return results;
 	}
 
-	private List<Shift> SeedShifts(Employee employee, string startTime, string endTime)
+	private List<Shift> SeedShifts(Employee employee, ShiftType shiftType)
 	{
+		var startTime = GetShiftType(shiftType).Item1;
+		var endTime = GetShiftType(shiftType).Item2;
 		var currentShifts = new List<Shift>();
 		int weekToFill = 1;//only one week is fill in from monday to friday
 		for (int i = 0; i < weekToFill; i++)
@@ -232,12 +234,12 @@
 				var lastDay = System.Linq.Enumerable.Range(0, 6)
 						.Select(i => currentDay.AddDays(i))
 						.Last(day => day.DayOfWeek == DayOfWeek.Friday);
-				var firstShift = new Shift(employee, DateOnly.FromDateTime(currentDay), TimeOnly.Parse(startTime), TimeOnly.Parse(endTime), 0);
+				var firstShift = new Shift(employee, DateOnly.FromDateTime(currentDay), startTime, endTime, 0);
 				currentShifts.Add(firstShift);
 				while (currentDay != lastDay)
 				{
 					currentDay = currentDay.AddDays(1);
-					var firstShift2 = new Shift(employee, DateOnly.FromDateTime(currentDay), TimeOnly.Parse(startTime), TimeOnly.Parse(endTime), 0);
+					var firstShift2 = new Shift(employee, DateOnly.FromDateTime(currentDay), startTime, endTime, 0);
 					currentShifts.Add(firstShift2);
 				};
 			}
@@ -245,4 +247,22 @@
 		return currentShifts;
 	}
 
+	private (TimeOnly, TimeOnly) GetShiftType(ShiftType shiftType)
+	{
+		var newStart = shiftType switch
+		{
+			ShiftType.First => new TimeOnly(6, 0),
+			ShiftType.Second => new TimeOnly(14, 0),
+			ShiftType.Third => new TimeOnly(22, 0),
+			_ => new TimeOnly(0, 0)
+		};
+		var newEnd = shiftType switch
+		{
+			ShiftType.First => new TimeOnly(14, 0),
+			ShiftType.Second => new TimeOnly(22, 0),
+			ShiftType.Third => new TimeOnly(6, 0),
+			_ => new TimeOnly(0, 0)
+		};
+		return (newStart, newEnd);
+	}
 }
