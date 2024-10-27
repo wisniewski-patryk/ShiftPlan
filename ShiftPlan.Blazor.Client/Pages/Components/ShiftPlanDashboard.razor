@@ -158,7 +158,7 @@
 
 	private async Task LoadEmployeeShifts()
 	{
-		var getEmployeeAndShifts = await jsonservice.LoadLocalFileAsSingle(fileJsonSave) as LocalShiftsAndEmployees;
+		var getEmployeeAndShifts = await jsonservice.LoadLocalFile(fileJsonSave) as LocalShiftsAndEmployees;
 		if (getEmployeeAndShifts != null)
 		{
 			employees = getEmployeeAndShifts.Employees;
@@ -176,11 +176,11 @@
 	{
 		if (shifts.Count() == 0)
 		{
-			await jsonservice.SaveLocalFileAsSingle(SeedData(), fileJsonSave);
+			await jsonservice.SaveLocalFile(SeedData(), fileJsonSave);
 		}
 		else
 		{
-			await jsonservice.SaveLocalFileAsSingle(new LocalShiftsAndEmployees(employees, shifts), fileJsonSave);
+			await jsonservice.SaveLocalFile(new LocalShiftsAndEmployees(employees, shifts), fileJsonSave);
 		}
 		if (File.Exists(fileJsonSave))
 		{
