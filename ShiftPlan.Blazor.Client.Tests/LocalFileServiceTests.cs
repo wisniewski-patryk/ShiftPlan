@@ -169,9 +169,9 @@ namespace ShiftPlan.Blazor.Client.Tests
 			await act.Should().NotThrowAsync<FileNotFoundException>();
 		}
 
-		private LocalDataObject TestEmployeeShifts()
+		private LocalShiftsAndEmployees TestEmployeeShifts()
 		{
-			return new LocalDataObject(
+			return new LocalShiftsAndEmployees(
 					new List<Employee> { new Employee("Mario", 1) },
 					new List<Shift> { new Shift(new Employee("Mario", 1), DateOnly.FromDateTime(DateTime.Now), new TimeOnly(6, 00), new TimeOnly(14, 00), 1) }
 				);

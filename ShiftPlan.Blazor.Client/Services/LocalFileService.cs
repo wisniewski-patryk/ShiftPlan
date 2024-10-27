@@ -54,7 +54,7 @@ public class LocalFileService : ILoadSaveService
 		} catch { throw new FileNotFoundException("Json file does not created"); }
     }
 
-	public async Task<LocalDataObject> LoadLocalFileAsSingle(string file)
+	public async Task<LocalShiftsAndEmployees> LoadLocalFileAsSingle(string file)
 	{
 		if (File.Exists(file))
 		{
@@ -63,14 +63,14 @@ public class LocalFileService : ILoadSaveService
 				throw new JsonException("Json file is empty");
 			try
 			{
-				return await JsonSerializer.DeserializeAsync<LocalDataObject>(result);
+				return await JsonSerializer.DeserializeAsync<LocalShiftsAndEmployees>(result);
 			}
 			catch { throw new InvalidDataException("Json file is not correct"); }
 		}
 		throw new FileNotFoundException("Json file does not exists");
 	}
 
-	public async Task SaveLocalFileAsSingle(LocalDataObject o, string file)
+	public async Task SaveLocalFileAsSingle(LocalShiftsAndEmployees o, string file)
 	{
 		try
 		{

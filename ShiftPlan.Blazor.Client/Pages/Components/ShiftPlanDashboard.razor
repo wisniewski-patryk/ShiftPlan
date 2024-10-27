@@ -158,7 +158,7 @@
 
 	private async Task LoadEmployeeShifts()
 	{
-		var getEmployeeAndShifts = await jsonservice.LoadLocalFileAsSingle(fileJsonSave) as LocalDataObject;
+		var getEmployeeAndShifts = await jsonservice.LoadLocalFileAsSingle(fileJsonSave) as LocalShiftsAndEmployees;
 		if (getEmployeeAndShifts != null)
 		{
 			employees = getEmployeeAndShifts.Employees;
@@ -180,7 +180,7 @@
 		}
 		else
 		{
-			await jsonservice.SaveLocalFileAsSingle(new LocalDataObject(employees, shifts), fileJsonSave);
+			await jsonservice.SaveLocalFileAsSingle(new LocalShiftsAndEmployees(employees, shifts), fileJsonSave);
 		}
 		if (File.Exists(fileJsonSave))
 		{
@@ -190,9 +190,9 @@
 		toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not created : {fileJsonSave}"));
 	}
 
-	private LocalDataObject SeedData()
+	private LocalShiftsAndEmployees SeedData()
 	{
-		var results = new LocalDataObject(new List<Employee>(), new List<Shift>());
+		var results = new LocalShiftsAndEmployees(new List<Employee>(), new List<Shift>());
 		var employees = new List<Employee> { new Employee("Employee1", 1),
 									 new Employee("Employee2", 2),
 									 new Employee("Employee3", 3)};
@@ -208,7 +208,7 @@
 		{
 			currentShifts.AddRange(SeedShifts(insertedEmploy, "14:00:00", "22:00:00"));			
 		}
-		results = new LocalDataObject(employees, currentShifts);
+		results = new LocalShiftsAndEmployees(employees, currentShifts);
 		return results;
 	}
 

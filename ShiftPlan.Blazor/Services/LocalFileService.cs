@@ -15,7 +15,7 @@ public class LocalFileService : ILoadSaveService
 		throw new NotSupportedException("Supported only in client side application");
 	}
 
-	public Task<LocalDataObject> LoadLocalFileAsSingle(string file)
+	public Task<LocalShiftsAndEmployees> LoadLocalFileAsSingle(string file)
 	{
 		throw new NotImplementedException();
 	}
@@ -30,7 +30,7 @@ public class LocalFileService : ILoadSaveService
 		throw new NotSupportedException("Supported only in client side application");
 	}
 
-	public Task SaveLocalFileAsSingle(LocalDataObject o, string file)
+	public Task SaveLocalFileAsSingle(LocalShiftsAndEmployees o, string file)
 	{
 		throw new NotImplementedException();
 	}
