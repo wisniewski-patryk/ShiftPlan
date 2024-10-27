@@ -51,7 +51,9 @@
 		var offlineMode = configuration.GetSection("OfflineMode").Value;
 		bool.TryParse(offlineMode, out bool isOfflineModeEnabled);
 		if (isOfflineModeEnabled)
+		{
 			await SaveEmployeeShifts();
+		}
 
 		await TryGetEmployees();
 		await TryGetShifts();
@@ -174,7 +176,7 @@
 	{
 		if (shifts.Count() == 0)
 		{
-			await jsonservice.SaveLocalFileAsSingle(EmployeeShiftsSeedData(), fileJsonSave);
+			await jsonservice.SaveLocalFileAsSingle(SeedData(), fileJsonSave);
 		}
 		else
 		{
@@ -188,15 +190,59 @@
 		toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not created : {fileJsonSave}"));
 	}
 
-	private LocalDataObject EmployeeShiftsSeedData()
+	private LocalDataObject SeedData()
 	{
-		return new LocalDataObject(
-				new List<Employee> { new Employee("Employee1", 1),
+		var results = new LocalDataObject(new List<Employee>(), new List<Shift>());
+		var employees = new List<Employee> { new Employee("Employee1", 1),
 									 new Employee("Employee2", 2),
-									 new Employee("Employee3", 3)},
-				new List<Shift> { new Shift(new Employee("Employee1", 1), DateOnly.FromDateTime(DateTime.Now), new TimeOnly(6, 00), new TimeOnly(14, 00), 1),
-								  new Shift(new Employee("Employee2", 2), DateOnly.FromDateTime(DateTime.Now), new TimeOnly(14, 00), new TimeOnly(22, 00), 1)}
-			);
+									 new Employee("Employee3", 3)};
+		var currentShifts = new List<Shift>();
+		var insertedEmploy = employees.Where(x => x.Name == "Employee1").Select(x => x).FirstOrDefault();
+		if (insertedEmploy != null)
+		{
+			currentShifts = SeedShifts(insertedEmploy, "6:00:00","14:00:00");
+		}
+
+		insertedEmploy = employees.Where(x => x.Name == "Employee2").Select(x => x).FirstOrDefault();
+		if (insertedEmploy != null)
+		{
+			currentShifts.AddRange(SeedShifts(insertedEmploy, "14:00:00", "22:00:00"));			
+		}
+		results = new LocalDataObject(employees, currentShifts);
+		return results;
+	}
+
+	private List<Shift> SeedShifts(Employee employee, string startTime, string endTime)
+	{
+		var currentShifts = new List<Shift>();
+		int weekToFill = 1;//only one week is fill in from monday to friday
+		for (int i = 0; i < weekToFill; i++)
+		{
+			if (i == 0)
+			{
+				DateTime currentDay = DateTime.Today;
+				if (currentDay.DayOfWeek == DayOfWeek.Sunday)
+				{
+					currentDay = currentDay.AddDays(1);
+				}
+				if (currentDay.DayOfWeek == DayOfWeek.Saturday)
+				{
+					currentDay = currentDay.AddDays(2);
+				}
+				var lastDay = System.Linq.Enumerable.Range(0, 6)
+						.Select(i => currentDay.AddDays(i))
+						.Last(day => day.DayOfWeek == DayOfWeek.Friday);
+				var firstShift = new Shift(employee, DateOnly.FromDateTime(currentDay), TimeOnly.Parse(startTime), TimeOnly.Parse(endTime), 0);
+				currentShifts.Add(firstShift);
+				while (currentDay != lastDay)
+				{
+					currentDay = currentDay.AddDays(1);
+					var firstShift2 = new Shift(employee, DateOnly.FromDateTime(currentDay), TimeOnly.Parse(startTime), TimeOnly.Parse(endTime), 0);
+					currentShifts.Add(firstShift2);
+				};
+			}
+		}
+		return currentShifts;
 	}
 
 }
