@@ -41,11 +41,10 @@
 
 @code {
 	[Inject] protected ToastService toastService { get; set; } = new();
-	private bool isOfflineModeEnabled = false;
 	public List<Employee> employees = [];
 	public List<Shift> shifts = [];
 	public ILoadSaveService jsonservice = new LocalFileService();
-	public string fileJsonSave = Path.Combine(Path.GetTempPath(), "shifts.json");
+	public string fileJsonSave = Path.Combine(Path.GetTempPath(), "employeeshifts.json");
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -173,7 +172,14 @@
 
 	private async Task SaveEmployeeShifts()
 	{
-		await jsonservice.SaveLocalFileAsSingle(EmployeeShiftsSeedData(), fileJsonSave);
+		if (shifts.Count() == 0)
+		{
+			await jsonservice.SaveLocalFileAsSingle(EmployeeShiftsSeedData(), fileJsonSave);
+		}
+		else
+		{
+			await jsonservice.SaveLocalFileAsSingle(new LocalDataObject(employees, shifts), fileJsonSave);
+		}
 		if (File.Exists(fileJsonSave))
 		{
 			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created : {fileJsonSave}"));
