@@ -15,7 +15,23 @@ namespace ShiftPlan.Blazor.Client.Tests
             _sut = new LocalFileService();
         }
 
-        [Theory]
+		[Theory]
+		[InlineData(1, "Mario")]
+		public async void LoadLocalFileAsList_WhenEmploeeNameAreProperly_ReturnTrue(int id, string expectedName)
+		{
+			// Arrange
+			string jsonEmployeeShiftsFile = Path.Combine("./TestData/employeeshifts.json");
+			var employeeshifts = await _sut.LoadLocalFileAsSingle(jsonEmployeeShiftsFile);
+
+			// Act
+			var result = employeeshifts.Employees.Where(e => e.Id == id).Select(e => e.Name).FirstOrDefault();
+
+			// Assert
+			result.Should().Be(expectedName);
+			result.Should().NotBeNull();
+		}
+
+		[Theory]
         [InlineData(1, "Test1")]
         [InlineData(2, "Test2")]
         public async void LoadFileAsList_WhenEmploeeNamesAreProperly_ReturnTrue(int id, string expectedName)
@@ -140,7 +156,28 @@ namespace ShiftPlan.Blazor.Client.Tests
             await act.Should().ThrowAsync<FileNotFoundException>();
         }
 
-        private Shift TestShift()
+		[Fact]
+		public async void SaveLocalFileAsSingle_WhenFileWasCorrectCreated_NotThrowFileNotFoundException()
+		{
+			// Arrange
+			string createFile = Path.Combine("./TestData/employeeshifts.json");
+
+			// Act
+			Func<Task> act = async () => await _sut.SaveLocalFileAsSingle(TestEmployeeShifts(), createFile);
+
+			// Assert
+			await act.Should().NotThrowAsync<FileNotFoundException>();
+		}
+
+		private LocalDataObject TestEmployeeShifts()
+		{
+			return new LocalDataObject(
+					new List<Employee> { new Employee("Mario", 1) },
+					new List<Shift> { new Shift(new Employee("Mario", 1), DateOnly.FromDateTime(DateTime.Now), new TimeOnly(6, 00), new TimeOnly(14, 00), 1) }
+				);
+		}
+
+		private Shift TestShift()
         {
             return new Shift(
                     new Employee("Mario", 1),

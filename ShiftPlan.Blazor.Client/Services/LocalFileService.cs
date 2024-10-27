@@ -53,4 +53,30 @@ public class LocalFileService : ILoadSaveService
 			await JsonSerializer.SerializeAsync(createStream, o);
 		} catch { throw new FileNotFoundException("Json file does not created"); }
     }
+
+	public async Task<LocalDataObject> LoadLocalFileAsSingle(string file)
+	{
+		if (File.Exists(file))
+		{
+			using FileStream result = File.OpenRead(file);
+			if (result.Length == 0)
+				throw new JsonException("Json file is empty");
+			try
+			{
+				return await JsonSerializer.DeserializeAsync<LocalDataObject>(result);
+			}
+			catch { throw new InvalidDataException("Json file is not correct"); }
+		}
+		throw new FileNotFoundException("Json file does not exists");
+	}
+
+	public async Task SaveLocalFileAsSingle(LocalDataObject o, string file)
+	{
+		try
+		{
+			using FileStream createStream = File.Create(file);
+			await JsonSerializer.SerializeAsync(createStream, o);
+		}
+		catch { throw new FileNotFoundException("Json file does not created"); }
+	}
 }
