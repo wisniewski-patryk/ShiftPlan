@@ -217,32 +217,13 @@
 		var startTime = GetShiftType(shiftType).Item1;
 		var endTime = GetShiftType(shiftType).Item2;
 		var currentShifts = new List<Shift>();
-		int weekToFill = 1;//only one week is fill in from monday to friday
-		for (int i = 0; i < weekToFill; i++)
+		int daysToFill = 12;//only fill in from monday to friday
+		DateTime moveDay = DateTime.Today;
+		for (int i = 0; i < daysToFill; i++)
 		{
-			if (i == 0)
-			{
-				DateTime currentDay = DateTime.Today;
-				if (currentDay.DayOfWeek == DayOfWeek.Sunday)
-				{
-					currentDay = currentDay.AddDays(1);
-				}
-				if (currentDay.DayOfWeek == DayOfWeek.Saturday)
-				{
-					currentDay = currentDay.AddDays(2);
-				}
-				var lastDay = System.Linq.Enumerable.Range(0, 6)
-						.Select(i => currentDay.AddDays(i))
-						.Last(day => day.DayOfWeek == DayOfWeek.Friday);
-				var currentShift = new Shift(employee, DateOnly.FromDateTime(currentDay), startTime, endTime, 0);
-				currentShifts.Add(currentShift);
-				while (currentDay != lastDay)
-				{
-					currentDay = currentDay.AddDays(1);
-					var currentShift2 = new Shift(employee, DateOnly.FromDateTime(currentDay), startTime, endTime, 0);
-					currentShifts.Add(currentShift2);
-				};
-			}
+			moveDay = moveDay.AddDays(1);
+			if (moveDay.DayOfWeek != DayOfWeek.Saturday && moveDay.DayOfWeek != DayOfWeek.Sunday)
+				currentShifts.Add(new Shift(employee, DateOnly.FromDateTime(moveDay), startTime, endTime, 0));
 		}
 		return currentShifts;
 	}
