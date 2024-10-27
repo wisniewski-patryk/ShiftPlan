@@ -16,10 +16,11 @@
 
 @{
 	var offlineMode = configuration.GetSection("OfflineMode").Value;
-	if (offlineMode == "True")
+	bool.TryParse(offlineMode, out bool isOfflineModeEnabled);
+	if (isOfflineModeEnabled)
 	{
-		<Button Color="ButtonColor.Primary" @onclick="LoadShifts">Load shifts</Button>
-		<Button Color="ButtonColor.Primary" @onclick="SaveShifts">Save shifts</Button>
+		<Button Color="ButtonColor.Primary" @onclick="LoadEmployeeShifts">Load shifts</Button>
+		<Button Color="ButtonColor.Primary" @onclick="SaveEmployeeShifts">Save shifts</Button>
 	}
 }
 
@@ -40,7 +41,7 @@
 
 @code {
 	[Inject] protected ToastService toastService { get; set; } = new();
-
+	private bool isOfflineModeEnabled = false;
 	public List<Employee> employees = [];
 	public List<Shift> shifts = [];
 	public ILoadSaveService jsonservice = new LocalFileService();
@@ -48,6 +49,11 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+		var offlineMode = configuration.GetSection("OfflineMode").Value;
+		bool.TryParse(offlineMode, out bool isOfflineModeEnabled);
+		if (isOfflineModeEnabled)
+			await SaveEmployeeShifts();
+
 		await TryGetEmployees();
 		await TryGetShifts();
 
@@ -149,11 +155,14 @@
 		}
 	}
 
-	private async Task LoadShifts()
+	private async Task LoadEmployeeShifts()
 	{
-		var getShifts = await jsonservice.LoadFileAsList(fileJsonSave) as List<Shift>;
-		if (getShifts != null)
-			getShifts.ForEach(x=> Console.WriteLine($"{x.Employee.Name} {x.Date} {x.Start} {x.End}"));
+		var getEmployeeAndShifts = await jsonservice.LoadLocalFileAsSingle(fileJsonSave) as LocalDataObject;
+		if (getEmployeeAndShifts != null)
+		{
+			employees = getEmployeeAndShifts.Employees;
+			shifts = getEmployeeAndShifts.Shifts;
+		}
 		if (File.Exists(fileJsonSave))
 		{
 			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created : {fileJsonSave}"));
@@ -162,10 +171,9 @@
 		toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not created : {fileJsonSave}"));
 	}
 
-	private async Task SaveShifts()
+	private async Task SaveEmployeeShifts()
 	{
-		if (shifts.Count() > 0)
-			await jsonservice.SaveFileAsList(shifts, fileJsonSave);
+		await jsonservice.SaveLocalFileAsSingle(EmployeeShiftsSeedData(), fileJsonSave);
 		if (File.Exists(fileJsonSave))
 		{
 			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created : {fileJsonSave}"));
@@ -173,4 +181,16 @@
 		}
 		toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not created : {fileJsonSave}"));
 	}
+
+	private LocalDataObject EmployeeShiftsSeedData()
+	{
+		return new LocalDataObject(
+				new List<Employee> { new Employee("Employee1", 1),
+									 new Employee("Employee2", 2),
+									 new Employee("Employee3", 3)},
+				new List<Shift> { new Shift(new Employee("Employee1", 1), DateOnly.FromDateTime(DateTime.Now), new TimeOnly(6, 00), new TimeOnly(14, 00), 1),
+								  new Shift(new Employee("Employee2", 2), DateOnly.FromDateTime(DateTime.Now), new TimeOnly(14, 00), new TimeOnly(22, 00), 1)}
+			);
+	}
+
 }

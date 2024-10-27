@@ -8,5 +8,7 @@ namespace ShiftPlan.Blazor.Commons.Services
 		Task<Shift> LoadFileAsSingle(string file);
 		Task SaveFileAsSingle(Shift o, string file);
 		Task SaveFileAsList(IList<Shift> o, string file);
+		Task SaveLocalFileAsSingle(LocalDataObject o, string file);
+		Task<LocalDataObject> LoadLocalFileAsSingle(string file);
 	}
 }
