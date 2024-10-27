@@ -196,7 +196,8 @@
 		var results = new LocalShiftsAndEmployees(new List<Employee>(), new List<Shift>());
 		var employees = new List<Employee> { new Employee("Employee1", 1),
 									 new Employee("Employee2", 2),
-									 new Employee("Employee3", 3)};
+									 new Employee("Employee3", 3),
+									 new Employee("Employee4", 4)};
 		var currentShifts = new List<Shift>();
 		var insertedEmploy = employees.Where(x => x.Name == "Employee1").Select(x => x).FirstOrDefault();
 		if (insertedEmploy != null)
@@ -212,6 +213,14 @@
 			currentShifts.AddRange(SeedShifts(insertedEmploy2, ShiftType.First, 3));
 			currentShifts.AddRange(SeedShifts(insertedEmploy2, ShiftType.Second, 1));
 			currentShifts.AddRange(SeedShifts(insertedEmploy2, ShiftType.Third, 2));
+		}
+
+		var insertedEmploy3 = employees.Where(x => x.Name == "Employee3").Select(x => x).FirstOrDefault();
+		if (insertedEmploy3 != null)
+		{
+			currentShifts.AddRange(SeedShifts(insertedEmploy3, ShiftType.First, 2));
+			currentShifts.AddRange(SeedShifts(insertedEmploy3, ShiftType.Second, 3));
+			currentShifts.AddRange(SeedShifts(insertedEmploy3, ShiftType.Third, 1));
 		}
 
 		results = new LocalShiftsAndEmployees(employees, currentShifts);
