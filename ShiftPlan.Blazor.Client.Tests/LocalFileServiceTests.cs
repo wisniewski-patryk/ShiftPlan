@@ -3,105 +3,104 @@ using ShiftPlan.Blazor.Client.Services;
 using ShiftPlan.Blazor.Commons.Models;
 using System.Text.Json;
 
-namespace ShiftPlan.Blazor.Client.Tests
+namespace ShiftPlan.Blazor.Client.Tests;
+
+public class LocalFileServiceTests
 {
-    public class LocalFileServiceTests
-    {
-	
-		private LocalFileService _sut { get; }
 
-        public LocalFileServiceTests()
-        {
-            _sut = new LocalFileService();
-        }
+	private LocalFileService _sut { get; }
 
-		[Theory]
-		[InlineData(1, "Test1")]
-		public async void LoadLocalFile_WhenEmploeeNameAreProperly_ReturnTrue(int id, string expectedName)
-		{
-			// Arrange
-			string jsonEmployeeShiftsFile = Path.Combine("./TestData/employeeshifts.json");
-			var employeeshifts = await _sut.LoadLocalFile(jsonEmployeeShiftsFile);
+	public LocalFileServiceTests()
+	{
+		_sut = new LocalFileService();
+	}
 
-			// Act
-			var result = employeeshifts.Employees.Where(e => e.Id == id).Select(e => e.Name).FirstOrDefault();
+	[Theory]
+	[InlineData(1, "Test1")]
+	public async void LoadLocalFile_WhenEmploeeNameAreProperly_ReturnTrue(int id, string expectedName)
+	{
+		// Arrange
+		string jsonEmployeeShiftsFile = Path.Combine("./TestData/employeeshifts.json");
+		var employeeshifts = await _sut.LoadLocalFile(jsonEmployeeShiftsFile);
 
-			// Assert
-			result.Should().Be(expectedName);
-			result.Should().NotBeNull();
-		}
+		// Act
+		var result = employeeshifts.Employees.Where(e => e.Id == id).Select(e => e.Name).FirstOrDefault();
 
-        [Fact]
-        public async void LoadLocalFile_WhenFileNotExist_ReturnFileNotFoundException()
-        {
-			// Arrange
-			string notExistFile = Path.Combine("./TestData/notExist.json");
+		// Assert
+		result.Should().Be(expectedName);
+		result.Should().NotBeNull();
+	}
 
-			// Act
-			Func<Task> act = async () => await _sut.LoadLocalFile(notExistFile);
+	[Fact]
+	public async void LoadLocalFile_WhenFileNotExist_ReturnFileNotFoundException()
+	{
+		// Arrange
+		string notExistFile = Path.Combine("./TestData/notExist.json");
 
-            // Assert
-            await act.Should().ThrowAsync<FileNotFoundException>();
-        }
+		// Act
+		Func<Task> act = async () => await _sut.LoadLocalFile(notExistFile);
 
-		[Fact]
-		public async void LoadLocalFile_WhenEmptyFile_ReturnJsonException()
-		{
-			// Arrange
-			string emptyFile = Path.Combine("./TestData/Empty.json");
+		// Assert
+		await act.Should().ThrowAsync<FileNotFoundException>();
+	}
 
-			// Act
-			Func<Task> act = async () => await _sut.LoadLocalFile(emptyFile);
+	[Fact]
+	public async void LoadLocalFile_WhenEmptyFile_ReturnJsonException()
+	{
+		// Arrange
+		string emptyFile = Path.Combine("./TestData/Empty.json");
 
-			// Assert
-			await act.Should().ThrowAsync<JsonException>();
-		}
+		// Act
+		Func<Task> act = async () => await _sut.LoadLocalFile(emptyFile);
 
-		[Fact]
-		public async void LoadLocalFile_WhenNotCorrectFile_ReturnInvalidDataException()
-		{
-			// Arrange
-			string jsonShiftFile = Path.Combine("./TestData/Shifts.json");
+		// Assert
+		await act.Should().ThrowAsync<JsonException>();
+	}
 
-			// Act
-			Func<Task> act = async () => await _sut.LoadLocalFile(jsonShiftFile);
+	[Fact]
+	public async void LoadLocalFile_WhenNotCorrectFile_ReturnInvalidDataException()
+	{
+		// Arrange
+		string jsonShiftFile = Path.Combine("./TestData/Shifts.json");
 
-			// Assert
-			await act.Should().ThrowAsync<InvalidDataException>();
-		}
-        
-        [Fact]
-        public async void SaveLocalFile_WhenFileWasCreated_NotThrowFileNotFoundException()
-        {
-            // Arrange
-            string createFile = Path.Combine("./TestData/create.json");
+		// Act
+		Func<Task> act = async () => await _sut.LoadLocalFile(jsonShiftFile);
 
-            // Act
-            Func<Task> act = async () => await _sut.SaveLocalFile(TestEmployeeShifts(), createFile);
+		// Assert
+		await act.Should().ThrowAsync<InvalidDataException>();
+	}
 
-            // Assert
-            await act.Should().NotThrowAsync<FileNotFoundException>();
-        }
+	[Fact]
+	public async void SaveLocalFile_WhenFileWasCreated_NotThrowFileNotFoundException()
+	{
+		// Arrange
+		string createFile = Path.Combine("./TestData/create.json");
 
-        [Fact]
-        public async void SaveLocalFile_WhenFileWasNotCreated_ReturnThrowFileNotFoundException()
-        {
-            // Arrange
-            string createFile = Path.Combine("./TestData/");
+		// Act
+		Func<Task> act = async () => await _sut.SaveLocalFile(TestEmployeeShifts(), createFile);
 
-            // Act
-            Func<Task> act = async () => await _sut.SaveLocalFile(new LocalShiftsAndEmployees(new(),new()), createFile);
+		// Assert
+		await act.Should().NotThrowAsync<FileNotFoundException>();
+	}
 
-            // Assert
-            await act.Should().ThrowAsync<FileNotFoundException>();
-        }
+	[Fact]
+	public async void SaveLocalFile_WhenFileWasNotCreated_ReturnThrowFileNotFoundException()
+	{
+		// Arrange
+		string createFile = Path.Combine("./TestData/");
 
-		private LocalShiftsAndEmployees TestEmployeeShifts()
-		{
-			return new LocalShiftsAndEmployees(
-					new List<Employee> { new Employee("Test1", 1) },
-					new List<Shift> { new Shift(new Employee("Test1", 1), DateOnly.FromDateTime(DateTime.Now), new TimeOnly(6, 00), new TimeOnly(14, 00), 1) }
-				);
-		}
-    }
+		// Act
+		Func<Task> act = async () => await _sut.SaveLocalFile(new LocalShiftsAndEmployees(new(), new()), createFile);
+
+		// Assert
+		await act.Should().ThrowAsync<FileNotFoundException>();
+	}
+
+	private LocalShiftsAndEmployees TestEmployeeShifts()
+	{
+		return new LocalShiftsAndEmployees(
+				new List<Employee> { new Employee("Test1", 1) },
+				new List<Shift> { new Shift(new Employee("Test1", 1), DateOnly.FromDateTime(DateTime.Now), new TimeOnly(6, 00), new TimeOnly(14, 00), 1) }
+			);
+	}
 }

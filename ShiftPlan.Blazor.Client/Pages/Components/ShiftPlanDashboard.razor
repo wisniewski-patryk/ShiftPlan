@@ -43,7 +43,6 @@
 	[Inject] protected ToastService toastService { get; set; } = new();
 	public List<Employee> employees = [];
 	public List<Shift> shifts = [];
-	public List<Shift> currentShifts = [];
 	public ILoadSaveService jsonservice = new LocalFileService();
 	public string fileJsonSave = Path.Combine(Path.GetTempPath(), "employeeshifts.json");
 
@@ -161,7 +160,7 @@
 		}
 		if (File.Exists(fileJsonSave))
 		{
-			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"Data was loaded from : {fileJsonSave}"));
+			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"Data was loaded from: {fileJsonSave}"));
 		}
 	}
 
@@ -170,7 +169,7 @@
 		await jsonservice.SaveLocalFile(new LocalShiftsAndEmployees(employees, shifts), fileJsonSave);
 		if (File.Exists(fileJsonSave))
 		{
-			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created : {fileJsonSave}"));
+			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created: {fileJsonSave}"));
 		}
 	}
 }
