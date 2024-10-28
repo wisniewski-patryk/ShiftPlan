@@ -53,6 +53,7 @@ public class EmployeesControllerTests
 		var ctx = services.ServiceProvider.GetRequiredService<ShiftPlanContext>();
 		ctx.Add(new Employee() { Id = 1, Name = "Stefan" });
 		ctx.SaveChanges();
+
 		// Act
 		var client = app.CreateClient();
 		var loginByte = Encoding.ASCII.GetBytes("Test:test");
