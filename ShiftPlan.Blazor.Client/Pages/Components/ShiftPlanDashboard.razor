@@ -19,8 +19,8 @@
 	bool.TryParse(offlineMode, out bool isOfflineModeEnabled);
 	if (isOfflineModeEnabled)
 	{
-		<Button Color="ButtonColor.Primary" @onclick="LoadEmployeeShifts">Load shifts</Button>
-		<Button Color="ButtonColor.Primary" @onclick="SaveEmployeeShifts">Save shifts</Button>
+		<Button Color="ButtonColor.Primary" @onclick="LoadEmployeesAndShiftsFromFile">Load shifts</Button>
+		<Button Color="ButtonColor.Primary" @onclick="SaveEmployeesAndShiftsToFile">Save shifts</Button>
 	}
 }
 
@@ -49,12 +49,6 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		var offlineMode = configuration.GetSection("OfflineMode").Value;
-		bool.TryParse(offlineMode, out bool isOfflineModeEnabled);
-		if (isOfflineModeEnabled)
-		{
-			await SaveEmployeeShifts();
-		}
 
 		await TryGetEmployees();
 		await TryGetShifts();
@@ -157,130 +151,26 @@
 		}
 	}
 
-	private async Task LoadEmployeeShifts()
+	private async Task LoadEmployeesAndShiftsFromFile()
 	{
-		var getEmployeeAndShifts = await jsonservice.LoadLocalFile(fileJsonSave) as LocalShiftsAndEmployees;
-		if (getEmployeeAndShifts != null)
+		var employeesAndShifts = await jsonservice.LoadLocalFile(fileJsonSave) as LocalShiftsAndEmployees;
+		if (employeesAndShifts != null)
 		{
-			employees = getEmployeeAndShifts.Employees;
-			shifts = getEmployeeAndShifts.Shifts;
+			employees = employeesAndShifts.Employees;
+			shifts = employeesAndShifts.Shifts;
 		}
 		if (File.Exists(fileJsonSave))
 		{
-			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created : {fileJsonSave}"));
-			return;
+			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"Data was loaded from : {fileJsonSave}"));
 		}
-		toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not created : {fileJsonSave}"));
 	}
 
-	private async Task SaveEmployeeShifts()
+	private async Task SaveEmployeesAndShiftsToFile()
 	{
-		if (shifts.Count() == 0)
-		{
-			await jsonservice.SaveLocalFile(SeedData(), fileJsonSave);
-		}
-		else
-		{
-			await jsonservice.SaveLocalFile(new LocalShiftsAndEmployees(employees, shifts), fileJsonSave);
-		}
+		await jsonservice.SaveLocalFile(new LocalShiftsAndEmployees(employees, shifts), fileJsonSave);
 		if (File.Exists(fileJsonSave))
 		{
 			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created : {fileJsonSave}"));
-			return;
 		}
-		toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not created : {fileJsonSave}"));
-	}
-
-	private LocalShiftsAndEmployees SeedData()
-	{
-		var results = new LocalShiftsAndEmployees(new List<Employee>(), new List<Shift>());
-		var employees = new List<Employee> { new Employee("Employee1", 1),
-									 new Employee("Employee2", 2),
-									 new Employee("Employee3", 3),
-									 new Employee("Employee4", 4)};
-		var currentShifts = new List<Shift>();
-		var insertedEmploy = employees.Where(x => x.Name == "Employee1").Select(x => x).FirstOrDefault();
-		if (insertedEmploy != null)
-		{
-			currentShifts.AddRange(SeedShifts(insertedEmploy, ShiftType.First, 1));
-			currentShifts.AddRange(SeedShifts(insertedEmploy, ShiftType.Second, 2));
-			currentShifts.AddRange(SeedShifts(insertedEmploy, ShiftType.Third, 3));
-		}
-
-		var insertedEmploy2 = employees.Where(x => x.Name == "Employee2").Select(x => x).FirstOrDefault();
-		if (insertedEmploy2 != null)
-		{
-			currentShifts.AddRange(SeedShifts(insertedEmploy2, ShiftType.First, 3));
-			currentShifts.AddRange(SeedShifts(insertedEmploy2, ShiftType.Second, 1));
-			currentShifts.AddRange(SeedShifts(insertedEmploy2, ShiftType.Third, 2));
-		}
-
-		var insertedEmploy3 = employees.Where(x => x.Name == "Employee3").Select(x => x).FirstOrDefault();
-		if (insertedEmploy3 != null)
-		{
-			currentShifts.AddRange(SeedShifts(insertedEmploy3, ShiftType.First, 2));
-			currentShifts.AddRange(SeedShifts(insertedEmploy3, ShiftType.Second, 3));
-			currentShifts.AddRange(SeedShifts(insertedEmploy3, ShiftType.Third, 1));
-		}
-
-		results = new LocalShiftsAndEmployees(employees, currentShifts);
-		return results;
-	}
-
-	private List<Shift> SeedShifts(Employee employee, ShiftType shiftType, int week)
-	{
-		var startTime = GetShiftType(shiftType).Item1;
-		var endTime = GetShiftType(shiftType).Item2;
-		//only fill in from monday to friday
-		DateTime moveDay = DateTime.Today;
-		if (week == 1)
-		{
-			for (int i = 0; i < 6; i++)
-			{
-				moveDay = moveDay.AddDays(1);
-				if (moveDay.DayOfWeek != DayOfWeek.Saturday && moveDay.DayOfWeek != DayOfWeek.Sunday)
-					currentShifts.Add(new Shift(employee, DateOnly.FromDateTime(moveDay), startTime, endTime, 0));
-			}
-		}
-		if (week == 2)
-		{
-			moveDay = moveDay.AddDays(7);
-			for (int i = 0; i < 6; i++)
-			{
-				moveDay = moveDay.AddDays(1);
-				if (moveDay.DayOfWeek != DayOfWeek.Saturday && moveDay.DayOfWeek != DayOfWeek.Sunday)
-					currentShifts.Add(new Shift(employee, DateOnly.FromDateTime(moveDay), startTime, endTime, 0));
-			}
-		}
-		if (week == 3)
-		{
-			moveDay = moveDay.AddDays(14);
-			for (int i = 0; i < 6; i++)
-			{
-				moveDay = moveDay.AddDays(1);
-				if (moveDay.DayOfWeek != DayOfWeek.Saturday && moveDay.DayOfWeek != DayOfWeek.Sunday)
-					currentShifts.Add(new Shift(employee, DateOnly.FromDateTime(moveDay), startTime, endTime, 0));
-			}
-		}
-		return currentShifts;
-	}
-
-	private (TimeOnly, TimeOnly) GetShiftType(ShiftType shiftType)
-	{
-		var newStart = shiftType switch
-		{
-			ShiftType.First => new TimeOnly(6, 0),
-			ShiftType.Second => new TimeOnly(14, 0),
-			ShiftType.Third => new TimeOnly(22, 0),
-			_ => new TimeOnly(0, 0)
-		};
-		var newEnd = shiftType switch
-		{
-			ShiftType.First => new TimeOnly(14, 0),
-			ShiftType.Second => new TimeOnly(22, 0),
-			ShiftType.Third => new TimeOnly(6, 0),
-			_ => new TimeOnly(0, 0)
-		};
-		return (newStart, newEnd);
 	}
 }
