@@ -162,7 +162,8 @@
 			}
 			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"Data was loaded from: {fileJsonSave}"));
 		}
-		catch { toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not loaded successful: {fileJsonSave}")); }
+		catch (Exception ex)
+		{ toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not loaded successful. {ex.Message}")); }
 	}
 
 	private async Task SaveEmployeesAndShiftsToFile()
@@ -177,6 +178,7 @@
 			}
 			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not created: {fileJsonSave}"));
 		}
-		catch { toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not saved.")); }
+		catch (Exception ex) 
+		{ toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not saved. {ex.Message}")); }
 	}
 }
