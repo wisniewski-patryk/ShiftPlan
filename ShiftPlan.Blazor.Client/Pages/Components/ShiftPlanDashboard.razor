@@ -5,6 +5,7 @@
 @inject IShiftsService shiftService
 @inject IEmployeesService employeeService
 @inject IConfiguration configuration
+@inject ILoadSaveService jsonservice
 
 @using ShiftPlan.Blazor.Client.Services
 @using ShiftPlan.Blazor.Commons.Exceptions
@@ -43,7 +44,6 @@
 	[Inject] protected ToastService toastService { get; set; } = new();
 	public List<Employee> employees = [];
 	public List<Shift> shifts = [];
-	public ILoadSaveService jsonservice = new LocalFileService();
 	public string fileJsonSave = Path.Combine(Path.GetTempPath(), "employeeshifts.json");
 
 	protected override async Task OnInitializedAsync()
@@ -152,24 +152,31 @@
 
 	private async Task LoadEmployeesAndShiftsFromFile()
 	{
-		var employeesAndShifts = await jsonservice.LoadLocalFile(fileJsonSave) as LocalShiftsAndEmployees;
-		if (employeesAndShifts != null)
+		try
 		{
-			employees = employeesAndShifts.Employees;
-			shifts = employeesAndShifts.Shifts;
-		}
-		if (File.Exists(fileJsonSave))
-		{
+			var employeesAndShifts = await jsonservice.LoadLocalFile(fileJsonSave) as LocalShiftsAndEmployees;
+			if (employeesAndShifts != null)
+			{
+				employees = employeesAndShifts.Employees;
+				shifts = employeesAndShifts.Shifts;
+			}
 			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"Data was loaded from: {fileJsonSave}"));
 		}
+		catch { toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not loaded successful: {fileJsonSave}")); }
 	}
 
 	private async Task SaveEmployeesAndShiftsToFile()
 	{
-		await jsonservice.SaveLocalFile(new LocalShiftsAndEmployees(employees, shifts), fileJsonSave);
-		if (File.Exists(fileJsonSave))
+		try
 		{
-			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created: {fileJsonSave}"));
+			await jsonservice.SaveLocalFile(new LocalShiftsAndEmployees(employees, shifts), fileJsonSave);
+			if (File.Exists(fileJsonSave))
+			{
+				toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created: {fileJsonSave}"));
+				return;
+			}
+			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not created: {fileJsonSave}"));
 		}
+		catch { toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not saved.")); }
 	}
 }
