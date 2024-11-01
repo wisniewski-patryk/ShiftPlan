@@ -171,12 +171,7 @@
 		try
 		{
 			await jsonservice.SaveLocalFile(new LocalShiftsAndEmployees(employees, shifts), fileJsonSave);
-			if (File.Exists(fileJsonSave))
-			{
-				toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created: {fileJsonSave}"));
-				return;
-			}
-			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not created: {fileJsonSave}"));
+			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created: {fileJsonSave}"));
 		}
 		catch (Exception ex) 
 		{ toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not saved. {ex.Message}")); }
