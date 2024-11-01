@@ -54,18 +54,28 @@ public class UserManagmentController(
 		return BadRequest(result);
 	}
 
-	[HttpPost("assigment/add")]
-	public async Task<IActionResult> AssignRoleToUser([FromBody] RoleAssignmentRequest assignmentObject)
+	[HttpGet("assigment")]
+	public async Task<IActionResult> GetUserAssigmentRoles([FromBody] GetUserRolesRequest req)
 	{
-		var user = await userManager.FindByEmailAsync(assignmentObject.UserEmail);
+		var user = await userManager.FindByEmailAsync(req.UserEmail);
+		if (user is null) return NotFound("User not found");
+
+		var result = await userManager.GetRolesAsync(user);
+		return Ok(result);
+	}
+
+	[HttpPost("assigment/add")]
+	public async Task<IActionResult> AssignRoleToUser([FromBody] RoleAssignmentRequest roleAssigmentRequest)
+	{
+		var user = await userManager.FindByEmailAsync(roleAssigmentRequest.UserEmail);
 		if (user is null)
 			return NotFound("User not found");
 
 		var userRoles = await userManager.GetRolesAsync(user);
-		if (userRoles.Contains(assignmentObject.RoleName))
+		if (userRoles.Contains(roleAssigmentRequest.RoleName))
 			return BadRequest("User already has this role");
 
-		var result = await userManager.AddToRoleAsync(user, assignmentObject.RoleName);
+		var result = await userManager.AddToRoleAsync(user, roleAssigmentRequest.RoleName);
 		if (result.Succeeded) return Ok(result);
 		return BadRequest(result);
 	}
@@ -83,5 +93,6 @@ public class UserManagmentController(
 }
 public record DeleteUserRequest(string UserEmail);
 public record EditUserRequest(string UserEmail, string NewEmailAddress, string? NewPhoneNumber);
+public record GetUserRolesRequest(string UserEmail);
 public record RoleAssignmentRequest(string UserEmail, string RoleName);
 public record RemoveAssigmentRequest(string UserEmail, string RoleName);
