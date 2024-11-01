@@ -54,9 +54,17 @@ Authorization: Bearer {{token}}
 }
 
 ###
+DELETE {{ShiftPlanApi}}/api/identity/users/delete
+Content-Type: application/json
+Authorization: Bearer {{token}}
+{
+	"UserName": "mymail@mail.com"
+}
+###
 GET {{ShiftPlanApi}}/api/identity/roles
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
 
 ###
 POST {{ShiftPlanApi}}/api/identity/roles/add

@@ -19,8 +19,7 @@ public class UserManagmentController(
 		return Ok(context.Users.ToList());
 	}
 
-	[HttpDelete]
-	[Route("delete")]
+	[HttpDelete("delete")]
 	public async Task<IActionResult> DeleteUser([FromBody] DeleteUserRequest req)
 	{
 		var userToDelete = await userManager.FindByEmailAsync(req.UserEmail);
@@ -38,8 +37,7 @@ public class UserManagmentController(
 		return BadRequest(result);
 	}
 
-	[HttpDelete]
-	[Route("edit")]
+	[HttpPatch("edit")]
 	public async Task<IActionResult> EditUser([FromBody] EditUserRequest req)
 	{
 		var userToEdit = await userManager.FindByEmailAsync(req.UserEmail);
@@ -56,7 +54,7 @@ public class UserManagmentController(
 		return BadRequest(result);
 	}
 
-	[HttpPatch("assigment/add")]
+	[HttpPost("assigment/add")]
 	public async Task<IActionResult> AssignRoleToUser([FromBody] RoleAssignmentRequest assignmentObject)
 	{
 		var user = await userManager.FindByEmailAsync(assignmentObject.UserEmail);
@@ -72,7 +70,7 @@ public class UserManagmentController(
 		return BadRequest(result);
 	}
 
-	[HttpPatch("assigment/remove")]
+	[HttpDelete("assigment/remove")]
 	public async Task<IActionResult> RemoveAssignRoleToUser([FromBody] RemoveAssigmentRequest removeAssigmentRequest)
 	{
 		var user = await userManager.FindByEmailAsync(removeAssigmentRequest.UserEmail);
