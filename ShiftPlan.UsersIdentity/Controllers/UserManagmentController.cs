@@ -19,6 +19,25 @@ public class UserManagmentController(
 		return Ok(context.Users.ToList());
 	}
 
+	[HttpDelete]
+	[Route("delete")]
+	public async Task<IActionResult> DeleteUser([FromBody] DeleteUserRequest req)
+	{
+		var userToDelete = await userManager.FindByEmailAsync(req.UserEmail);
+		if (userToDelete is null)
+			return NotFound("User to delete hasn't been found.");
+
+		var userRoles = await userManager.GetRolesAsync(userToDelete);
+		var rolesRemoveResult = await userManager.RemoveFromRolesAsync(userToDelete, userRoles);
+		if (!rolesRemoveResult.Succeeded)
+			return BadRequest("Can't remove roles from user");
+
+		var result = await userManager.DeleteAsync(userToDelete);
+
+		if (result.Succeeded) return Ok(result);
+		return BadRequest(result);
+	}
+
 	[HttpPatch("assigment/add")]
 	public async Task<IActionResult> AssignRoleToUser([FromBody] RoleAssignmentRequest assignmentObject)
 	{
@@ -46,6 +65,6 @@ public class UserManagmentController(
 		return BadRequest(result);
 	}
 }
-
+public record DeleteUserRequest(string UserEmail);
 public record RoleAssignmentRequest(string UserEmail, string RoleName);
 public record RemoveAssigmentRequest(string UserEmail, string RoleName);
