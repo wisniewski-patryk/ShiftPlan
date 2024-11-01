@@ -5,25 +5,68 @@
 @page "/"
 
 @using ShiftPlan.Blazor.Client.Pages.Components
-<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
+@using ShiftPlan.Blazor.Client.Pages.Components.UserIdentity
+@using Blazored.SessionStorage
 
-<ErrorBoundary @ref=errorBoundary>
-	<ChildContent>
-		<ShiftPlanDashboard />
-	</ChildContent>
-	<ErrorContent Context="ex">
-		<h1>Something went wrong</h1>
-		<p>Try to refresh the page or contact the support</p>
-		<p>Error message: @ex.Message</p>
-		<Button class="m-3" Color="ButtonColor.Primary" @onclick="ResetError">Refresh</Button>
-	</ErrorContent>
-</ErrorBoundary>
+<Toasts class="p-3" AutoHide="true" Delay="1500" Placement="ToastsPlacement.TopRight" />
+
+<div class="row shadow-lg">
+    <div class="col-sm-3">
+    <Card>
+        <CardHeader>Welcome</CardHeader>
+        <img class="card-img-top" src="https://images.unsplash.com/photo-1556740758-90de374c12ad?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');" alt="Card image cap">
+        <CardBody>
+            <CardTitle>Shift plan</CardTitle>
+            <CardText style="font-family: cursive; font-size: 14px;">Settings shift plan for workers.</CardText>
+            <ErrorBoundary @ref=errorBoundary>
+                <ChildContent>
+                    <UserComponent />
+                </ChildContent>
+                <ErrorContent Context="ex">
+                    <h1>Something went wrong</h1>
+                    <p>Try to refresh the page or contact the support</p>
+                    <p>Error message: @ex.Message</p>
+                    <Button class="m-3" Color="ButtonColor.Primary" @onclick="ResetError">Refresh</Button>
+                </ErrorContent>
+            </ErrorBoundary>
+        </CardBody>
+        <CardFooter>
+            <small class="text-muted">@DateTime.Now.ToString("h:mm:ss tt")</small>
+        </CardFooter>
+    </Card>
+    </div>
+
+    <div class ="col-sm-9">
+    <Card>
+        <CardHeader>Shift plan table</CardHeader>
+        <CardBody>
+            <ErrorBoundary @ref=errorBoundary>
+                <ChildContent>
+                    <ShiftPlanDashboard />
+                </ChildContent>
+                <ErrorContent Context="ex">
+                    <h1>Something went wrong</h1>
+                    <p>Try to refresh the page or contact the support</p>
+                    <p>Error message: @ex.Message</p>
+                    <Button class="m-3" Color="ButtonColor.Primary" @onclick="ResetError">Refresh</Button>
+                </ErrorContent>
+            </ErrorBoundary>
+        </CardBody>
+        <CardFooter>
+            <small class="text-muted">@DateTime.Now.ToString("h:mm:ss tt")</small>
+        </CardFooter>
+    </Card>
+    </div>
+</div>
+
+<FooterComponent/>
 
 @code {
-	public ErrorBoundary errorBoundary { get; set; } = new();
+    public ErrorBoundary errorBoundary { get; set; } = new();
+    public DateTime DateTime;
 
-	private void ResetError()
-	{
-		errorBoundary.Recover();
-	}
+    private void ResetError()
+    {
+        errorBoundary.Recover();
+    }
 }
