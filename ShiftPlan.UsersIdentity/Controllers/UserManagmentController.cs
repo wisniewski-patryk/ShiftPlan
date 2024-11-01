@@ -38,6 +38,24 @@ public class UserManagmentController(
 		return BadRequest(result);
 	}
 
+	[HttpDelete]
+	[Route("edit")]
+	public async Task<IActionResult> EditUser([FromBody] EditUserRequest req)
+	{
+		var userToEdit = await userManager.FindByEmailAsync(req.UserEmail);
+		if (userToEdit is null)
+			return NotFound("User to edit hasn't been found.");
+
+		userToEdit.Email = req.NewEmailAddress;
+		if (req.NewPhoneNumber is not null)
+			userToEdit.PhoneNumber = req.NewPhoneNumber;
+
+		var result = await userManager.UpdateAsync(userToEdit);
+
+		if (result.Succeeded) return Ok(result);
+		return BadRequest(result);
+	}
+
 	[HttpPatch("assigment/add")]
 	public async Task<IActionResult> AssignRoleToUser([FromBody] RoleAssignmentRequest assignmentObject)
 	{
@@ -66,5 +84,6 @@ public class UserManagmentController(
 	}
 }
 public record DeleteUserRequest(string UserEmail);
+public record EditUserRequest(string UserEmail, string NewEmailAddress, string? NewPhoneNumber);
 public record RoleAssignmentRequest(string UserEmail, string RoleName);
 public record RemoveAssigmentRequest(string UserEmail, string RoleName);
