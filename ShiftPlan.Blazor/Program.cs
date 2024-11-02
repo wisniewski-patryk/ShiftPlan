@@ -1,5 +1,7 @@
 using ShiftPlan.Blazor.Commons.Extensions;
+using ShiftPlan.Blazor.Commons.Services;
 using ShiftPlan.Blazor.Components;
+using ShiftPlan.Blazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,8 @@ builder.Services.AddMediatR(cfg =>
 });
 
 builder.Services.RegisterServices(builder.Configuration);
+
+builder.Services.AddTransient<ILoadSaveService, LocalFileService>();
 
 var app = builder.Build();
 
