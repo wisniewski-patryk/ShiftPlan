@@ -1,4 +1,3 @@
-using ShiftPlan.Blazor.Commons.Extensions;
 using ShiftPlan.Blazor.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,8 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents()
 	.AddInteractiveWebAssemblyComponents();
-
-builder.Services.RegisterServices(builder.Configuration);
 
 var app = builder.Build();
 
