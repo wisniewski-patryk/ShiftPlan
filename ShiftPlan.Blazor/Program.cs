@@ -8,11 +8,6 @@ builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents()
 	.AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddMediatR(cfg =>
-{
-	cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-});
-
 builder.Services.RegisterServices(builder.Configuration);
 
 var app = builder.Build();
