@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using ShiftPlan.Api.Models;
 using ShiftPlan.Api.Repository;
+using ShiftPlan.UsersIdentity.Models;
 
 namespace ShiftPlan.Api.Controllers;
 
 [ApiController]
 [Route("api/employees")]
-[Authorize]
+[Authorize(Roles = ConstRoles.Editor)]
 public class EmployeesController(IRepository<Employee> employeesRepository) : ControllerBase
 {
 	[HttpGet, AllowAnonymous]
