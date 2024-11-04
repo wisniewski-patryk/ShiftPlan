@@ -1,23 +1,27 @@
-﻿@namespace ShiftPlan.Blazor.Client.Pages
+﻿@using ShiftPlan.Blazor.Client.Components.Shared
+
+@namespace ShiftPlan.Blazor.Client.Pages
 
 @rendermode InteractiveWebAssembly
 
 @page "/"
 
 @using ShiftPlan.Blazor.Client.Pages.Components
-<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
 
-<ErrorBoundary @ref=errorBoundary>
-	<ChildContent>
-		<ShiftPlanDashboard/>
-	</ChildContent>
-	<ErrorContent Context="ex">
-		<h1>Something went wrong</h1>
-		<p>Try to refresh the page or contact the support</p>
-		<p>Error message: @ex.Message</p>
-		<Button class="m-3" Color="ButtonColor.Primary" @onclick="ResetError">Refresh</Button>
-	</ErrorContent>
-</ErrorBoundary>
+<LoadingPage>
+	<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
+	<ErrorBoundary @ref=errorBoundary>
+		<ChildContent>
+			<ShiftPlanDashboard/>
+		</ChildContent>
+		<ErrorContent Context="ex">
+			<h1>Something went wrong</h1>
+			<p>Try to refresh the page or contact the support</p>
+			<p>Error message: @ex.Message</p>
+			<Button class="m-3" Color="ButtonColor.Primary" @onclick="ResetError">Refresh</Button>
+		</ErrorContent>
+	</ErrorBoundary>
+</LoadingPage>
 
 @code {
 	public ErrorBoundary errorBoundary { get; set; } = new();
