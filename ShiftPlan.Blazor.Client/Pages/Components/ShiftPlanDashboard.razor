@@ -16,164 +16,255 @@
 @using ShiftPlan.Blazor.Client.Pages.Components.UserIdentity
 
 @{
-	var offlineMode = configuration.GetSection("OfflineMode").Value;
-	bool.TryParse(offlineMode, out bool isOfflineModeEnabled);
-	if (isOfflineModeEnabled)
-	{
-		<Button Color="ButtonColor.Primary" @onclick="LoadEmployeesAndShiftsFromFile">Load shifts</Button>
-		<Button Color="ButtonColor.Primary" @onclick="SaveEmployeesAndShiftsToFile">Save shifts</Button>
-	}
+    var offlineMode = configuration.GetSection("OfflineMode").Value;
+    bool.TryParse(offlineMode, out bool isOfflineModeEnabled);
+    if (isOfflineModeEnabled)
+    {
+        <Button Color="ButtonColor.Primary" @onclick="LoadEmployeesAndShiftsFromFile">Load shifts</Button>
+        <Button Color="ButtonColor.Primary" @onclick="SaveEmployeesAndShiftsToFile">Save shifts</Button>
+        <Button Color="ButtonColor.Primary" @onclick="GenerateShifts">Generate shifts</Button>
+    }
 }
 
 <div class="row d-flex">
-	<div class="col-3 justify-content-start">
-		<h3>ShiftPlan</h3>
-	</div>
-	<div class="col-6 justify-content-center">
-		<AddEmployeeModal InsertEmployee="InsertOrUpdateEmployee" />
-		<RemoveEmployeeModal RemoveEmployee="RemoveEmployee" Employees="employees" />
-	</div>
-	<div class="col-3 justify-content-end">
-		<UserComponent />
-	</div>
+    <div class="col-3 justify-content-start">
+        <h3>ShiftPlan</h3>
+    </div>
+    <div class="col-6 justify-content-center">
+        <AddEmployeeModal InsertEmployee="InsertOrUpdateEmployee" />
+        <RemoveEmployeeModal RemoveEmployee="RemoveEmployee" Employees="employees" />
+    </div>
+    <div class="col-3 justify-content-end">
+        <UserComponent />
+    </div>
 </div>
 
 <ShiftPlanTableComponent employees="employees" shifts="shifts" OnRemoveShift="RemoveShift" OnShiftInsertOrUpdate="InsertOrUpdateShift" />
 
 @code {
-	[Inject] protected ToastService toastService { get; set; } = new();
-	public List<Employee> employees = [];
-	public List<Shift> shifts = [];
-	public string fileJsonSave = Path.Combine(Path.GetTempPath(), "employeeshifts.json");
+    [Inject] protected ToastService toastService { get; set; } = new();
+    public List<Employee> employees = [];
+    public List<Shift> shifts = [];
+    public string fileJsonSave = Path.Combine(Path.GetTempPath(), "employeeshifts.json");
 
-	protected override async Task OnInitializedAsync()
-	{
+    protected override async Task OnInitializedAsync()
+    {
 
-		await TryGetEmployees();
-		await TryGetShifts();
+        await TryGetEmployees();
+        await TryGetShifts();
 
-		async Task TryGetEmployees()
-		{
-			try
-			{
-				employees = (await employeeService.GetAll())?.ToList() ?? [];
-			}
-			catch (HttpCommunicationException ex)
-			{
-				toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
-			}
-		}
+        async Task TryGetEmployees()
+        {
+            try
+            {
+                employees = (await employeeService.GetAll())?.ToList() ?? [];
+            }
+            catch (HttpCommunicationException ex)
+            {
+                toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+            }
+        }
 
-		async Task TryGetShifts()
-		{
-			try
-			{
-				var shiftRequestResult = await shiftService.GetAll();
-				shifts = shiftRequestResult?.ToList() ?? [];
-			}
-			catch (HttpCommunicationException ex)
-			{
-				toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
-			}
-		}
-	}
+        async Task TryGetShifts()
+        {
+            try
+            {
+                var shiftRequestResult = await shiftService.GetAll();
+                shifts = shiftRequestResult?.ToList() ?? [];
+            }
+            catch (HttpCommunicationException ex)
+            {
+                toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+            }
+        }
+    }
 
 
-	private async Task RemoveShift(Shift shift)
-	{
-		try
-		{
-			await shiftService.Remove(shift);
-			shifts.Remove(shift);
-		}
-		catch (HttpCommunicationException ex)
-		{
-			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
-		}
-	}
+    private async Task RemoveShift(Shift shift)
+    {
+        try
+        {
+            await shiftService.Remove(shift);
+            shifts.Remove(shift);
+        }
+        catch (HttpCommunicationException ex)
+        {
+            toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+        }
+    }
 
-	private async Task InsertOrUpdateEmployee(Employee employee)
-	{
-		try
-		{
-			var newEmployee = await employeeService.InsertOrUpdate(employee);
-			var existingEmployee = employees.FirstOrDefault(e => e.Id == newEmployee?.Id);
-			if (existingEmployee is not null)
-			{
-				employees.Remove(existingEmployee);
-			}
-			if (newEmployee is null) return;
-			employees.Add(newEmployee);
-		}
-		catch (HttpCommunicationException ex)
-		{
-			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
-		}
+    private async Task InsertOrUpdateEmployee(Employee employee)
+    {
+        try
+        {
+            var newEmployee = await employeeService.InsertOrUpdate(employee);
+            var existingEmployee = employees.FirstOrDefault(e => e.Id == newEmployee?.Id);
+            if (existingEmployee is not null)
+            {
+                employees.Remove(existingEmployee);
+            }
+            if (newEmployee is null) return;
+            employees.Add(newEmployee);
+        }
+        catch (HttpCommunicationException ex)
+        {
+            toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+        }
 
-	}
+    }
 
-	private async Task RemoveEmployee(Employee employee)
-	{
-		try
-		{
-			await employeeService.Remove(employee);
-			employees.Remove(employee);
-		}
-		catch (HttpCommunicationException ex)
-		{
-			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
-		}
-		catch (Exception ex)
-		{
-			return;
-		}
-	}
+    private async Task RemoveEmployee(Employee employee)
+    {
+        try
+        {
+            await employeeService.Remove(employee);
+            employees.Remove(employee);
+        }
+        catch (HttpCommunicationException ex)
+        {
+            toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+        }
+        catch (Exception ex)
+        {
+            return;
+        }
+    }
 
-	private async Task InsertOrUpdateShift(Shift shift)
-	{
-		try
-		{
-			var newShift = await shiftService.InsertOrUpdate(shift);
+    private async Task InsertOrUpdateShift(Shift shift)
+    {
+        try
+        {
+            var newShift = await shiftService.InsertOrUpdate(shift);
 
-			var existingShift = shifts.FirstOrDefault(s => s.Id == newShift?.Id);
-			if (existingShift != null)
-			{
-				shifts.Remove(existingShift);
-			}
-			if (newShift is null) return;
-			shifts.Add(newShift);
+            var existingShift = shifts.FirstOrDefault(s => s.Id == newShift?.Id);
+            if (existingShift != null)
+            {
+                shifts.Remove(existingShift);
+            }
+            if (newShift is null) return;
+            shifts.Add(newShift);
 
-		}
-		catch (HttpCommunicationException ex)
-		{
-			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
-		}
-	}
+        }
+        catch (HttpCommunicationException ex)
+        {
+            toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+        }
+    }
 
-	private async Task LoadEmployeesAndShiftsFromFile()
-	{
-		try
-		{
-			var employeesAndShifts = await jsonservice.LoadLocalFile(fileJsonSave) as LocalShiftsAndEmployees;
-			if (employeesAndShifts != null)
-			{
-				employees = employeesAndShifts.Employees;
-				shifts = employeesAndShifts.Shifts;
-			}
-			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"Data was loaded from: {fileJsonSave}"));
-		}
-		catch (Exception ex)
-		{ toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not loaded successful. {ex.Message}")); }
-	}
+    private async Task LoadEmployeesAndShiftsFromFile()
+    {
+        try
+        {
+            var employeesAndShifts = await jsonservice.LoadLocalFile(fileJsonSave) as LocalShiftsAndEmployees;
+            if (employeesAndShifts != null)
+            {
+                employees = employeesAndShifts.Employees;
+                shifts = employeesAndShifts.Shifts;
+            }
+            toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"Data was loaded from: {fileJsonSave}"));
+        }
+        catch (Exception ex)
+        { toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not loaded successful. {ex.Message}")); }
+    }
 
-	private async Task SaveEmployeesAndShiftsToFile()
-	{
-		try
-		{
-			await jsonservice.SaveLocalFile(new LocalShiftsAndEmployees(employees, shifts), fileJsonSave);
-			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created: {fileJsonSave}"));
-		}
-		catch (Exception ex) 
-		{ toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not saved. {ex.Message}")); }
-	}
+    private async Task SaveEmployeesAndShiftsToFile()
+    {
+        try
+        {
+            await jsonservice.SaveLocalFile(new LocalShiftsAndEmployees(employees, shifts), fileJsonSave);
+            toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created: {fileJsonSave}"));
+        }
+        catch (Exception ex)
+        { toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not saved. {ex.Message}")); }
+    }
+
+    private async Task GenerateShifts(MouseEventArgs e)
+    {
+        try
+        {
+            if (employees.Any())
+            {
+                if (shifts.Any())
+                {
+                    return;
+                }
+                for (int index = 0; index < employees.Count(); index++)
+                {
+                    if (index == 0)
+                        AddEmployeShifts(employees[0], ShiftType.First, ShiftType.Second, ShiftType.Third);
+                    if (index == 1)
+                        AddEmployeShifts(employees[1], ShiftType.Second, ShiftType.Third, ShiftType.First);
+                    if (index == 2)
+                        AddEmployeShifts(employees[2], ShiftType.Third, ShiftType.First, ShiftType.Second);
+                }
+            }
+        }
+        catch (HttpCommunicationException ex)
+        {
+            toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+        }
+    }
+
+    private void AddEmployeShifts(Employee employee,
+        ShiftType shiftTypeStart,
+        ShiftType shiftTypeMidd,
+        ShiftType shiftTypeEnd
+        )
+    {
+        int weeks = 6;//how many weeks set
+        int days = weeks * 7;
+
+        DateTime moveDay = DateTime.Today;
+        var currentDay = moveDay.AddDays(1);
+        var currentShiftTd = 1;
+        var startTime = GetShiftType(shiftTypeStart).Item1;
+        var endTime = GetShiftType(shiftTypeStart).Item2;
+
+        var mondays = System.Linq.Enumerable.Range(0, days)
+                 .Select(i => currentDay.AddDays(i))
+                 .Where(day => day.DayOfWeek == DayOfWeek.Monday)
+                 .Select(day => day)
+                 .ToList();
+
+        while (currentDay != moveDay.AddDays(days))
+        {
+            currentDay = currentDay.AddDays(1);
+            if (currentDay.Date == mondays[0].Date || currentDay.Date == mondays[3].Date)
+            {
+                startTime = GetShiftType(shiftTypeStart).Item1;
+                endTime = GetShiftType(shiftTypeStart).Item2;
+            }
+            if (currentDay.Date == mondays[1].Date || currentDay.Date == mondays[4].Date)
+            {
+                startTime = GetShiftType(shiftTypeMidd).Item1;
+                endTime = GetShiftType(shiftTypeMidd).Item2;
+            }
+            if (currentDay.Date == mondays[2].Date || currentDay.Date == mondays[5].Date)
+            {
+                startTime = GetShiftType(shiftTypeEnd).Item1;
+                endTime = GetShiftType(shiftTypeEnd).Item2;
+            }
+            shifts.Add(new Shift(employee, DateOnly.FromDateTime(currentDay), startTime, endTime, currentShiftTd++));
+        };
+    }
+
+    private (TimeOnly, TimeOnly) GetShiftType(ShiftType shiftType)
+    {
+        var newStart = shiftType switch
+        {
+            ShiftType.First => new TimeOnly(6, 0),
+            ShiftType.Second => new TimeOnly(14, 0),
+            ShiftType.Third => new TimeOnly(22, 0),
+            _ => new TimeOnly(0, 0)
+        };
+        var newEnd = shiftType switch
+        {
+            ShiftType.First => new TimeOnly(14, 0),
+            ShiftType.Second => new TimeOnly(22, 0),
+            ShiftType.Third => new TimeOnly(6, 0),
+            _ => new TimeOnly(0, 0)
+        };
+        return (newStart, newEnd);
+    }
+
 }
