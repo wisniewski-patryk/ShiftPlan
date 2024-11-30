@@ -1,0 +1,195 @@
+﻿@using BlazorBootstrap
+@using ShiftPlan.Blazor.WebAssembly.Models
+@using ShiftPlan.Blazor.WebAssembly.Services
+
+@inject IEmployeesService employeesService
+
+@if (Shift is null)
+{
+    <td class="col-2">
+        <div class="d-grid gap-2" @onclick="OnShowModalClick">
+            <Button Color="ButtonColor.Secondary" Outline>
+                +
+
+            </Button>
+        </div>
+    </td>
+} 
+else
+{
+    <td class ="col-2">
+        <div class="d-grid gap-2" @onclick="OnShowModalClick">
+            <Button Color="GetButtonColor()">
+                @Shift.Start.ToString("HH:mm") - @Shift.End.ToString("HH:mm")
+            </Button>
+        </div>
+    </td>
+}
+
+
+<Modal @ref="modal" Title="Modal" ShowCloseButton="true" IsVerticallyCentered="true">
+    <BodyTemplate>
+        <label>Employee</label>
+        <InputSelect class="form-control" @bind-Value="@Employee">
+            @foreach (var employ in employees)
+            {
+                <option value="@employ" selected="@(Shift?.Employee.Name == employ.Name)">@employ.Name</option>
+            }
+        </InputSelect>
+        <label>Date</label>
+        <DateInput TValue="DateOnly" @bind-Value="@Date"/>
+        <label>Shift</label>
+        <select class="form-select" @onchange="OnChangeShift" >
+            @foreach(var type in Enum.GetNames(typeof(ShiftType)))
+            {
+                <option selected="@(GetShiftType().ToString() == type)">@type</option>
+            }
+        </select>
+        <label>Start</label>
+        <TimeInput TValue="TimeOnly" @bind-Value="@newStart" @onchange="SetEndTimeOnChangeStartTime()"/>
+        <label>End</label>
+        <TimeInput TValue="TimeOnly" @bind-Value="@newEnd"/>
+
+    </BodyTemplate>
+    <FooterTemplate>
+        @if (Shift is not null)
+        {
+            <Button class="d-flex" Color="ButtonColor.Danger" @onclick="OnShiftRemove">Remove</Button>
+        }
+        <Button Color="ButtonColor.Primary" @onclick="InsertOrUpdate">@confirmButtonText</Button>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
+    </FooterTemplate>
+</Modal>
+
+@code {
+    [Parameter]
+    public Shift? Shift { get; set; }
+
+    [Parameter]
+    public DateOnly Date { get; set; }
+
+    [Parameter]
+    public EventCallback<Shift> OnShiftInsertOrUpdate { get; set; }
+
+    [Parameter]
+    public EventCallback<Shift> OnShiftRemoved { get; set; }
+
+    [Parameter]
+    public Employee? Employee { get; set; }
+
+    private TimeOnly newStart { get; set; }
+    private TimeOnly newEnd { get; set; }
+
+    private ButtonColor GetButtonColor() => Shift?.Start switch
+    {
+        TimeOnly time when time == new TimeOnly(6, 0) => ButtonColor.Primary,
+        TimeOnly time when time == new TimeOnly(14, 0) => ButtonColor.Warning,
+        TimeOnly time when time == new TimeOnly(22, 0) => ButtonColor.Info,
+        _ => ButtonColor.Secondary
+    };
+
+    private ShiftType GetShiftType() => Shift?.Start switch
+    {
+        TimeOnly time when time == new TimeOnly(6, 0) => ShiftType.First,
+        TimeOnly time when time == new TimeOnly(14, 0) => ShiftType.Second,
+        TimeOnly time when time == new TimeOnly(22, 0) => ShiftType.Third,
+        _ => ShiftType.Other
+    };
+
+    private string confirmButtonText => this.Shift is null ? "Add" : "Edit";
+
+    private Modal modal = new();
+
+    private IEnumerable<Employee> employees = [];
+
+    private async Task InsertOrUpdate()
+    {
+        Shift? shift = null;
+        if (Employee is null)
+        {
+            return;
+        }
+        if (Shift is null)
+        {
+            shift = new Shift(Employee, Date, newStart, newEnd, Id: 0);
+        }
+        else
+        {
+            shift = Shift with
+			{
+				Employee = Employee,
+				Date = Date,
+				Start = newStart,
+				End = newEnd
+			};
+        }
+        await OnShiftInsertOrUpdate.InvokeAsync(shift);
+        await modal.HideAsync();
+    }
+
+    private void OnChangeShift(ChangeEventArgs e)
+    {
+        Enum.TryParse<ShiftType>(e.Value!.ToString(), out var shiftType);
+        newStart = shiftType switch
+        {
+            ShiftType.First => new TimeOnly(6, 0),
+            ShiftType.Second => new TimeOnly(14, 0),
+            ShiftType.Third => new TimeOnly(22, 0),
+            _ => new TimeOnly(0, 0)
+        };
+        newEnd = shiftType switch
+        {
+            ShiftType.First => new TimeOnly(14, 0),
+            ShiftType.Second => new TimeOnly(22, 0),
+            ShiftType.Third => new TimeOnly(6, 0),
+            _ => new TimeOnly(0, 0)
+        };
+    }
+    private async Task OnShiftRemove()
+    {
+        if (Shift is not null)
+        {
+            await OnShiftRemoved.InvokeAsync(Shift);
+        }
+        await modal.HideAsync();
+    }
+    private async Task OnShowModalClick()
+    {
+        employees = await employeesService.GetAll();
+        if (Shift is not null)
+		{
+			Employee = Shift.Employee;
+			Date = Shift.Date;
+			newStart = Shift.Start;
+			newEnd = Shift.End;
+		}
+		await modal.ShowAsync();
+	}
+
+	private async Task OnHideModalClick()
+	{
+		await modal.HideAsync();
+	}
+
+	protected override void OnInitialized()
+	{
+		if(Shift is not null)
+		{
+			Employee = Shift.Employee;
+			Date = Shift.Date;
+			newStart = Shift.Start;
+			newEnd = Shift.End;
+		}
+		else
+		{
+			newStart = new TimeOnly(6, 0);
+			newEnd = new TimeOnly(14, 0);
+		}
+	}
+
+	private EventCallback SetEndTimeOnChangeStartTime()
+	{
+		newEnd = newStart.AddHours(8);
+		return EventCallback.Empty;
+	}
+}

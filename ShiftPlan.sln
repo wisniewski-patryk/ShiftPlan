@@ -17,10 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftPlan.Blazor", "ShiftPlan.Blazor\ShiftPlan.Blazor.csproj", "{2F24D27E-AE8D-46E9-9BB6-22760DCBA539}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftPlan.Blazor.Client", "ShiftPlan.Blazor.Client\ShiftPlan.Blazor.Client.csproj", "{6EC5F1C1-AF78-4698-873D-D7778E5D752C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{7CBFDD06-C554-473F-B0A4-68362ABE1FBE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "frontend", "frontend", "{C74C22BC-B241-4956-AD87-006F18AED77A}"
@@ -30,8 +26,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "frontend", "frontend", "{C7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftPlan.UsersIdentity", "ShiftPlan.UsersIdentity\ShiftPlan.UsersIdentity.csproj", "{EE4E99EC-7185-41B3-A2EB-A3ED3E6A5DA4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftPlan.Blazor.Commons", "ShiftPlan.Blazor.Commons\ShiftPlan.Blazor.Commons.csproj", "{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database-postgres", "Database-postgres", "{4D0EF708-76E6-4A93-903E-0457A2C1EE44}"
 	ProjectSection(SolutionItems) = preProject
 		Database-postgres\.env = Database-postgres\.env
@@ -39,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database-postgres", "Databa
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftPlan.Api.Tests", "ShiftPlan.Api.Tests\ShiftPlan.Api.Tests.csproj", "{52805EF6-86FC-44A9-A5DD-4F9E5E4E7733}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShiftPlan.Blazor.WebAssembly", "ShiftPlan.Blazor.WebAssembly\ShiftPlan.Blazor.WebAssembly.csproj", "{EEC2F732-5B61-43DD-8F0F-BF689342A9BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,38 +46,28 @@ Global
 		{7E74146D-EBAD-41F7-8098-1EDCBB90BE13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E74146D-EBAD-41F7-8098-1EDCBB90BE13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E74146D-EBAD-41F7-8098-1EDCBB90BE13}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2F24D27E-AE8D-46E9-9BB6-22760DCBA539}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2F24D27E-AE8D-46E9-9BB6-22760DCBA539}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2F24D27E-AE8D-46E9-9BB6-22760DCBA539}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2F24D27E-AE8D-46E9-9BB6-22760DCBA539}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6EC5F1C1-AF78-4698-873D-D7778E5D752C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6EC5F1C1-AF78-4698-873D-D7778E5D752C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6EC5F1C1-AF78-4698-873D-D7778E5D752C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6EC5F1C1-AF78-4698-873D-D7778E5D752C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EE4E99EC-7185-41B3-A2EB-A3ED3E6A5DA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE4E99EC-7185-41B3-A2EB-A3ED3E6A5DA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE4E99EC-7185-41B3-A2EB-A3ED3E6A5DA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE4E99EC-7185-41B3-A2EB-A3ED3E6A5DA4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{52805EF6-86FC-44A9-A5DD-4F9E5E4E7733}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{52805EF6-86FC-44A9-A5DD-4F9E5E4E7733}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52805EF6-86FC-44A9-A5DD-4F9E5E4E7733}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52805EF6-86FC-44A9-A5DD-4F9E5E4E7733}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEC2F732-5B61-43DD-8F0F-BF689342A9BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEC2F732-5B61-43DD-8F0F-BF689342A9BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEC2F732-5B61-43DD-8F0F-BF689342A9BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEC2F732-5B61-43DD-8F0F-BF689342A9BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7E74146D-EBAD-41F7-8098-1EDCBB90BE13} = {7CBFDD06-C554-473F-B0A4-68362ABE1FBE}
-		{2F24D27E-AE8D-46E9-9BB6-22760DCBA539} = {C74C22BC-B241-4956-AD87-006F18AED77A}
-		{6EC5F1C1-AF78-4698-873D-D7778E5D752C} = {C74C22BC-B241-4956-AD87-006F18AED77A}
 		{EE4E99EC-7185-41B3-A2EB-A3ED3E6A5DA4} = {7CBFDD06-C554-473F-B0A4-68362ABE1FBE}
-		{8EC6D5A2-29F7-4DAA-BF8D-E693119B304B} = {C74C22BC-B241-4956-AD87-006F18AED77A}
 		{4D0EF708-76E6-4A93-903E-0457A2C1EE44} = {C9224C94-ACB0-4EEE-9F49-1A6EDED904D9}
 		{52805EF6-86FC-44A9-A5DD-4F9E5E4E7733} = {7CBFDD06-C554-473F-B0A4-68362ABE1FBE}
+		{EEC2F732-5B61-43DD-8F0F-BF689342A9BE} = {C74C22BC-B241-4956-AD87-006F18AED77A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B817F357-A483-4173-8178-4198E9EDE6F8}
