@@ -1,22 +1,49 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ShiftPlan.UsersIdentity.Context;
 using ShiftPlan.UsersIdentity.Models;
+using System.Security.Claims;
 
 namespace ShiftPlan.UsersIdentity.Controllers;
 
 [ApiController]
 [Route("api/identity/roles")]
-[Authorize(Roles = ConstRoles.Admin)]
-internal class UserRolesController(
+[Authorize]
+public class UserRolesController(
 	RoleManager<IdentityRole> roleManager,
 	IdentityUserContext context) : ControllerBase
 {
 	[HttpGet]
+	[Authorize]
+	public IActionResult GetRoles()
+	{
+		var user = this.HttpContext.User;
+		if (user.Identity is not null && user.Identity.IsAuthenticated)
+		{
+			var identity = (ClaimsIdentity)user.Identity;
+			var roles = identity.FindAll(identity.RoleClaimType)
+				.Select(c =>
+					new
+					{
+						c.Issuer,
+						c.OriginalIssuer,
+						c.Type,
+						c.Value,
+						c.ValueType
+					});
+
+			return Ok(roles);
+		}
+
+		return Unauthorized();
+	}
+	[HttpGet("all")]
 	public ActionResult<List<IdentityRole>> GetAllRoles() => Ok(context.Roles.ToList());
 
 	[HttpPost("add")]
+	[Authorize(Roles = ConstRoles.Admin)]
 	public async Task<IActionResult> AddRole([FromBody] string roleName)
 	{
 		var role = new IdentityRole(roleName)
@@ -29,6 +56,7 @@ internal class UserRolesController(
 	}
 
 	[HttpDelete("delete")]
+	[Authorize(Roles = ConstRoles.Admin)]
 	public async Task<IActionResult> DeleteRole([FromBody] string roleName)
 	{
 		var role = await roleManager.FindByNameAsync(roleName);
