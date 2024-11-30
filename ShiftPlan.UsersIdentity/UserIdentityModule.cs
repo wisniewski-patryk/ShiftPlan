@@ -6,7 +6,7 @@ using ShiftPlan.UsersIdentity.Context;
 using ShiftPlan.UsersIdentity.Models;
 using ShiftPlan.UsersIdentity.Users;
 
-namespace ShiftPlan.UsersIdentity.Extensions;
+namespace ShiftPlan.UsersIdentity;
 
 public static class UserIdentityModule
 {
@@ -16,10 +16,10 @@ public static class UserIdentityModule
 		services.AddHttpContextAccessor();
 		services.AddDbContext<IdentityUserContext>(options => options.UseNpgsql(connectionString));
 
-		services.AddAuthorization();
-		services.AddIdentityApiEndpoints<User>()
+		services.AddIdentityApiEndpoints<User>() // note: This add authentication with bearer scheme and with identity cookies
 			.AddRoles<IdentityRole>()
 			.AddEntityFrameworkStores<IdentityUserContext>();
+		services.AddAuthorization();
 
 		return services;
 
