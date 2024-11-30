@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using ShiftPlan.Api.Extensions;
 using ShiftPlan.Api.Repository;
-using ShiftPlan.UsersIdentity.Extensions;
+using ShiftPlan.UsersIdentity;
 using ShiftPlan.UsersIdentity.Models;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +16,10 @@ builder.Services.AddCors(options =>
 {
 	options.AddPolicy(name: origins,
 		policy =>
-		{
-			policy.AllowAnyHeader()
+			policy.WithOrigins("https://localhost:7057")
+				.AllowAnyHeader()
 				.AllowAnyMethod()
-				.AllowAnyOrigin();
-		});
+				.AllowCredentials());
 });
 
 builder.Services.AddControllers();
@@ -38,6 +40,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
+app.UseCors(origins);
 //if (app.Environment.IsDevelopment())
 //{
 app.UseSwagger();
@@ -50,8 +53,7 @@ app.MapGroup("api/identity")
 
 app.UseHttpsRedirection();
 
-app.UseCors(origins);
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
@@ -60,6 +62,22 @@ app.MapControllers();
 app.Map("/health", appBuilder =>
 	appBuilder.Run(async context =>
 		await context.Response.WriteAsync("Healthy")));
+
+// provide an endpoint to clear the cookie for logout
+//
+// For more information on the logout endpoint and antiforgery, see:
+// https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity#antiforgery-support
+app.MapPost("/api/identity/logout", async (SignInManager<User> signInManager, [FromBody] object empty) =>
+{
+	if (empty is not null)
+	{
+		await signInManager.SignOutAsync();
+
+		return Results.Ok();
+	}
+
+	return Results.Unauthorized();
+}).RequireAuthorization();
 
 app.Run();
 
