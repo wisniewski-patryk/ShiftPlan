@@ -46,4 +46,8 @@ builder.Services.AddHttpClient(
 	opt => opt.BaseAddress = new Uri("https://localhost:5001/api"))
 	.AddHttpMessageHandler<CookieHandler>();
 
+// set base address for default host
+builder.Services.AddScoped(sp =>
+	(HttpClient)sp.GetRequiredService<IHttpClientFactory>().CreateClient("Auth"));
+
 await builder.Build().RunAsync();
