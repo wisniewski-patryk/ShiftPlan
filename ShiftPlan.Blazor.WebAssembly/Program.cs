@@ -31,14 +31,10 @@ builder.Services.AddBlazorBootstrap();
 
 builder.Services.AddTransient<IEmployeesClient, EmployeesClient>();
 builder.Services.AddTransient<IShiftsClient, ShiftsClient>();
+builder.Services.AddTransient<IRolesClient, RolesClient>();
 
 builder.Services.AddTransient<IEmployeesService, EmployeesService>();
 builder.Services.AddTransient<IShiftsService, ShiftsService>();
-
-
-// set base address for default host
-builder.Services.AddScoped(sp =>
-	new HttpClient { BaseAddress = new Uri("https://localhost:5001/api") });
 
 // configure client for auth interactions
 builder.Services.AddHttpClient(

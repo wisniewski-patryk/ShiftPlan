@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ShiftPlan.UsersIdentity.Context;
@@ -16,7 +15,6 @@ public class UserRolesController(
 	IdentityUserContext context) : ControllerBase
 {
 	[HttpGet]
-	[Authorize]
 	public IActionResult GetRoles()
 	{
 		var user = this.HttpContext.User;
@@ -39,11 +37,12 @@ public class UserRolesController(
 
 		return Unauthorized();
 	}
+
 	[HttpGet("all")]
 	public ActionResult<List<IdentityRole>> GetAllRoles() => Ok(context.Roles.ToList());
 
 	[HttpPost("add")]
-	[Authorize(Roles = ConstRoles.Admin)]
+	[Authorize(Roles = RolesNames.Admin)]
 	public async Task<IActionResult> AddRole([FromBody] string roleName)
 	{
 		var role = new IdentityRole(roleName)
@@ -55,9 +54,9 @@ public class UserRolesController(
 		return Ok(role);
 	}
 
-	[HttpDelete("delete")]
-	[Authorize(Roles = ConstRoles.Admin)]
-	public async Task<IActionResult> DeleteRole([FromBody] string roleName)
+	[HttpDelete("delete/{roleName}")]
+	[Authorize(Roles = RolesNames.Admin)]
+	public async Task<IActionResult> DeleteRole(string roleName)
 	{
 		var role = await roleManager.FindByNameAsync(roleName);
 		if (role is null) return NotFound($"Role {roleName} not found");

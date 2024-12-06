@@ -8,7 +8,7 @@ namespace ShiftPlan.UsersIdentity.Controllers;
 
 [ApiController]
 [Route("api/identity/users")]
-[Authorize(Roles = ConstRoles.Admin)]
+[Authorize(Roles = RolesNames.Admin)]
 public class UserManagmentController(
 	UserManager<User> userManager,
 	IdentityUserContext context) : ControllerBase
@@ -55,12 +55,12 @@ public class UserManagmentController(
 	}
 
 	[HttpGet("assigment")]
-	public async Task<IActionResult> GetUserAssigmentRoles([FromBody] GetUserRolesRequest req)
+	public async Task<IActionResult> GetUserAssigmentRoles([FromQuery] GetUserRolesRequest user)
 	{
-		var user = await userManager.FindByEmailAsync(req.UserEmail);
-		if (user is null) return NotFound("User not found");
+		var userData = await userManager.FindByEmailAsync(user.UserEmail);
+		if (userData is null) return NotFound("User not found");
 
-		var result = await userManager.GetRolesAsync(user);
+		var result = await userManager.GetRolesAsync((User)userData);
 		return Ok(result);
 	}
 

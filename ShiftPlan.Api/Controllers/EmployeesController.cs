@@ -8,7 +8,7 @@ namespace ShiftPlan.Api.Controllers;
 
 [ApiController]
 [Route("api/employees")]
-[Authorize(Roles = ConstRoles.Editor)]
+[Authorize(Roles = RolesNames.Editor)]
 public class EmployeesController(IRepository<Employee> employeesRepository) : ControllerBase
 {
 	[HttpGet, AllowAnonymous]

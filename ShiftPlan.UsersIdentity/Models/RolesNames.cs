@@ -1,6 +1,6 @@
 ﻿namespace ShiftPlan.UsersIdentity.Models;
 
-public static class ConstRoles
+public static class RolesNames
 {
 	public const string Admin = "Admin";
 	public const string Editor = "Editor";

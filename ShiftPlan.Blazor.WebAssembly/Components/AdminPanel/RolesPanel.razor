@@ -1,0 +1,52 @@
+﻿
+@namespace ShiftPlan.Blazor.WebAssembly.Components.AdminPanel.Roles
+
+@using BlazorBootstrap
+@using ShiftPlan.Blazor.WebAssembly.Clients
+
+@inject IRolesClient client
+
+<div class="container w-50">
+	<div class="d-flex">
+		<h6 class="m-2">Roles</h6>
+		<div class="m-2 d-flex">
+			<InputText @bind-Value="newRoleName" class="form-control m-1" />
+			<Button @onclick="AddRole" Color="ButtonColor.Primary" Class="m-1">Add</Button>
+		</div>
+	</div>
+	<Grid @ref="grid" TItem="IdentityRole" Class="table table-hover table-border table-striped" AllowFiltering="true" DataProvider="DataProvider" FixedHeader="true" EmptyText="Data not avaiable">
+		<GridColumns>
+			<GridColumn TItem="IdentityRole" HeaderText="Id" PropertyName="Id" >@context.Id</GridColumn>
+			<GridColumn TItem="IdentityRole" HeaderText="Name" PropertyName="Name">@context.Name</GridColumn>
+			<GridColumn TItem="IdentityRole" HeaderText="NormalizedName" PropertyName="NormalizedName">@context.NormalizedName</GridColumn>
+			<GridColumn TItem="IdentityRole" Filterable="false" Sortable="false">
+				<ChildContent>
+					<Button Color="ButtonColor.Danger" @onclick="@(() => DeleteRole(@context.Name))" >Del</Button>
+				</ChildContent>
+			</GridColumn>
+		</GridColumns>
+	</Grid>
+</div>
+
+@code {
+	private string newRoleName = string.Empty;
+	private Grid<IdentityRole> grid;
+
+	private async Task<GridDataProviderResult<IdentityRole>> DataProvider(GridDataProviderRequest<IdentityRole> req)
+	{
+		return req.ApplyTo(await client.GetIdentityRoles());
+	}
+
+	private async Task AddRole()
+	{
+		await client.CreateNewRole(newRoleName);
+		await grid.RefreshDataAsync();
+		newRoleName = string.Empty;
+	}
+
+	private async Task DeleteRole(string roleName)
+	{
+		await client.DeleteRole(roleName);
+		await grid.RefreshDataAsync();
+	}
+}
