@@ -1,0 +1,32 @@
+﻿@namespace ShiftPlan.Blazor.WebAssembly.Components.AdminPanel.Users
+
+@using ShiftPlan.Blazor.WebAssembly.Clients
+@using BlazorBootstrap
+
+@inject UserManagmentClient client
+
+<div class="container w-50">
+	<h3 class="m-2">UsersPanel</h3>
+	<Grid @ref="grid" TItem="UserWithRoles" Class="table table-hover table-border table-striped" AllowFiltering="true" EmptyText="Data not avaiavle" DataProvider="DataProvider">
+		<GridColumns>
+			<GridColumn TItem="UserWithRoles" HeaderText="Id" PropertyName="Id">@context.User.Id</GridColumn>
+			<GridColumn TItem="UserWithRoles" HeaderText="UserName" PropertyName="UserName">@context.User.UserName</GridColumn>
+			<GridColumn TItem="UserWithRoles" HeaderText="Email" PropertyName="Email">@context.User.Email</GridColumn>
+			<GridColumn TItem="UserWithRoles" HeaderText="Roles" PropertyName="Roles">@BuildRolesString(context.Roles)</GridColumn>
+		</GridColumns>
+	</Grid>
+</div>
+
+@code {
+	private Grid<UserWithRoles> grid;
+
+	private async Task<GridDataProviderResult<UserWithRoles>> DataProvider(GridDataProviderRequest<UserWithRoles> req)
+	{
+		return req.ApplyTo(await client.GetAllUsers());
+	}
+
+	private string BuildRolesString(IEnumerable<string> roles)
+	{
+		return string.Join(", ", roles);
+	}
+}

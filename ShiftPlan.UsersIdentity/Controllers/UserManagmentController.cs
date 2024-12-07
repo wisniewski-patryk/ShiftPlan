@@ -19,6 +19,19 @@ public class UserManagmentController(
 		return Ok(context.Users.ToList());
 	}
 
+	[HttpGet("withroles")]
+	public async Task<IActionResult> GetAllUsersWithRoles()
+	{
+		var users = context.Users.ToList();
+		var usersWithRoles = new List<UserWithRoles>();
+		foreach (var user in users)
+		{
+			var userRoles = await userManager.GetRolesAsync(user);
+			usersWithRoles.Add(new UserWithRoles(user, userRoles));
+		}
+		return Ok(usersWithRoles);
+	}
+
 	[HttpDelete("delete")]
 	public async Task<IActionResult> DeleteUser([FromBody] DeleteUserRequest req)
 	{
@@ -91,6 +104,8 @@ public class UserManagmentController(
 		return BadRequest(result);
 	}
 }
+
+public record UserWithRoles(User User, IEnumerable<string> Roles);
 public record DeleteUserRequest(string UserEmail);
 public record EditUserRequest(string UserEmail, string NewEmailAddress, string? NewPhoneNumber);
 public record GetUserRolesRequest(string UserEmail);

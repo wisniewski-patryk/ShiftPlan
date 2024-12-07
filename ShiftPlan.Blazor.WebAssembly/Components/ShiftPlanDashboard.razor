@@ -6,29 +6,35 @@
 @using ShiftPlan.Blazor.WebAssembly.Helpers
 @using ShiftPlan.Blazor.WebAssembly.Models
 @using ShiftPlan.Blazor.WebAssembly.Services
+@using System.Security.Claims
 
 @inject IShiftsService shiftService
 @inject IEmployeesService employeeService
-
 
 <div class="row d-flex">
 	<div class="col-3 justify-content-start">
 		<h3>ShiftPlan</h3>
 		<div class="px-4">
-			<AuthorizeView>
-				<Authorized>
-					Logged in as @context.User.Identity?.Name. <a class="btn btn-danger" href="logout"><span class="bi bi-door-closed-fill"></span> Logout</a>
-				</Authorized>
-				<NotAuthorized>
-					<a class="btn btn-primary" href="login"><span class="bi bi-door-open"></span> Login</a>
-					<a class="btn btn-secoundary" href="register"><span class="bi bi-pencil-square"></span> Register</a>
-				</NotAuthorized>
-			</AuthorizeView>
+			<AddEmployeeModal InsertEmployee="InsertOrUpdateEmployee" />
+			<RemoveEmployeeModal RemoveEmployee="RemoveEmployee" Employees="employees" />
 		</div>
 	</div>
 	<div class="col-6 justify-content-center">
-		<AddEmployeeModal InsertEmployee="InsertOrUpdateEmployee" />
-		<RemoveEmployeeModal RemoveEmployee="RemoveEmployee" Employees="employees" />
+		<AuthorizeView>
+			<Authorized>
+				<div class="d-flex">
+					<div class="m-1">@context.User.Identity?.Name</div>
+					<a class="btn btn-danger m-1" href="logout"><span class="bi bi-door-closed-fill"></span> Logout</a>
+					<a class="btn btn-outline-primary m-1" href="admin">Admin panle</a>
+				</div>
+			</Authorized>
+			<NotAuthorized>
+				<div class="d-flex">
+					<a class="btn btn-primary m-1" href="login"><span class="bi bi-door-open"></span> Login</a>
+					<a class="btn btn-secoundary m-1" href="register"><span class="bi bi-pencil-square"></span> Register</a>
+				</div>
+			</NotAuthorized>
+		</AuthorizeView>
 	</div>
 </div>
 
@@ -110,11 +116,14 @@
 			}
 			if (newShift is null) return;
 			shifts.Add(newShift);
-			
 		}
 		catch (HttpCommunicationException ex)
 		{
 			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
 		}
+	}
+	private bool ContainAdminClaim(IEnumerable<Claim> claims)
+	{
+		return claims.FirstOrDefault(c => c.Type == ClaimTypes.Role && c.Value == "Admin") != null;
 	}
 }

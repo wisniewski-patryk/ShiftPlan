@@ -4,12 +4,11 @@
 
 @inject IAccountManagement accountManager
 @inject AuthenticationStateProvider asprovider
+@inject NavigationManager navigation
 
 <PageTitle>Login</PageTitle>
 
 <h1>Login</h1>
-
-<div>@asp</div>
 
 <AuthorizeView>
 	<Authorized>
@@ -48,7 +47,6 @@
 	private string email = string.Empty;
 	private string password = string.Empty;
 	private string[] errorList = [];
-	private string? asp = "waithing";
 
 	public async Task DoLoginAsync()
 	{
@@ -77,6 +75,7 @@
 			{
 				success = true;
 				email = password = string.Empty;
+				navigation.NavigateTo("/");
 			}
 			else
 			{
@@ -89,8 +88,5 @@
 			errors = true;
 			errorList = new[] { $"An error occurred: {ex.Message}" };
 		}
-		var a = await asprovider.GetAuthenticationStateAsync();
-		asp = a.User.Identity?.Name;
-
 	}
 }

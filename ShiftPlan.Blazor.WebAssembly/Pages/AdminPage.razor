@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using ShiftPlan.Blazor.Client.Identity
 @using ShiftPlan.Blazor.WebAssembly.Components.AdminPanel.Roles
+@using ShiftPlan.Blazor.WebAssembly.Components.AdminPanel.Users
 
 <AuthorizeView Roles="Admin">
 	<NotAuthorized>
@@ -12,6 +13,7 @@
 	</NotAuthorized>
 	<Authorized>
 		<RolesPanel/>
+		<UsersPanel />
 	</Authorized>
 </AuthorizeView>
 

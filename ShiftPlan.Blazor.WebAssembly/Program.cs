@@ -32,6 +32,7 @@ builder.Services.AddBlazorBootstrap();
 builder.Services.AddTransient<IEmployeesClient, EmployeesClient>();
 builder.Services.AddTransient<IShiftsClient, ShiftsClient>();
 builder.Services.AddTransient<IRolesClient, RolesClient>();
+builder.Services.AddTransient<UserManagmentClient>();
 
 builder.Services.AddTransient<IEmployeesService, EmployeesService>();
 builder.Services.AddTransient<IShiftsService, ShiftsService>();
