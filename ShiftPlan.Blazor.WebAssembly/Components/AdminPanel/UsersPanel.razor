@@ -5,7 +5,7 @@
 
 @inject UserManagmentClient client
 
-<div class="container w-50">
+<div class="container">
 	<h3 class="m-2">UsersPanel</h3>
 	<Grid @ref="grid" TItem="UserWithRoles" Class="table table-hover table-border table-striped" AllowFiltering="true" EmptyText="Data not avaiavle" DataProvider="DataProvider">
 		<GridColumns>
@@ -13,12 +13,36 @@
 			<GridColumn TItem="UserWithRoles" HeaderText="UserName" PropertyName="UserName">@context.User.UserName</GridColumn>
 			<GridColumn TItem="UserWithRoles" HeaderText="Email" PropertyName="Email">@context.User.Email</GridColumn>
 			<GridColumn TItem="UserWithRoles" HeaderText="Roles" PropertyName="Roles">@BuildRolesString(context.Roles)</GridColumn>
+			<GridColumn TItem="UserWithRoles" Filterable="false" Sortable="false">
+				<ChildContent>
+					<div class="d-flex m-1">
+						<Button Color="ButtonColor.Info" @onclick="@(() => ShowRoleAssigmentModal(@context.User.Email))">Edit</Button>
+					</div>
+				</ChildContent>
+			</GridColumn>
 		</GridColumns>
 	</Grid>
 </div>
 
+<Modal @ref="roleNameModal" >
+	<BodyTemplate>
+		<label class="form-label">Role name</label>
+		<InputText class="form-control" @bind-Value="roleName" />
+	</BodyTemplate>
+	<FooterTemplate>
+		<Button Color="ButtonColor.Danger" @onclick="RemoveRoleFromUser">Remove</Button>
+		<Button Color="ButtonColor.Primary" @onclick="AssingRoleToUser">Assign</Button>
+		<Button Color="ButtonColor.Secondary" @onclick="roleNameModal.HideAsync">Close</Button>
+	</FooterTemplate>
+</Modal>
+
+
 @code {
 	private Grid<UserWithRoles> grid;
+	private Modal roleNameModal;
+
+	private string roleName = string.Empty;
+	private string selectedUserEmail = string.Empty;
 
 	private async Task<GridDataProviderResult<UserWithRoles>> DataProvider(GridDataProviderRequest<UserWithRoles> req)
 	{
@@ -29,4 +53,25 @@
 	{
 		return string.Join(", ", roles);
 	}
+
+	private async Task RemoveRoleFromUser()
+	{
+		await client.RemoveRoleFromUser(selectedUserEmail, roleName);
+		await grid.RefreshDataAsync();
+		await roleNameModal.HideAsync();
+	}
+
+	private async Task AssingRoleToUser()
+	{
+		await client.AssignRoleToUser(selectedUserEmail, roleName);
+		await grid.RefreshDataAsync();
+		await roleNameModal.HideAsync();
+	}
+
+	private async Task ShowRoleAssigmentModal(string userEmail)
+	{
+		selectedUserEmail = userEmail;
+		await roleNameModal.ShowAsync();
+	}
+
 }

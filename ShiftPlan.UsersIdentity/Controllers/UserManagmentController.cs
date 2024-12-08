@@ -93,7 +93,7 @@ public class UserManagmentController(
 		return BadRequest(result);
 	}
 
-	[HttpDelete("assigment/remove")]
+	[HttpPost("assigment/remove")]
 	public async Task<IActionResult> RemoveAssignRoleToUser([FromBody] RemoveAssigmentRequest removeAssigmentRequest)
 	{
 		var user = await userManager.FindByEmailAsync(removeAssigmentRequest.UserEmail);
