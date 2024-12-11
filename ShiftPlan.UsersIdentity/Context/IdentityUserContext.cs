@@ -25,10 +25,10 @@ public class IdentityUserContext(DbContextOptions<IdentityUserContext> options) 
 			.HasData(new User
 			{
 				Id = adminUserGuid,
-				UserName = "ROOT_ADMIN",
-				NormalizedUserName = "ROOT_ADMIN",
-				Email = "ROOT_ADMIN@example.com",
-				NormalizedEmail = "ROOT_ADMIN@EXAMPLE.COM",
+				UserName = "ROOT_ADMIN@root.local",
+				NormalizedUserName = "ROOT_ADMIN@ROOT.LOCAL",
+				Email = "ROOT_ADMIN@root.local",
+				NormalizedEmail = "ROOT_ADMIN@ROOT.LOCAL",
 				PasswordHash = new PasswordHasher<User>().HashPassword(default!, "ROOT_ADMIN_PASSWORD"),
 				SecurityStamp = Guid.NewGuid().ToString()
 			});

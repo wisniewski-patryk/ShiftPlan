@@ -1,10 +1,7 @@
 @host = https://localhost
 @port = 5001
 @ShiftPlanApi = {{host}}:{{port}}
-@token = CfDJ8OOS5yivTxdCv-SAkGg2W7sSEUG4Yi0PAeCUyczfFfLZWus-H2LxFIs4MzgEASfZq6G0H3mHpHWee8IK4HN-oWr9rVWXk48Z8Gn0hW8Hncl68ahntP1-rpHU0u5S1iFo8OItqCKUxF8STxLptmY9w3XrgL2kn8dnngWdW9nX4g_cJDaSThCuUY_QzhKqozT1LCRP3zHseZziPnxn__8iVCf7cdr2YUAI1IfLUy_wbYgQDYgGXkZye-IqeFXZjErj-fAHrJ86VF4WC0R3bhxpyx8L5kl3dNzOYCFr-d0LbI5VgzhFJUk9RXKfEE_zYAhO1JCvuPUqaFSS4R6ySHVH1FoS7WsiykQYYMu0BAG0vtKvUBPG526l5KhY4bcmdgBfVxRDqpslhkHldba5OEhvCfTaiByvwHQSuMUaWvsPLUfJ98LfPS6dyV8BJRBZE_YsOvP-PuUJlNf2xFRAG9Q1OKGlwbe2jGAf_KSTJJsMDX5bbGO04Fx7QqBn1dkJ3JNuhTfw4Z5Y9NFxXdVsZOWcwY3cdZ_vQkxVyyySJ2Pkj-944my2CPDuYXTIhBUc4Nx06uXE9C4gYxGK-anZhAXG6uZAwon2NNXQZbRSRfr_knOjeArGEpvYc0k-Dwb7ZbcR7z6yLQTH7utTiTCbFrHQr4O3z6eCcVcyd96lL3xMcu444oXRLKYCMTU8-De9wnj4QinZ_GlMShQW34RjO0CTZQAgk78qYYHBCcdof8XB1MDqj2QOgA_FY87zwLhehRMZfm2db1lA1HS15SWlBRQMIQ8GKQ7EbLng0cO26vWnZvtU
-### 
-//e:test2@test.mail
-//p:Test2@test
+@token = 
 POST {{ShiftPlanApi}}/api/identity/register
 Content-Type: application/json
 
@@ -19,7 +16,7 @@ Content-Type: application/json
 
 {
 	"email": "ROOT_ADMIN",
-	"password": "s0me_Super_secert_p@55w0rd"
+	"password": "ROOT_ADMIN_PASSWORD"
 }
 
 ###

@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShiftPlan.Api.Models;
 using ShiftPlan.Api.Repository;
+using ShiftPlan.UsersIdentity.Models;
 
 namespace ShiftPlan.Api.Controllers
 {
 	[ApiController]
 	[Route("api/shifts")]
-	[Authorize]
+	[Authorize(Roles = RolesNames.Editor)]
 	public class ShiftController(IRepository<Shift> shiftsRepository) : ControllerBase
 	{
 		[HttpGet, AllowAnonymous]
