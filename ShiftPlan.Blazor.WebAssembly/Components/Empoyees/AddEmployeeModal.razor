@@ -10,7 +10,7 @@
 	<Icon Name="IconName.Plus"/> Add new employee
 </Button>
 
-<Modal @ref="modal" Title="Add employee" ShowCloseButton="true" IsVerticallyCentered="true">
+<Modal @ref="modal" Title="Add employee" ShowCloseButton="true" IsVerticallyCentered="true" OnHidden="ResetEmployeeName">
 	<BodyTemplate>
 		<label class="form-label">Employee name</label>
 		<InputText class="form-control" @bind-Value="EmployeeName" />
@@ -39,4 +39,6 @@
 	private async Task OnShowModalClick() => await modal.ShowAsync();
 
 	private async Task OnHideModalClick() => await modal.HideAsync();
+
+	private void ResetEmployeeName() => EmployeeName = string.Empty;
 }
