@@ -5,7 +5,6 @@ using ShiftPlan.Blazor.Client.Identity;
 using ShiftPlan.Blazor.WebAssembly;
 using ShiftPlan.Blazor.WebAssembly.Clients;
 using ShiftPlan.Blazor.WebAssembly.Identity;
-using ShiftPlan.Blazor.WebAssembly.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -25,17 +24,13 @@ builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStat
 builder.Services.AddScoped(
 	sp => (IAccountManagement)sp.GetRequiredService<AuthenticationStateProvider>());
 
-
-
 builder.Services.AddBlazorBootstrap();
 
 builder.Services.AddTransient<IEmployeesClient, EmployeesClient>();
 builder.Services.AddTransient<IShiftsClient, ShiftsClient>();
 builder.Services.AddTransient<IRolesClient, RolesClient>();
 builder.Services.AddTransient<UserManagmentClient>();
-
-builder.Services.AddTransient<IEmployeesService, EmployeesService>();
-builder.Services.AddTransient<IShiftsService, ShiftsService>();
+builder.Services.RegisterServices(builder.Configuration);
 
 // configure client for auth interactions
 builder.Services.AddHttpClient(

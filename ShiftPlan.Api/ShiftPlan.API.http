@@ -15,7 +15,7 @@ POST {{ShiftPlanApi}}/api/identity/login
 Content-Type: application/json
 
 {
-	"email": "ROOT_ADMIN",
+	"email": "ROOT_ADMIN@root.local",
 	"password": "ROOT_ADMIN_PASSWORD"
 }
 

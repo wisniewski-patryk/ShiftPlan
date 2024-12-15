@@ -18,6 +18,8 @@ public static class RegistrationExtenstion
 
 
 		services.RegisterApplicationServices();
+
+		services.AddTransient<ILoadSaveService, LocalFileService>();
 		return services;
 	}
 
@@ -27,12 +29,7 @@ public static class RegistrationExtenstion
 		services.AddTransient<IShiftsService, ShiftsService>();
 		return services;
 	}
-
-	public static IServiceCollection RegisterToastMessagesList(this IServiceCollection services)
-	{
-		return services;
-	}
-
+ 
 	public static IServiceCollection RegisterOfflineServices(this IServiceCollection services)
 	{
 		services.AddSingleton<List<Shift>>();
