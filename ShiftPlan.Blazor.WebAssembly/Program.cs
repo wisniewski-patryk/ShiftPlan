@@ -32,10 +32,12 @@ builder.Services.AddTransient<IRolesClient, RolesClient>();
 builder.Services.AddTransient<UserManagmentClient>();
 builder.Services.RegisterServices(builder.Configuration);
 
+var apiUrl = builder.Configuration.GetConnectionString("ShiftplanApi") ?? throw new Exception("Url to api is unavaiable");
+
 // configure client for auth interactions
 builder.Services.AddHttpClient(
 	"Auth",
-	opt => opt.BaseAddress = new Uri("https://localhost:5001/api"))
+	opt => opt.BaseAddress = new Uri(apiUrl))
 	.AddHttpMessageHandler<CookieHandler>();
 
 // set base address for default host
