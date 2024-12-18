@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using ShiftPlan.UsersIdentity;
+using ShiftPlan.UsersIdentity.Context;
 
 #nullable disable
 
 namespace ShiftPlan.UsersIdentity.Migrations
 {
-    [DbContext(typeof(IdentityUserContext))]
+	[DbContext(typeof(IdentityUserContext))]
     [Migration("20240706094511_AddIdentity")]
     partial class AddIdentity
     {

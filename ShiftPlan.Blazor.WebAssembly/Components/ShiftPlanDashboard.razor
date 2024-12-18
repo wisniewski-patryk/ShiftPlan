@@ -1,0 +1,194 @@
+﻿@using BlazorBootstrap
+@using Microsoft.AspNetCore.Components.Authorization
+@using ShiftPlan.Blazor.Client.Pages.Components
+@using ShiftPlan.Blazor.WebAssembly.Clients
+@using ShiftPlan.Blazor.WebAssembly.Exceptions
+@using ShiftPlan.Blazor.WebAssembly.Helpers
+@using ShiftPlan.Blazor.WebAssembly.Models
+@using ShiftPlan.Blazor.WebAssembly.Services
+@using System.Security.Claims
+
+@inject IShiftsService shiftService
+@inject IEmployeesService employeeService
+@inject IConfiguration configuration
+@inject ILoadSaveService localFileService
+
+@{
+	var offlineMode = configuration.GetSection("OfflineMode").Value;
+	bool.TryParse(offlineMode, out bool isOfflineModeEnabled);
+	if (isOfflineModeEnabled)
+	{
+		<Button Color="ButtonColor.Primary" @onclick="LoadEmployeesAndShiftsFromFile">Load shifts</Button>
+		<Button Color="ButtonColor.Primary" @onclick="SaveEmployeesAndShiftsToFile">Save shifts</Button>
+	}
+}
+
+<div class="row d-flex">
+	<div class="col-3 justify-content-start">
+		<h3>ShiftPlan</h3>
+		<div class="px-4">
+			<AddEmployeeModal InsertEmployee="InsertOrUpdateEmployee" />
+			<RemoveEmployeeModal RemoveEmployee="RemoveEmployee" Employees="employees" />
+		</div>
+	</div>
+	<div class="col-6 justify-content-center">
+		<AuthorizeView>
+			<Authorized>
+				<div class="d-flex">
+					<div class="m-1">@context.User.Identity?.Name</div>
+					<a class="btn btn-danger m-1" href="logout"><span class="bi bi-door-closed-fill"></span> Logout</a>
+					<a class="btn btn-outline-primary m-1" href="admin">Admin panle</a>
+				</div>
+			</Authorized>
+			<NotAuthorized>
+				<div class="d-flex">
+					<a class="btn btn-primary m-1" href="login"><span class="bi bi-door-open"></span> Login</a>
+					<a class="btn btn-secoundary m-1" href="register"><span class="bi bi-pencil-square"></span> Register</a>
+				</div>
+			</NotAuthorized>
+		</AuthorizeView>
+	</div>
+</div>
+
+<ShiftPlanTableComponent employees="employees" shifts="shifts" OnRemoveShift="RemoveShift" OnShiftInsertOrUpdate="InsertOrUpdateShift" />
+
+@code {
+	[Inject] protected ToastService toastService { get; set; } = new();
+	public List<Employee> employees = [];
+	public List<Shift> shifts = [];
+	public string fileJsonSave = Path.Combine(Path.GetTempPath(), "employeeshifts.json");
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await TryGetEmployees();
+		await TryGetShifts();
+
+		async Task TryGetEmployees()
+		{
+			try
+			{
+				employees = (await employeeService.GetAll())?.ToList() ?? [];
+			}
+			catch (HttpCommunicationException ex)
+			{
+				toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+			}
+		}
+
+		async Task TryGetShifts()
+		{
+			try
+			{
+				var shiftRequestResult = await shiftService.GetAll();
+				shifts = shiftRequestResult?.ToList() ?? [];
+			}
+			catch (HttpCommunicationException ex)
+			{
+				toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+			}
+		}
+	}
+
+
+	private async Task RemoveShift(Shift shift)
+	{
+		try
+		{
+			await shiftService.Remove(shift);
+			shifts.Remove(shift);
+		}
+		catch (HttpCommunicationException ex)
+		{
+			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+		}
+	}
+
+	private async Task InsertOrUpdateEmployee(Employee employee)
+	{
+		try
+		{
+			var newEmployee = await employeeService.InsertOrUpdate(employee);
+			var existingEmployee = employees.FirstOrDefault(e => e.Id == newEmployee?.Id);
+			if (existingEmployee is not null)
+			{
+				employees.Remove(existingEmployee);
+			}
+			if (newEmployee is null) return;
+			employees.Add(newEmployee);
+		}
+		catch (HttpCommunicationException ex)
+		{
+			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+		}
+
+	}
+
+	private async Task RemoveEmployee(Employee employee)
+	{
+		try
+		{
+			await employeeService.Remove(employee);
+			employees.Remove(employee);
+		}
+		catch (HttpCommunicationException ex)
+		{
+			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+		}
+		catch (Exception ex)
+		{
+			return;
+		}
+	}
+
+	private async Task InsertOrUpdateShift(Shift shift)
+	{
+		try
+		{
+			var newShift = await shiftService.InsertOrUpdate(shift);
+
+			var existingShift = shifts.FirstOrDefault(s => s.Id == newShift?.Id);
+			if (existingShift != null)
+			{
+				shifts.Remove(existingShift);
+			}
+			if (newShift is null) return;
+			shifts.Add(newShift);
+		}
+		catch (HttpCommunicationException ex)
+		{
+			toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", ex.Message));
+		}
+	}
+
+	private async Task LoadEmployeesAndShiftsFromFile()
+	{
+		try
+		{
+			var employeesAndShifts = await localFileService.LoadLocalFile(fileJsonSave) as LocalShiftsAndEmployees;
+			if (employeesAndShifts != null)
+			{
+				employees = employeesAndShifts.Employees;
+				shifts = employeesAndShifts.Shifts;
+			}
+			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"Data was loaded from: {fileJsonSave}"));
+		}
+		catch (Exception ex)
+		{ toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not loaded successful. {ex.Message}")); }
+	}
+
+	private async Task SaveEmployeesAndShiftsToFile()
+	{
+		try
+		{
+			await localFileService.SaveLocalFile(new LocalShiftsAndEmployees(employees, shifts), fileJsonSave);
+			toastService.Notify(ToastNotificationHelper.SuccessToastMessage("Information", $"File was created: {fileJsonSave}"));
+		}
+		catch (Exception ex) 
+		{ toastService.Notify(ToastNotificationHelper.ErrorToastMessage("Error", $"File was not saved. {ex.Message}")); }
+	}
+	private bool ContainAdminClaim(IEnumerable<Claim> claims)
+	{
+		return claims.FirstOrDefault(c => c.Type == ClaimTypes.Role && c.Value == "Admin") != null;
+	}
+}

@@ -1,0 +1,20 @@
+﻿@using ShiftPlan.Blazor.WebAssembly.Models
+
+<InsertOrUpdateShiftModal Employee="@Employee" Shift="@Shift" Date="Date" OnShiftInsertOrUpdate="OnShiftInsertOrUpdate" OnShiftRemoved="OnShiftRemoved"/>
+
+@code {
+    [Parameter]
+    public DateOnly Date { get; set; }
+
+    [Parameter]
+    public Employee? Employee { get; set; }
+
+	[Parameter]
+	public Shift? Shift { get; set; }
+
+	[Parameter]
+	public EventCallback<Shift> OnShiftInsertOrUpdate { get; set; }
+
+	[Parameter]
+	public EventCallback<Shift> OnShiftRemoved { get; set; }
+}

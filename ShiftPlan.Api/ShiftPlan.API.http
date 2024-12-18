@@ -1,0 +1,77 @@
+@host = https://localhost
+@port = 5001
+@ShiftPlanApi = {{host}}:{{port}}
+@token = 
+POST {{ShiftPlanApi}}/api/identity/register
+Content-Type: application/json
+
+{
+	"email": "test@testmail.com",
+	"password": "testP@55word"
+}
+
+###
+POST {{ShiftPlanApi}}/api/identity/login
+Content-Type: application/json
+
+{
+	"email": "ROOT_ADMIN@root.local",
+	"password": "ROOT_ADMIN_PASSWORD"
+}
+
+###
+POST {{ShiftPlanApi}}/api/identity/login
+Content-Type: application/json
+
+{
+	"email": "test@testmail.com",
+	"password": "testP@55word"
+}
+
+###
+GET {{ShiftPlanApi}}/api/identity/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+PATCH {{ShiftPlanApi}}/api/identity/users/assigment/add
+Content-Type: application/json
+Authorization: Bearer {{token}}
+{
+	"UserEmail": "mymail@mail.me",
+	"RoleName": "Admin"
+}
+
+###
+PATCH {{ShiftPlanApi}}/api/identity/users/assigment/remove
+Content-Type: application/json
+Authorization: Bearer {{token}}
+{
+	"UserEmail": "mymail@mail.me",
+	"RoleName": "Admin"
+}
+
+###
+DELETE {{ShiftPlanApi}}/api/identity/users/delete
+Content-Type: application/json
+Authorization: Bearer {{token}}
+{
+	"UserName": "mymail@mail.com"
+}
+###
+GET {{ShiftPlanApi}}/api/identity/roles
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+
+###
+POST {{ShiftPlanApi}}/api/identity/roles/add
+Content-Type: application/json
+Authorization: Bearer {{token}}
+"Admin"
+
+###
+DELETE {{ShiftPlanApi}}/api/identity/roles/delete
+Content-Type: application/json
+Authorization: Bearer {{token}}
+"Admin"
