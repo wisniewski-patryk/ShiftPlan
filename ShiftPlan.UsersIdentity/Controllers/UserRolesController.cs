@@ -9,7 +9,7 @@ namespace ShiftPlan.UsersIdentity.Controllers;
 
 [ApiController]
 [Route("api/identity/roles")]
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class UserRolesController(
 	RoleManager<IdentityRole> roleManager,
 	IdentityUserContext context) : ControllerBase
